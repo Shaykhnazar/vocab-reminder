@@ -1,7 +1,6 @@
 // components/WordsList.tsx
 'use client';
 
-import { useState } from 'react';
 import { Word } from '@/lib/supabase';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -10,15 +9,14 @@ interface WordsListProps {
 }
 
 export default function WordsList({ initialWords }: WordsListProps) {
-  const [words, setWords] = useState(initialWords);
 
   return (
     <div className="space-y-4">
-      {words.length === 0 ? (
+      {initialWords.length === 0 ? (
         <p className="text-gray-500">No words added yet.</p>
       ) : (
         <div className="grid gap-4">
-          {words.map((word) => (
+          {initialWords.map((word) => (
             <div
               key={word.id}
               className="bg-white p-4 rounded-lg shadow border border-gray-200"
