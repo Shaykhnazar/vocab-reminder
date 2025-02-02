@@ -1,7 +1,6 @@
 // components/WordsList.tsx
 'use client';
 
-import { useState } from 'react';
 import { Word } from '@/lib/supabase';
 import { formatDistanceToNow } from 'date-fns';
 
