@@ -1,19 +1,25 @@
 // app/api/cron/process-notifications/route.ts
 import { NextResponse } from 'next/server';
+import { verifySignature } from '@upstash/qstash/dist/nextjs';
 import { processNotificationQueue } from '@/lib/notifications';
 
-export const runtime = 'edge';
-
-export async function GET(request: Request) {
+async function handler(request: Request) {
   try {
-    // Verify the request is from Vercel Cron
-    // You should add proper authentication here
-
     await processNotificationQueue();
-
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error processing notifications:', error);
     return NextResponse.json({ error: 'Failed to process notifications' }, { status: 500 });
   }
+}
+
+// Wrap the handler with QStash verification
+export const POST = verifySignature(handler);
+
+// Keep GET for testing locally
+export async function GET(request: Request) {
+  if (process.env.NODE_ENV === 'development') {
+    return handler(request);
+  }
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
 }
