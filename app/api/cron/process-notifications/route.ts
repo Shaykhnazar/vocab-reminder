@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { verifySignature } from '@upstash/qstash/dist/nextjs';
 import { processNotificationQueue } from '@/lib/notifications';
 
-async function handler(request: Request) {
+async function handler() {
   try {
     await processNotificationQueue();
     return NextResponse.json({ success: true });
@@ -17,9 +17,9 @@ async function handler(request: Request) {
 export const POST = verifySignature(handler);
 
 // Keep GET for testing locally
-export async function GET(request: Request) {
+export async function GET() {
   if (process.env.NODE_ENV === 'development') {
-    return handler(request);
+    return handler();
   }
   return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
 }
