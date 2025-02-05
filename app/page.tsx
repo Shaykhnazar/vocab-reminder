@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import {supabase, Word} from "@/lib/supabase";
 import WordForm from "@/components/WordForm";
 import WordsList from "@/components/WordsList";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
