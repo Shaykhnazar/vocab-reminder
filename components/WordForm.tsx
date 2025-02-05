@@ -5,13 +5,13 @@ import { useState } from 'react';
 import { Word } from '@/lib/supabase';
 
 interface WordFormProps {
-  onSubmit: (word: Partial<Word>) => Promise<void>;
+  onSubmitAction: (word: Partial<Word>) => Promise<void>;
 }
 
-export default function WordForm({ onSubmit }: WordFormProps) {
+export default function WordForm({ onSubmitAction }: WordFormProps) {
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
-  const [context, setContext] = useState('');
+  const [context, setContext] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,10 +19,10 @@ export default function WordForm({ onSubmit }: WordFormProps) {
     setIsLoading(true);
 
     try {
-      await onSubmit({
+      await onSubmitAction({
         word,
         definition,
-        context
+        context: context || null,  // Convert empty string to null
       });
 
       // Reset form

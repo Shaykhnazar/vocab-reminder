@@ -1,9 +1,9 @@
 // app/api/words/route.ts
-import { NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import { supabase, REVIEW_INTERVALS } from '@/lib/supabase';
 import { addToNotificationQueue } from '@/lib/notifications';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const { word, definition, context, userId } = await req.json();
 

@@ -18,12 +18,14 @@ export interface Word {
   next_review_at: string | null;
   review_stage: number;
   mastered: boolean;
-  context: string | null;
+  context?: string | null;  // Make context optional and nullable
 }
 
 export interface User {
   id: string;
   email: string;
+  password: string;
+  created_at: Date;
   notification_preferences: {
     email: boolean;
     telegram: boolean;
