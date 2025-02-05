@@ -17,6 +17,7 @@
     "@types/nodemailer": "^6.4.17",
     "@upstash/qstash": "^2.7.20",
     "@upstash/redis": "^1.34.3",
+    "@vercel/analytics": "^1.4.1",
     "bcryptjs": "^2.4.3",
     "date-fns": "^4.1.0",
     "jose": "^5.0.0",
