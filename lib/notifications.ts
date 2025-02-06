@@ -1,6 +1,6 @@
 // lib/notifications.ts
 import nodemailer from 'nodemailer';
-import { REVIEW_INTERVALS, supabase } from './supabase';
+import {REVIEW_INTERVALS, supabase} from './supabase';
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -53,9 +53,9 @@ export async function getUsersWithPendingNotifications() {
   const now = new Date();
   const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
-  const { data: users, error } = await supabase
+  const { data: notifications, error } = await supabase
     .from('notification_queue')
-    .select('users (*)')
+    .select('user_id')
     .eq('status', 'pending')
     .lte('scheduled_for', now.toISOString())
     .gte('scheduled_for', hourAgo.toISOString());
@@ -65,7 +65,10 @@ export async function getUsersWithPendingNotifications() {
     throw error;
   }
 
-  return users.map(item => item.users);
+  // Get unique user_ids
+  return Array.from(
+    new Set(notifications?.map(notification => notification.user_id))
+  );
 }
 
 /**
