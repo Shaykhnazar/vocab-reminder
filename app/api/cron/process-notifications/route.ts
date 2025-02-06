@@ -36,7 +36,7 @@ async function handler() {
     });
   } catch (error) {
     console.error('Error processing notifications:', error);
-    return NextResponse.json({ error: 'Failed to process notificationssssssss' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to process notifications' }, { status: 500 });
   }
 }
 
