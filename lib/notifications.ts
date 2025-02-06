@@ -1,6 +1,6 @@
 // lib/notifications.ts
 import nodemailer from 'nodemailer';
-import { REVIEW_INTERVALS, supabase, User, Word } from './supabase';
+import { REVIEW_INTERVALS, supabase } from './supabase';
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -19,22 +19,15 @@ interface NotificationQueueItem {
   type: 'email' | 'telegram';
 }
 
-interface NotificationQueue {
-  id: string;
-  user_id: string;
-  word_id: string;
-  status: 'pending' | 'sent';
-  scheduled_for: string;
-  sent_at?: string;
-  users: User;
-  words: Word;
+interface WordToReview {
+  word: string;
+  definition: string;
+  context?: string | null;
 }
 
-interface UserNotifications {
-  user: User;
-  notifications: NotificationQueue[];
-}
-
+/**
+ * Add a notification to the queue.
+ */
 export async function addToNotificationQueue(notification: NotificationQueueItem) {
   try {
     const { error } = await supabase
@@ -53,12 +46,36 @@ export async function addToNotificationQueue(notification: NotificationQueueItem
   }
 }
 
-
-export async function processNotificationQueue() {
+/**
+ * Fetch users with pending notifications in the last hour.
+ */
+export async function getUsersWithPendingNotifications() {
   const now = new Date();
   const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
-  // Fetch pending notifications
+  const { data: users, error } = await supabase
+    .from('notification_queue')
+    .select('users (*)')
+    .eq('status', 'pending')
+    .lte('scheduled_for', now.toISOString())
+    .gte('scheduled_for', hourAgo.toISOString());
+
+  if (error) {
+    console.error('Error fetching users with notifications:', error);
+    throw error;
+  }
+
+  return users.map(item => item.users);
+}
+
+/**
+ * Process notifications for a single user.
+ */
+export async function processUserNotifications(userId: string) {
+  const now = new Date();
+  const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+  // Fetch pending notifications for this user
   const { data: notifications, error } = await supabase
     .from('notification_queue')
     .select(`
@@ -67,6 +84,7 @@ export async function processNotificationQueue() {
       users (*)
     `)
     .eq('status', 'pending')
+    .eq('user_id', userId)
     .lte('scheduled_for', now.toISOString())
     .gte('scheduled_for', hourAgo.toISOString());
 
@@ -75,88 +93,56 @@ export async function processNotificationQueue() {
     return;
   }
 
-  // Group notifications by user
-  const notificationsByUser = (notifications as NotificationQueue[]).reduce<Record<string, UserNotifications>>((acc, notification) => {
-    const userId = notification.users.email;
-    if (!acc[userId]) {
-      acc[userId] = {
-        user: notification.users,
-        notifications: []
-      };
-    }
-    acc[userId].notifications.push(notification);
-    return acc;
-  }, {});
+  if (!notifications?.length) return;
 
-  // Process notifications for each user
-  await Promise.all(
-    Object.values(notificationsByUser).map(async (userNotification: UserNotifications) => {
-      const { user, notifications } = userNotification;
-      try {
-      if (user.notification_preferences.email) {
-        // Create batched email content
-        const wordsToReview = notifications.map(notification => ({
-          word: notification.words.word,
-          definition: notification.words.definition
-        }));
+  const user = notifications[0].users;
 
-        await sendBatchedEmail({
-          to: user.email,
-          words: wordsToReview
-        });
-      }
-
-      // Update all notifications and words
-      await Promise.all(notifications.map(async (notification) => {
-        // Mark notification as sent
-        await supabase
-          .from('notification_queue')
-          .update({ status: 'sent', sent_at: now.toISOString() })
-          .eq('id', notification.id);
-
-        // Update word's review stage if not mastered
-        if (notification.words.review_stage < 5) {
-          const nextStage = notification.words.review_stage + 1;
-          const nextReviewAt = new Date(Date.now() + REVIEW_INTERVALS[nextStage]);
-
-          await supabase
-            .from('words')
-            .update({
-              review_stage: nextStage,
-              next_review_at: nextReviewAt.toISOString(),
-              mastered: nextStage === 5
-            })
-            .eq('id', notification.words.id);
-
-          if (nextStage < 5) {
-            await addToNotificationQueue({
-              userId: notification.user_id,
-              wordId: notification.word_id,
-              scheduledFor: nextReviewAt,
-              type: 'email'
-            });
-          }
-        }
+  try {
+    if (user.notification_preferences.email) {
+      const wordsToReview = notifications.map(notification => ({
+        word: notification.words.word,
+        definition: notification.words.definition,
+        context: notification.words.context
       }));
+
+      await sendBatchedEmail({
+        to: user.email,
+        words: wordsToReview
+      });
+    }
+
+    // Update all notifications and words in a transaction
+    await supabase.rpc('update_notifications_and_words', {
+      notification_ids: notifications.map((n) => n.id),
+      word_ids: notifications.map((n) => n.words.id),
+      next_review_dates: notifications.map((n) => {
+        const nextStage = n.words.review_stage + 1;
+        return new Date(Date.now() + REVIEW_INTERVALS[nextStage]).toISOString();
+      }),
+      now: now.toISOString(),
+      });
     } catch (error) {
       console.error(`Error processing notifications for user ${user.email}:`, error);
+      throw error;
     }
-  }));
 }
 
-interface WordToReview {
-  word: string;
-  definition: string;
-  context?: string | null;
-}
-
+/**
+ * Send a batched email with multiple words to review.
+ */
 async function sendBatchedEmail({ to, words }: { to: string; words: WordToReview[] }) {
   const subject = `Word Review Reminder - ${words.length} words to review`;
   const text = `
     Time to review your words:
-    
-  ${words.map((item, index) => `${index + 1}. ${item.word}
-     Definition: ${item.definition}`).join('\n\n')}
+
+    ${words
+    .map(
+      (item, index) =>
+        `${index + 1}. ${item.word}\n   Definition: ${item.definition}${
+          item.context ? `\n   Context: ${item.context}` : ''
+        }`
+    )
+    .join('\n\n')}
   `;
 
   try {
