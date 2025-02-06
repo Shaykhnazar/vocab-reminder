@@ -123,11 +123,11 @@ export async function processUserNotifications(userId: string) {
         return new Date(Date.now() + REVIEW_INTERVALS[nextStage]).toISOString();
       }),
       now: now.toISOString(),
-      });
-    } catch (error) {
-      console.error(`Error processing notifications for user ${user.email}:`, error);
-      throw error;
-    }
+    });
+  } catch (error) {
+    console.error(`Error processing notifications for user ${user.email}:`, error);
+    throw error;
+  }
 }
 
 /**
