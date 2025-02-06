@@ -1,17 +1,39 @@
 // app/api/cron/process-notifications/route.ts
 import { NextResponse } from 'next/server';
-import { Receiver } from '@upstash/qstash';
-import { processNotificationQueue } from '@/lib/notifications';
+import {Client, Receiver} from '@upstash/qstash';
+import { getUsersWithPendingNotifications } from '@/lib/notifications';
 
 const receiver = new Receiver({
   currentSigningKey: process.env.QSTASH_CURRENT_SIGNING_KEY!,
   nextSigningKey: process.env.QSTASH_NEXT_SIGNING_KEY!,
 });
 
-async function handler() {
+const qstashClient = new Client({
+  token: process.env.QSTASH_TOKEN!
+});
+
+async function handler(/*req: Request*/) {
   try {
-    await processNotificationQueue();
-    return NextResponse.json({ success: true });
+    const userIds = await getUsersWithPendingNotifications();
+
+    // Queue processing for each user using QStash
+    await Promise.all(userIds.map(userId =>
+      qstashClient.publishJSON({
+        url: `${process.env.VERCEL_URL}/api/cron/process-user`,
+        body: { userId },
+        options: {
+          retries: 3,
+          delay: '0s',
+          notBefore: new Date().toISOString(), // Process immediately
+          deadlineSeconds: 60 // Set 1-minute timeout
+        }
+      })
+    ));
+
+    return NextResponse.json({
+      success: true,
+      usersQueued: userIds.length
+    });
   } catch (error) {
     console.error('Error processing notifications:', error);
     return NextResponse.json({ error: 'Failed to process notifications' }, { status: 500 });
@@ -23,10 +45,7 @@ export async function POST(req: Request) {
   const body = await req.text();
 
   // Verify the signature
-  if (!signature || !(await receiver.verify({
-    signature,
-    body
-  }))) {
+  if (!signature || !(await receiver.verify({ signature, body }))) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
