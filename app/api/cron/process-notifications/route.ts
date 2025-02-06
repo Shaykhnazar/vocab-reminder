@@ -9,11 +9,10 @@ const receiver = new Receiver({
 });
 
 const qstashClient = new Client({
-  baseUrl: process.env.QSTASH_URL!,
   token: process.env.QSTASH_TOKEN!
 });
 
-async function handler(/*req: Request*/) {
+async function handler() {
   try {
     const userIds = await getUsersWithPendingNotifications();
 
