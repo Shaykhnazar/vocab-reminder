@@ -16,41 +16,76 @@ async function handler() {
   try {
     const userIds = await getUsersWithPendingNotifications();
 
+    if (!userIds.length) {
+      return NextResponse.json({
+        success: true,
+        usersQueued: 0,
+        message: 'No pending notifications found'
+      });
+    }
+
+    console.log(`Processing notifications for ${userIds.length} users`);
+
     // Queue processing for each user using QStash
-    await Promise.all(userIds.map(userId =>
-      qstashClient.publishJSON({
-        url: `${process.env.VERCEL_URL}/api/cron/process-user`,
-        body: { userId },
-        options: {
-          retries: 3,
-          delay: '0s',
-          notBefore: new Date().toISOString(), // Process immediately
-          deadlineSeconds: 60 // Set 1-minute timeout
-        }
-      })
-    ));
+    const queueResults = await Promise.all(userIds.map(async userId => {
+      try {
+        await qstashClient.publishJSON({
+          url: `${process.env.VERCEL_URL}/api/cron/process-user`,
+          body: { userId },
+          options: {
+            retries: 3,
+            delay: '0s',
+            notBefore: new Date().toISOString(),
+            deadlineSeconds: 60
+          }
+        });
+        return { userId, success: true };
+      } catch (error) {
+        console.error(`Failed to queue user ${userId}:`, error);
+        return { userId, success: false, error };
+      }
+    }));
+
+    const successful = queueResults.filter(r => r.success);
+    const failed = queueResults.filter(r => !r.success);
 
     return NextResponse.json({
       success: true,
-      usersQueued: userIds.length
+      usersQueued: successful.length,
+      failedToQueue: failed.length,
+      details: {
+        successful: successful.map(r => r.userId),
+        failed: failed.map(r => r.userId)
+      }
     });
   } catch (error) {
-    console.error('Error processing notifications:', error);
-    return NextResponse.json({ error: 'Failed to process notifications' }, { status: 500 });
+    console.error('Error in process-notifications handler:', error);
+    return NextResponse.json({
+      error: 'Failed to process notifications',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
-  const signature = req.headers.get('upstash-signature');
-  const body = await req.text();
+  try {
+    const signature = req.headers.get('upstash-signature');
+    const body = await req.text();
 
-  // Verify the signature
-  if (!signature || !(await receiver.verify({ signature, body }))) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    if (!signature || !(await receiver.verify({ signature, body }))) {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    }
+
+    return handler();
+  } catch (error) {
+    console.error('Error in process-notifications POST:', error);
+    return NextResponse.json({
+      error: 'Failed to process request',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
-
-  return handler();
 }
+
 
 // Keep GET for testing locally
 export async function GET() {
