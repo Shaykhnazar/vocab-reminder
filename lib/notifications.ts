@@ -51,14 +51,14 @@ export async function addToNotificationQueue(notification: NotificationQueueItem
  */
 export async function getUsersWithPendingNotifications() {
   const now = new Date();
-  const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+  // const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
   const { data: notifications, error } = await supabase
     .from('notification_queue')
     .select('user_id')
     .eq('status', 'pending')
     .lte('scheduled_for', now.toISOString())
-    .gte('scheduled_for', hourAgo.toISOString());
+    // .gte('scheduled_for', hourAgo.toISOString());
 
   if (error) {
     console.error('Error fetching users with notifications:', error);
@@ -78,6 +78,9 @@ export async function processUserNotifications(userId: string) {
   const now = new Date();
   const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
+  console.log('Processing notifications for user:', userId);
+  console.log('Time range:', { now: now.toISOString(), hourAgo: hourAgo.toISOString() });
+
   // Fetch pending notifications for this user
   const { data: notifications, error } = await supabase
     .from('notification_queue')
@@ -89,16 +92,22 @@ export async function processUserNotifications(userId: string) {
     .eq('status', 'pending')
     .eq('user_id', userId)
     .lte('scheduled_for', now.toISOString())
-    .gte('scheduled_for', hourAgo.toISOString());
+    // .gte('scheduled_for', hourAgo.toISOString());
+
+  console.log('Found notifications:', notifications?.length);
 
   if (error) {
     console.error('Error fetching notifications:', error);
     return;
   }
 
-  if (!notifications?.length) return;
+  if (!notifications?.length) {
+    console.log('No notifications found for user');
+    return;
+  }
 
   const user = notifications[0].users;
+  console.log('User preferences:', user.notification_preferences);
 
   try {
     if (user.notification_preferences.email) {
@@ -108,10 +117,13 @@ export async function processUserNotifications(userId: string) {
         context: notification.words.context
       }));
 
+      console.log('Preparing to send email for words:', wordsToReview);
       await sendBatchedEmail({
         to: user.email,
         words: wordsToReview
       });
+    } else {
+      console.log('User has email notifications disabled');
     }
 
     // Update all notifications and words in a transaction
@@ -134,27 +146,33 @@ export async function processUserNotifications(userId: string) {
  * Send a batched email with multiple words to review.
  */
 async function sendBatchedEmail({ to, words }: { to: string; words: WordToReview[] }) {
+  console.log('Attempting to send email to:', to);
+  console.log('Words to review:', words);
+
   const subject = `Word Review Reminder - ${words.length} words to review`;
   const text = `
     Time to review your words:
 
-    ${words
-    .map(
-      (item, index) =>
-        `${index + 1}. ${item.word}\n   Definition: ${item.definition}${
-          item.context ? `\n   Context: ${item.context}` : ''
-        }`
-    )
-    .join('\n\n')}
+    ${words.map((item, index) => `${index + 1}. ${item.word}
+     Definition: ${item.definition}${item.context ? `\n   Context: ${item.context}` : ''}`).join('\n\n')}
   `;
 
   try {
+    console.log('Email configuration:', {
+      from: process.env.SMTP_FROM,
+      to,
+      subject,
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT
+    });
+
     await transporter.sendMail({
       from: process.env.SMTP_FROM,
       to,
       subject,
       text
     });
+    console.log('Email sent successfully');
   } catch (error) {
     console.error('Error sending batched email:', error);
     throw error;
