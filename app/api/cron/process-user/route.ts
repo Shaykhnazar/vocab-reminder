@@ -8,9 +8,8 @@ const receiver = new Receiver({
   nextSigningKey: process.env.QSTASH_NEXT_SIGNING_KEY!,
 });
 
-async function handler(req: Request) {
+async function handler(body: { userId: string }) {
   try {
-    const body = await req.json();
     const userId = body.userId;
 
     if (!userId) {
@@ -21,17 +20,30 @@ async function handler(req: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error processing user notifications:', error);
-    return NextResponse.json({ error: 'Failed to process user notifications' }, { status: 500 });
+    return NextResponse.json({
+      error: 'Failed to process user notifications',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
-  const signature = req.headers.get('upstash-signature');
-  const body = await req.text();
+  try {
+    const signature = req.headers.get('upstash-signature');
+    const rawBody = await req.text();
 
-  if (!signature || !(await receiver.verify({ signature, body }))) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    if (!signature || !(await receiver.verify({ signature, body: rawBody }))) {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    }
+
+    // Parse the body after verification
+    const body = JSON.parse(rawBody);
+    return handler(body);
+  } catch (error) {
+    console.error('Error in process-user POST:', error);
+    return NextResponse.json({
+      error: 'Failed to process request',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
-
-  return handler(req);
 }
