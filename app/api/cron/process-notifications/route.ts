@@ -66,9 +66,11 @@ async function handler() {
 export async function POST(req: Request) {
   try {
     const signature = req.headers.get('upstash-signature');
-    const body = await req.text();
+    // Clone the request before reading
+    const clonedReq = req.clone();
+    const rawBody = await clonedReq.text();
 
-    if (!signature || !(await receiver.verify({ signature, body }))) {
+    if (!signature || !(await receiver.verify({ signature, body: rawBody }))) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
