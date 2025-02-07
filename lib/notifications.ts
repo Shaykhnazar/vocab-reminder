@@ -33,23 +33,22 @@ const emailQueue = qstashClient.queue({
  */
 export async function addToNotificationQueue(notification: NotificationQueueItem) {
   try {
-    const stages = REVIEW_INTERVALS.map((interval, index) => {
-      const scheduledFor = new Date(notification.scheduledFor.getTime() + interval);
-      return {
-        user_id: notification.userId,
-        word_id: notification.wordId,
-        scheduled_for: scheduledFor.toISOString(),
-        type: notification.type,
-        review_stage: index,
-        status: 'scheduled' // New status for future notifications
-      };
-    });
+    // Create a single notification for the current review stage
+    const notificationData = {
+      user_id: notification.userId,
+      word_id: notification.wordId,
+      scheduled_for: notification.scheduledFor.toISOString(),
+      type: notification.type,
+      status: 'scheduled'
+    };
 
     const { error } = await supabase
       .from('notification_queue')
-      .insert(stages);
+      .insert(notificationData);
 
     if (error) throw error;
+
+    return { success: true };
   } catch (error) {
     console.error('Error adding to notification queue:', error);
     throw error;
@@ -160,14 +159,14 @@ export async function processUserNotifications(userId: string) {
       const nextStage = currentStage + 1;
       const interval = REVIEW_INTERVALS[nextStage];
 
-      console.log('Calculating next review:', {
-        wordId: n.words.id,
-        word: n.words.word,
-        currentStage,
-        nextStage,
-        interval,
-        nextReview: new Date(Date.now() + interval).toISOString()
-      });
+      // console.log('Calculating next review:', {
+      //   wordId: n.words.id,
+      //   word: n.words.word,
+      //   currentStage,
+      //   nextStage,
+      //   interval,
+      //   nextReview: new Date(Date.now() + interval).toISOString()
+      // });
 
       return new Date(Date.now() + interval).toISOString();
     });

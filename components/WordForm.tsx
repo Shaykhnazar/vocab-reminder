@@ -2,37 +2,77 @@
 'use client';
 
 import { useState } from 'react';
-import { Word } from '@/lib/supabase';
+import { useSession } from 'next-auth/react';
+import { useToast } from "@/hooks/use-toast";
+import { useWords } from '@/hooks/use-words';
 
-interface WordFormProps {
-  onSubmitAction: (word: Partial<Word>) => Promise<void>;
-}
 
-export default function WordForm({ onSubmitAction }: WordFormProps) {
+export default function WordForm() {
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
   const [context, setContext] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const { data: session } = useSession();
+  const { addWord } = useWords();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    if (!session?.user?.id) return;
+    setLoading(true);
 
     try {
-      await onSubmitAction({
-        word,
-        definition,
-        context: context || null,  // Convert empty string to null
+      if (!word || !definition) {
+        throw new Error('Word and definition are required');
+      }
+
+      // Construct the full URL for the API endpoint
+      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+      const apiUrl = `${baseUrl}/api/words`;
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          word: word,
+          definition: definition,
+          context: context || null,
+          userId: session.user.id, // Use session.user.id directly
+        }),
       });
 
-      // Reset form
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to add word');
+      }
+
+      if (data.data) {
+        addWord(data.data);  // If the API returns { data: newWord }
+      }
+
+      toast({
+        title: "Success",
+        description: "Word added successfully!",
+      });
+
+      // Reset form state
       setWord('');
       setDefinition('');
       setContext('');
     } catch (error) {
-      console.error('Error submitting word:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add word';
+
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: errorMessage
+      });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -81,10 +121,10 @@ export default function WordForm({ onSubmitAction }: WordFormProps) {
 
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={loading || !word || !definition}  // Add validation to disable button
         className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
       >
-        {isLoading ? 'Adding...' : 'Add Word'}
+        {loading ? 'Adding...' : 'Add Word'}
       </button>
     </form>
   );
