@@ -59,7 +59,7 @@ const formatDate = (dateString: string | null | undefined) => {
   }
 };
 
-const SkeletonItem = ({ index }: { index: number }) => (
+const SkeletonItem = () => (
   <div
     className="bg-gray-100 p-4 rounded-lg mb-4 h-24 animate-pulse"
   />
@@ -70,7 +70,7 @@ const Skeleton = () => {
   return (
     <div className="space-y-4">
       {skeletonItems.map((item) => (
-        <SkeletonItem key={`skeleton-item-${item}`} index={item} />
+        <SkeletonItem key={`skeleton-item-${item}`}/>
       ))}
     </div>
   );
