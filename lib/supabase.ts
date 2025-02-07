@@ -33,10 +33,11 @@ export interface User {
 }
 
 export const REVIEW_INTERVALS = [
-  60 * 60 * 1000,       // 1 hour
-  3 * 60 * 60 * 1000,   // 3 hours
-  8 * 60 * 60 * 1000,   // 8 hours
-  24 * 60 * 60 * 1000,  // 1 day
-  3 * 24 * 60 * 60 * 1000, // 3 days
-  7 * 24 * 60 * 60 * 1000  // 7 days
+  60 * 60 * 1000,           // Stage 0->1: 1 hour
+  3 * 60 * 60 * 1000,      // Stage 1->2: 3 hours
+  8 * 60 * 60 * 1000,      // Stage 2->3: 8 hours
+  24 * 60 * 60 * 1000,     // Stage 3->4: 1 day
+  3 * 24 * 60 * 60 * 1000, // Stage 4->5: 3 days
+  7 * 24 * 60 * 60 * 1000  // Stage 5->6: 7 days (final stage)
 ];
+
