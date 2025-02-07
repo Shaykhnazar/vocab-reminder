@@ -2,37 +2,63 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { useToast } from "@/hooks/use-toast";
-import { Word } from '@/lib/supabase';
+import { useWords } from '@/hooks/use-words';
 
-interface WordFormProps {
-  onSubmitAction: (data: Partial<Word>) => Promise<void>;
-}
 
-export default function WordForm({ onSubmitAction }: WordFormProps) {
+export default function WordForm() {
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
   const [context, setContext] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { data: session } = useSession();
+  const { addWord } = useWords();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!session?.user?.id) return;
     setLoading(true);
 
     try {
-      await onSubmitAction({
-        word,        // Use state variable instead of formData
-        definition,  // Use state variable instead of formData
-        context: context || null,  // Use state variable instead of formData
+      if (!word || !definition) {
+        throw new Error('Word and definition are required');
+      }
+
+      // Construct the full URL for the API endpoint
+      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+      const apiUrl = `${baseUrl}/api/words`;
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          word: word,
+          definition: definition,
+          context: context || null,
+          userId: session.user.id, // Use session.user.id directly
+        }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to add word');
+      }
+
+      if (data.data) {
+        addWord(data.data);  // If the API returns { data: newWord }
+      }
 
       toast({
         title: "Success",
         description: "Word added successfully!",
       });
 
-      // Reset form
       // Reset form state
       setWord('');
       setDefinition('');
