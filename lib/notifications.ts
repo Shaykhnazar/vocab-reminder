@@ -134,14 +134,34 @@ export async function processUserNotifications(userId: string) {
     }
 
     // Update all notifications and words in a transaction
+    const nextReviewDates = notifications.map((n) => {
+      const currentStage = n.words.review_stage || 0;
+
+      // Don't increment if already at max stage
+      if (currentStage >= 5) {  // Changed from 4 to 5
+        return null; // Word is mastered
+      }
+
+      const nextStage = currentStage + 1;
+      const interval = REVIEW_INTERVALS[nextStage];
+
+      console.log('Calculating next review:', {
+        wordId: n.words.id,
+        word: n.words.word,
+        currentStage,
+        nextStage,
+        interval,
+        nextReview: new Date(Date.now() + interval).toISOString()
+      });
+
+      return new Date(Date.now() + interval).toISOString();
+    });
+
     await supabase.rpc('update_notifications_and_words', {
       notification_ids: notifications.map((n) => n.id),
       word_ids: notifications.map((n) => n.words.id),
-      next_review_dates: notifications.map((n) => {
-        const nextStage = n.words.review_stage + 1;
-        return new Date(Date.now() + REVIEW_INTERVALS[nextStage]).toISOString();
-      }),
-      now: now.toISOString(),
+      next_review_dates: nextReviewDates,
+      now: now.toISOString()
     });
   } catch (error) {
     console.error(`Error processing notifications for user ${user.email}:`, error);
