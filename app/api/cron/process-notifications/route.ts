@@ -26,7 +26,7 @@ async function handler() {
     const queueResults = await Promise.all(userIds.map(async userId => {
       try {
         await qstashClient.publishJSON({
-          url: `${process.env.VERCEL_URL}/api/cron/process-user`,
+          url: `https://vocab-reminder.vercel.app/api/cron/process-user`,
           body: { userId },
           retries: 3,
           delay: '0s',

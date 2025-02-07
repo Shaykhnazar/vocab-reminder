@@ -126,7 +126,7 @@ export async function processUserNotifications(userId: string) {
       console.log('Preparing to send email for words:', wordsToReview);
       // Queue email sending instead of sending directly
       await qstashClient.publishJSON({
-        url: `${process.env.VERCEL_URL}/api/notifications/send-email`,
+        url: `https://vocab-reminder.vercel.app/api/notifications/send-email`,
         body: {
           to: user.email,
           words: wordsToReview
