@@ -45,8 +45,10 @@ export default async function Home() {
       }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error('Failed to add word');
+      throw new Error(data.error || 'Failed to add word');
     }
 
     // Refresh the page to show the new word

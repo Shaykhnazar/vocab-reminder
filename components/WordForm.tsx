@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
 import { Word } from '@/lib/supabase';
 
 interface WordFormProps {
@@ -12,32 +13,42 @@ export default function WordForm({ onSubmitAction }: WordFormProps) {
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
   const [context, setContext] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleSubmit = async (formData: FormData) => {
+    setLoading(true);
 
     try {
       await onSubmitAction({
-        word,
-        definition,
-        context: context || null,  // Convert empty string to null
+        word: formData.get('word') as string,
+        definition: formData.get('definition') as string,
+        context: formData.get('context') as string || null,
+      });
+
+      toast({
+        title: "Success",
+        description: "Word added successfully!",
       });
 
       // Reset form
-      setWord('');
-      setDefinition('');
-      setContext('');
+      const form = document.querySelector('form') as HTMLFormElement;
+      form?.reset();
     } catch (error) {
-      console.error('Error submitting word:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add word';
+
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: errorMessage
+      });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form action={handleSubmit} className="space-y-4">
       <div>
         <label htmlFor="word" className="block text-sm font-medium text-gray-700">
           Word
@@ -81,10 +92,10 @@ export default function WordForm({ onSubmitAction }: WordFormProps) {
 
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={loading}
         className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
       >
-        {isLoading ? 'Adding...' : 'Add Word'}
+        {loading ? 'Adding...' : 'Add Word'}
       </button>
     </form>
   );
