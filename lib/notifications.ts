@@ -1,6 +1,7 @@
 // lib/notifications.ts
 import nodemailer from 'nodemailer';
 import {REVIEW_INTERVALS, supabase} from './supabase';
+import {Client} from '@upstash/qstash';  // Add this import
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -24,6 +25,11 @@ interface WordToReview {
   definition: string;
   context?: string | null;
 }
+
+// Initialize QStash client
+const qstashClient = new Client({
+  token: process.env.QSTASH_TOKEN!
+});
 
 /**
  * Add a notification to the queue.
@@ -118,9 +124,14 @@ export async function processUserNotifications(userId: string) {
       }));
 
       console.log('Preparing to send email for words:', wordsToReview);
-      await sendBatchedEmail({
-        to: user.email,
-        words: wordsToReview
+      // Queue email sending instead of sending directly
+      await qstashClient.publishJSON({
+        url: `${process.env.VERCEL_URL}/api/notifications/send-email`,
+        body: {
+          to: user.email,
+          words: wordsToReview
+        },
+        retries: 3,
       });
     } else {
       console.log('User has email notifications disabled');
@@ -145,7 +156,7 @@ export async function processUserNotifications(userId: string) {
 /**
  * Send a batched email with multiple words to review.
  */
-async function sendBatchedEmail({ to, words }: { to: string; words: WordToReview[] }) {
+export async function sendBatchedEmail({ to, words }: { to: string; words: WordToReview[] }) {
   console.log('Attempting to send email to:', to);
   console.log('Words to review:', words);
 
