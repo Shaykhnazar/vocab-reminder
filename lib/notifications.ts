@@ -53,14 +53,14 @@ export async function addToNotificationQueue(notification: NotificationQueueItem
  */
 export async function getUsersWithPendingNotifications() {
   const now = new Date();
-  // const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+  const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
   const { data: notifications, error } = await supabase
     .from('notification_queue')
     .select('user_id')
-    // .eq('status', 'pending')
+    .eq('status', 'pending')
     .lte('scheduled_for', now.toISOString())
-    // .gte('scheduled_for', hourAgo.toISOString());
+    .gte('scheduled_for', hourAgo.toISOString());
 
   if (error) {
     console.error('Error fetching users with notifications:', error);
@@ -91,10 +91,10 @@ export async function processUserNotifications(userId: string) {
       words (*),
       users (*)
     `)
-    // .eq('status', 'pending')
+    .eq('status', 'pending')
     .eq('user_id', userId)
     .lte('scheduled_for', now.toISOString())
-    // .gte('scheduled_for', hourAgo.toISOString());
+    .gte('scheduled_for', hourAgo.toISOString());
 
   console.log('Found notifications:', notifications?.length);
 
@@ -120,6 +120,13 @@ export async function processUserNotifications(userId: string) {
       }));
 
       console.log('Preparing to send email for words:', wordsToReview);
+
+      // First update status to 'processing' to prevent duplicate processing
+      await supabase
+        .from('notification_queue')
+        .update({ status: 'processing' })
+        .in('id', notifications.map(n => n.id));
+
       // Queue email sending instead of sending directly
       await emailQueue.enqueueJSON({
         url: `https://vocab-reminder.vercel.app/api/notifications/send-email`,
@@ -164,6 +171,12 @@ export async function processUserNotifications(userId: string) {
       now: now.toISOString()
     });
   } catch (error) {
+    // If there's an error, revert notifications back to pending
+    await supabase
+      .from('notification_queue')
+      .update({ status: 'pending' })
+      .in('id', notifications.map(n => n.id));
+
     console.error(`Error processing notifications for user ${user.email}:`, error);
     throw error;
   }
