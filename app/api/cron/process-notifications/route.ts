@@ -8,6 +8,10 @@ const qstashClient = new Client({
   token: process.env.QSTASH_TOKEN!
 });
 
+const notificationQueue = qstashClient.queue({
+  queueName: "notification-processing"
+});
+
 async function handler() {
   try {
     const userIds = await getUsersWithPendingNotifications();
@@ -25,11 +29,10 @@ async function handler() {
     // Queue processing for each user using QStash
     const queueResults = await Promise.all(userIds.map(async userId => {
       try {
-        await qstashClient.publishJSON({
+        await notificationQueue.enqueueJSON({
           url: `https://vocab-reminder.vercel.app/api/cron/process-user`,
           body: { userId },
           retries: 3,
-          delay: '0s',
         });
         return { userId, success: true };
       } catch (error) {
