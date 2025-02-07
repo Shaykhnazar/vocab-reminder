@@ -28,18 +28,25 @@ const emailQueue = qstashClient.queue({
 });
 
 /**
- * Add a notification to the queue.
+ * Add notifications for all review stages when a word is added
  */
 export async function addToNotificationQueue(notification: NotificationQueueItem) {
   try {
-    const { error } = await supabase
-      .from('notification_queue')
-      .insert({
+    const stages = REVIEW_INTERVALS.map((interval, index) => {
+      const scheduledFor = new Date(notification.scheduledFor.getTime() + interval);
+      return {
         user_id: notification.userId,
         word_id: notification.wordId,
-        scheduled_for: notification.scheduledFor.toISOString(),
-        type: notification.type
-      });
+        scheduled_for: scheduledFor.toISOString(),
+        type: notification.type,
+        review_stage: index,
+        status: 'scheduled' // New status for future notifications
+      };
+    });
+
+    const { error } = await supabase
+      .from('notification_queue')
+      .insert(stages);
 
     if (error) throw error;
   } catch (error) {
@@ -58,7 +65,7 @@ export async function getUsersWithPendingNotifications() {
   const { data: notifications, error } = await supabase
     .from('notification_queue')
     .select('user_id')
-    .eq('status', 'pending')
+    .eq('status', 'scheduled')
     .lte('scheduled_for', now.toISOString())
     .gte('scheduled_for', hourAgo.toISOString());
 
@@ -91,7 +98,7 @@ export async function processUserNotifications(userId: string) {
       words (*),
       users (*)
     `)
-    .eq('status', 'pending')
+    .eq('status', 'scheduled')
     .eq('user_id', userId)
     .lte('scheduled_for', now.toISOString())
     .gte('scheduled_for', hourAgo.toISOString());
@@ -174,7 +181,7 @@ export async function processUserNotifications(userId: string) {
     // If there's an error, revert notifications back to pending
     await supabase
       .from('notification_queue')
-      .update({ status: 'pending' })
+      .update({ status: 'scheduled' })
       .in('id', notifications.map(n => n.id));
 
     console.error(`Error processing notifications for user ${user.email}:`, error);
