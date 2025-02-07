@@ -42,22 +42,23 @@ export async function POST(req: Request) {
       return handler(body);
     }
 
-    // For production:
-    const signature = req.headers.get('upstash-signature');
-    // Clone the request before reading
-    const clonedReq = req.clone();
-
-    // Get raw body for signature verification
-    const rawBody = await clonedReq.text();
-
-    // Verify signature
-    if (!signature || !(await receiver.verify({ signature, body: rawBody }))) {
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-    }
+    // // For production:
+    // const signature = req.headers.get('upstash-signature');
+    // // Clone the request before reading
+    // const clonedReq = req.clone();
+    //
+    // // Get raw body for signature verification
+    // const rawBody = await clonedReq.text();
+    //
+    // // Verify signature
+    // if (!signature || !(await receiver.verify({ signature, body: rawBody }))) {
+    //   return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    // }
 
     // Parse the body
-    const body = JSON.parse(rawBody);
-    return handler(body);
+    // const body = JSON.parse(rawBody);
+    // return handler(body);
+    return handler(await req.json());
   } catch (error) {
     console.error('Error in process-user POST:', error);
     return NextResponse.json({
