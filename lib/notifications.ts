@@ -1,17 +1,9 @@
 // lib/notifications.ts
-import nodemailer from 'nodemailer';
-import {REVIEW_INTERVALS, supabase} from './supabase';
-import {Client} from '@upstash/qstash';  // Add this import
+import { REVIEW_INTERVALS, supabase } from './supabase';
+import { Client } from '@upstash/qstash';
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface NotificationQueueItem {
   userId: string;
@@ -173,16 +165,8 @@ export async function sendBatchedEmail({ to, words }: { to: string; words: WordT
   `;
 
   try {
-    console.log('Email configuration:', {
-      from: process.env.SMTP_FROM,
-      to,
-      subject,
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT
-    });
-
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM,
+    await  resend.emails.send({
+      from: 'Vocab Reminder <onboarding@resend.dev>',
       to,
       subject,
       text
