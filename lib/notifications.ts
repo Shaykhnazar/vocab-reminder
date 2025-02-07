@@ -56,7 +56,7 @@ export async function getUsersWithPendingNotifications() {
   const { data: notifications, error } = await supabase
     .from('notification_queue')
     .select('user_id')
-    .eq('status', 'pending')
+    // .eq('status', 'pending')
     .lte('scheduled_for', now.toISOString())
     // .gte('scheduled_for', hourAgo.toISOString());
 
@@ -89,7 +89,7 @@ export async function processUserNotifications(userId: string) {
       words (*),
       users (*)
     `)
-    .eq('status', 'pending')
+    // .eq('status', 'pending')
     .eq('user_id', userId)
     .lte('scheduled_for', now.toISOString())
     // .gte('scheduled_for', hourAgo.toISOString());
