@@ -2,18 +2,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-type Context = {
-  params: {
-    wordId: string;
-  };
-};
+
 
 export async function PATCH(
   req: NextRequest,
-  context: Context
+  { params }: { params: { wordId: string } }
 ) {
   try {
-    const { wordId } = context.params;
+    const { wordId } = params;
     const updates = await req.json();
 
     // Validate the request
