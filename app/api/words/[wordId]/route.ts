@@ -43,10 +43,9 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  context: Context
 ) {
   try {
-    const { wordId } = context.params;
+    const wordId = request.nextUrl.pathname.split('/').pop();
 
     if (!wordId) {
       return NextResponse.json({ error: 'Word ID is required' }, { status: 400 });
