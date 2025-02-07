@@ -2,6 +2,7 @@
 import { REVIEW_INTERVALS, supabase } from './supabase';
 import { Client } from '@upstash/qstash';
 import { Resend } from 'resend';
+import { getWordReviewTemplate } from './email-templates/word-review';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -196,19 +197,15 @@ export async function sendBatchedEmail({ to, words }: { to: string; words: WordT
   console.log('Attempting to send email to:', to);
   console.log('Words to review:', words);
 
-  const subject = `Word Review Reminder - ${words.length} words to review`;
-  const text = `
-    Time to review your words:
+  const { subject, html, text } = getWordReviewTemplate(words);
 
-    ${words.map((item, index) => `${index + 1}. ${item.word}
-     Definition: ${item.definition}${item.context ? `\n   Context: ${item.context}` : ''}`).join('\n\n')}
-  `;
 
   try {
     await  resend.emails.send({
       from: 'Vocab Reminder <onboarding@resend.dev>',
       to,
       subject,
+      html,
       text
     });
     console.log('Email sent successfully');
