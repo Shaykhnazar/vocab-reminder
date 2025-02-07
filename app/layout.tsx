@@ -30,10 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Toaster/>
-        <NextAuthProvider>{children}</NextAuthProvider>
-        <Analytics />
+        <div className="relative">
+          <Toaster/>
+          <NextAuthProvider>{children}</NextAuthProvider>
+          <Analytics/>
+        </div>
       </body>
     </html>
-  );
+);
 }

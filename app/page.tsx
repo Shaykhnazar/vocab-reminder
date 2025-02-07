@@ -1,7 +1,7 @@
 // app/page.tsx
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
-import {supabase, Word} from "@/lib/supabase";
+import { Word} from "@/lib/supabase";
 import WordForm from "@/components/WordForm";
 import WordsList from "@/components/WordsList";
 import { authOptions } from "@/lib/auth";
@@ -14,11 +14,9 @@ export default async function Home() {
     redirect("/login");
   }
 
-  const { data: words } = await supabase
-    .from("words")
-    .select("*")
-    .eq("user_id", session.user.id)
-    .order("created_at", { ascending: false });
+  // Empty array as initial words, the component will fetch them
+  const initialWords: Word[] = [];
+
 
   // Define the addNewWord function
   const addNewWord = async (wordData: Partial<Word>) => {
@@ -66,7 +64,7 @@ export default async function Home() {
 
         <div>
           <h2 className="text-xl font-semibold mb-4">Your Words</h2>
-          <WordsList initialWords={words || []} />
+          <WordsList initialWords={initialWords} />
         </div>
       </div>
     </main>

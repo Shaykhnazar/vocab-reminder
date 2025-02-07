@@ -22,28 +22,40 @@ export async function POST(req: NextRequest) {
         error: validation.error
       }, { status: 400 });
     }
+
+    const firstReviewTime = new Date(Date.now() + REVIEW_INTERVALS[0]);
+
     // Insert the word
     const { data: wordData, error: wordError } = await supabase
       .from('words')
       .insert({
         user_id: userId,
-        word: word.toLowerCase().trim(), // Normalize the word
+        word: word.trim(), // Normalize the word
         definition,
         context,
-        next_review_at: new Date(Date.now() + REVIEW_INTERVALS[0]).toISOString()
+        next_review_at: firstReviewTime.toISOString(),
+        review_stage: 0  // Start with first review stage
       })
       .select()
       .single();
 
-    if (wordError) throw wordError;
+    if (wordError || !wordData) {
+      throw new Error(wordError?.message || 'Failed to insert word');
+    }
 
-    // Schedule first notification
-    await addToNotificationQueue({
-      userId,
-      wordId: wordData.id,
-      scheduledFor: new Date(Date.now() + REVIEW_INTERVALS[0]),
-      type: 'email'
-    });
+    // Now we're sure we have the word ID
+    try {
+      // Schedule notification for the current review stage
+      await addToNotificationQueue({
+        userId,
+        wordId: wordData.id,
+        scheduledFor: firstReviewTime,
+        type: 'email'
+      });
+    } catch (notificationError) {
+      // Log notification error but don't fail the word creation
+      console.error('Error creating notifications:', notificationError);
+    }
 
     return NextResponse.json({
       success: true,
