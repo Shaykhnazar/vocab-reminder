@@ -4,6 +4,8 @@ import { supabase, REVIEW_INTERVALS } from '@/lib/supabase';
 import { addToNotificationQueue } from '@/lib/notifications';
 import { validateNewWord } from '@/lib/validation';
 
+const ITEMS_PER_PAGE = 10;
+
 export async function POST(req: NextRequest) {
   try {
     const { word, definition, context, userId } = await req.json();
@@ -75,25 +77,45 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId');
+  const url = new URL(req.url);
+  const userId = url.searchParams.get('userId');
+  const page = parseInt(url.searchParams.get('page') || '1');
+  const status = url.searchParams.get('status') || 'all';
 
   if (!userId) {
     return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
   }
 
   try {
-    const { data: words, error } = await supabase
+    let query = supabase
       .from('words')
       .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .eq('user_id', userId);
+
+    // Apply status filter
+    if (status === 'mastered') {
+      query = query.eq('mastered', true);
+    } else if (status === 'learning') {
+      query = query.eq('mastered', false);
+    }
+
+    // Apply pagination
+    const from = (page - 1) * ITEMS_PER_PAGE;
+    const to = from + ITEMS_PER_PAGE - 1;
+
+    query = query
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    const { data: words, error } = await query;
 
     if (error) throw error;
 
     return NextResponse.json({
       success: true,
-      data: words
+      data: words,
+      page,
+      itemsPerPage: ITEMS_PER_PAGE
     });
   } catch (error) {
     console.error('Error fetching words:', error);
