@@ -9,7 +9,6 @@ const receiver = new Receiver({
 });
 
 const qstashClient = new Client({
-  baseUrl: process.env.QSTASH_URL!,
   token: process.env.QSTASH_TOKEN!
 });
 
@@ -33,12 +32,8 @@ async function handler() {
         await qstashClient.publishJSON({
           url: `${process.env.VERCEL_URL}/api/cron/process-user`,
           body: { userId },
-          options: {
-            retries: 3,
-            delay: '0s',
-            notBefore: new Date().toISOString(),
-            deadlineSeconds: 60
-          }
+          retries: 3,
+          delay: '0s',
         });
         return { userId, success: true };
       } catch (error) {
