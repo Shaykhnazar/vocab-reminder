@@ -2,12 +2,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+type Context = {
+  params: {
+    wordId: string;
+  };
+};
+
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { wordId: string } }
+  context: Context
 ) {
   try {
-    const { wordId } = params;
+    const { wordId } = context.params;
     const updates = await req.json();
 
     // Validate the request
@@ -37,10 +43,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { wordId: string } }
+  context: Context
 ) {
   try {
-    const { wordId } = params;
+    const { wordId } = context.params;
 
     if (!wordId) {
       return NextResponse.json({ error: 'Word ID is required' }, { status: 400 });
