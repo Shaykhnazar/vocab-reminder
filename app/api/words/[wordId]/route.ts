@@ -35,12 +35,18 @@ export async function PATCH(
   }
 }
 
+type Props = {
+  params: {
+    wordId: string
+  }
+}
+
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { wordId: string } }
+  request: NextRequest,
+  props: Props
 ) {
   try {
-    const { wordId } = params;
+    const { wordId } = props.params;
 
     if (!wordId) {
       return NextResponse.json({ error: 'Word ID is required' }, { status: 400 });
