@@ -1,12 +1,12 @@
 // app/api/cron/process-notifications/route.ts
 import { NextResponse } from 'next/server';
-import {Client, Receiver} from '@upstash/qstash';
+import {Client, /*Receiver*/} from '@upstash/qstash';
 import { getUsersWithPendingNotifications } from '@/lib/notifications';
 
-const receiver = new Receiver({
-  currentSigningKey: process.env.QSTASH_CURRENT_SIGNING_KEY!,
-  nextSigningKey: process.env.QSTASH_NEXT_SIGNING_KEY!,
-});
+// const receiver = new Receiver({
+//   currentSigningKey: process.env.QSTASH_CURRENT_SIGNING_KEY!,
+//   nextSigningKey: process.env.QSTASH_NEXT_SIGNING_KEY!,
+// });
 
 const qstashClient = new Client({
   token: process.env.QSTASH_TOKEN!

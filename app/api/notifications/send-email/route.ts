@@ -1,12 +1,12 @@
 // app/api/notifications/send-email/route.ts
 import { NextResponse } from 'next/server';
-import { Receiver } from '@upstash/qstash';
+// import { Receiver } from '@upstash/qstash';
 import { sendBatchedEmail } from '@/lib/notifications';
 
-const receiver = new Receiver({
+/*const receiver = new Receiver({
   currentSigningKey: process.env.QSTASH_CURRENT_SIGNING_KEY!,
   nextSigningKey: process.env.QSTASH_NEXT_SIGNING_KEY!,
-});
+});*/
 
 interface WordToReview {
   word: string;
