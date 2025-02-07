@@ -2,6 +2,7 @@
 import { REVIEW_INTERVALS, supabase } from './supabase';
 import { Client } from '@upstash/qstash';
 import { Resend } from 'resend';
+import { getWordReviewTemplate } from './email-templates/word-review';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -28,18 +29,25 @@ const emailQueue = qstashClient.queue({
 });
 
 /**
- * Add a notification to the queue.
+ * Add notifications for all review stages when a word is added
  */
 export async function addToNotificationQueue(notification: NotificationQueueItem) {
   try {
-    const { error } = await supabase
-      .from('notification_queue')
-      .insert({
+    const stages = REVIEW_INTERVALS.map((interval, index) => {
+      const scheduledFor = new Date(notification.scheduledFor.getTime() + interval);
+      return {
         user_id: notification.userId,
         word_id: notification.wordId,
-        scheduled_for: notification.scheduledFor.toISOString(),
-        type: notification.type
-      });
+        scheduled_for: scheduledFor.toISOString(),
+        type: notification.type,
+        review_stage: index,
+        status: 'scheduled' // New status for future notifications
+      };
+    });
+
+    const { error } = await supabase
+      .from('notification_queue')
+      .insert(stages);
 
     if (error) throw error;
   } catch (error) {
@@ -53,14 +61,14 @@ export async function addToNotificationQueue(notification: NotificationQueueItem
  */
 export async function getUsersWithPendingNotifications() {
   const now = new Date();
-  // const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+  const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
   const { data: notifications, error } = await supabase
     .from('notification_queue')
     .select('user_id')
-    // .eq('status', 'pending')
+    .eq('status', 'scheduled')
     .lte('scheduled_for', now.toISOString())
-    // .gte('scheduled_for', hourAgo.toISOString());
+    .gte('scheduled_for', hourAgo.toISOString());
 
   if (error) {
     console.error('Error fetching users with notifications:', error);
@@ -91,10 +99,10 @@ export async function processUserNotifications(userId: string) {
       words (*),
       users (*)
     `)
-    // .eq('status', 'pending')
+    .eq('status', 'scheduled')
     .eq('user_id', userId)
     .lte('scheduled_for', now.toISOString())
-    // .gte('scheduled_for', hourAgo.toISOString());
+    .gte('scheduled_for', hourAgo.toISOString());
 
   console.log('Found notifications:', notifications?.length);
 
@@ -120,6 +128,13 @@ export async function processUserNotifications(userId: string) {
       }));
 
       console.log('Preparing to send email for words:', wordsToReview);
+
+      // First update status to 'processing' to prevent duplicate processing
+      await supabase
+        .from('notification_queue')
+        .update({ status: 'processing' })
+        .in('id', notifications.map(n => n.id));
+
       // Queue email sending instead of sending directly
       await emailQueue.enqueueJSON({
         url: `https://vocab-reminder.vercel.app/api/notifications/send-email`,
@@ -164,6 +179,12 @@ export async function processUserNotifications(userId: string) {
       now: now.toISOString()
     });
   } catch (error) {
+    // If there's an error, revert notifications back to pending
+    await supabase
+      .from('notification_queue')
+      .update({ status: 'scheduled' })
+      .in('id', notifications.map(n => n.id));
+
     console.error(`Error processing notifications for user ${user.email}:`, error);
     throw error;
   }
@@ -176,19 +197,15 @@ export async function sendBatchedEmail({ to, words }: { to: string; words: WordT
   console.log('Attempting to send email to:', to);
   console.log('Words to review:', words);
 
-  const subject = `Word Review Reminder - ${words.length} words to review`;
-  const text = `
-    Time to review your words:
+  const { subject, html, text } = getWordReviewTemplate(words);
 
-    ${words.map((item, index) => `${index + 1}. ${item.word}
-     Definition: ${item.definition}${item.context ? `\n   Context: ${item.context}` : ''}`).join('\n\n')}
-  `;
 
   try {
     await  resend.emails.send({
       from: 'Vocab Reminder <onboarding@resend.dev>',
       to,
       subject,
+      html,
       text
     });
     console.log('Email sent successfully');
