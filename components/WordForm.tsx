@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Word } from '@/lib/supabase';
 
 interface WordFormProps {
-  onSubmitAction: (word: Partial<Word>) => Promise<void>;
+  onSubmitAction: (data: Partial<Word>) => Promise<void>;
 }
 
 export default function WordForm({ onSubmitAction }: WordFormProps) {
@@ -16,14 +16,15 @@ export default function WordForm({ onSubmitAction }: WordFormProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
 
     try {
       await onSubmitAction({
-        word: formData.get('word') as string,
-        definition: formData.get('definition') as string,
-        context: formData.get('context') as string || null,
+        word,        // Use state variable instead of formData
+        definition,  // Use state variable instead of formData
+        context: context || null,  // Use state variable instead of formData
       });
 
       toast({
@@ -32,8 +33,10 @@ export default function WordForm({ onSubmitAction }: WordFormProps) {
       });
 
       // Reset form
-      const form = document.querySelector('form') as HTMLFormElement;
-      form?.reset();
+      // Reset form state
+      setWord('');
+      setDefinition('');
+      setContext('');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to add word';
 
@@ -48,7 +51,7 @@ export default function WordForm({ onSubmitAction }: WordFormProps) {
   };
 
   return (
-    <form action={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label htmlFor="word" className="block text-sm font-medium text-gray-700">
           Word
