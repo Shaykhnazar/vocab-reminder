@@ -7,11 +7,10 @@ export async function PATCH(
   { params }: { params: { wordId: string } }
 ) {
   try {
-    const { wordId } = params;
     const updates = await req.json();
 
     // Validate the request
-    if (!wordId) {
+    if (!params.wordId) {
       return NextResponse.json({ error: 'Word ID is required' }, { status: 400 });
     }
 
@@ -19,7 +18,7 @@ export async function PATCH(
     const { data: updatedWord, error } = await supabase
       .from('words')
       .update(updates)
-      .eq('id', wordId)
+      .eq('id', params.wordId)
       .select()
       .single();
 
@@ -36,11 +35,11 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: NextRequest,
+  request: NextRequest,
   { params }: { params: { wordId: string } }
 ) {
   try {
-    const { wordId } = params;
+    const wordId = params.wordId;
 
     if (!wordId) {
       return NextResponse.json({ error: 'Word ID is required' }, { status: 400 });
