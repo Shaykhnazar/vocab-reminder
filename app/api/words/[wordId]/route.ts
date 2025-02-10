@@ -6,10 +6,10 @@ import { supabase } from '@/lib/supabase';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { wordId: string } }
+  context: { params: { wordId: string } }
 ) {
   try {
-    const { wordId } = params;
+    const { wordId } = context.params;
     const updates = await req.json();
 
     // Validate the request
