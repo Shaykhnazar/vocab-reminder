@@ -2,18 +2,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-
-
 export async function PATCH(
   req: NextRequest,
-  context: { params: { wordId: string } }
+  { params }: { params: { wordId: string } }
 ) {
   try {
-    const { wordId } = context.params;
     const updates = await req.json();
 
     // Validate the request
-    if (!wordId) {
+    if (!params.wordId) {
       return NextResponse.json({ error: 'Word ID is required' }, { status: 400 });
     }
 
@@ -21,7 +18,7 @@ export async function PATCH(
     const { data: updatedWord, error } = await supabase
       .from('words')
       .update(updates)
-      .eq('id', wordId)
+      .eq('id', params.wordId)
       .select()
       .single();
 
@@ -39,9 +36,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
+  { params }: { params: { wordId: string } }
 ) {
   try {
-    const wordId = request.nextUrl.pathname.split('/').pop();
+    const wordId = params.wordId;
 
     if (!wordId) {
       return NextResponse.json({ error: 'Word ID is required' }, { status: 400 });
