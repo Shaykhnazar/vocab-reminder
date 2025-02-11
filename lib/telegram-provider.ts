@@ -1,20 +1,38 @@
 // lib/telegram-provider.ts
-import type {OAuthConfig, OAuthUserConfig, Provider} from "next-auth/providers";
+import type { OAuthUserConfig } from "next-auth/providers/oauth";
 import crypto from 'crypto';
 
-export default function TelegramProvider(options: {
-  clientId: string;
-  clientSecret: string;
-}): Provider {
+interface TelegramProfile {
+  id: string;
+  first_name: string;
+  username?: string;
+  photo_url?: string;
+  auth_date: string;
+}
+
+export default function TelegramProvider(
+  options: Omit<OAuthUserConfig<TelegramProfile>, "clientSecret"> & {
+    clientSecret: string;
+  }
+): {
+  authorization: { params: { scope: string } };
+  checks: string[];
+  profile(profile: TelegramProfile): { image: string | undefined; name: string; id: string; email: null };
+  name: string;
+  id: string;
+  type: string;
+  authorize(params: never): Promise<{ image: string | undefined; name: string; id: string; email: null }>;
+  userinfo: { request: () => null };
+  token: { request: () => null }
+} {
   return {
     id: "telegram",
     name: "Telegram",
     type: "oauth",
-    wellKnown: null,
     authorization: { params: { scope: "" } },
-    token: null,
-    userinfo: null,
-    profile(profile) {
+    token: { request: () => null },
+    userinfo: { request: () => null },
+    profile(profile: TelegramProfile) {
       return {
         id: profile.id,
         name: profile.username || profile.first_name,
@@ -25,6 +43,10 @@ export default function TelegramProvider(options: {
     checks: ["state"],
     async authorize(params) {
       const { data_check_string, hash } = params;
+
+      if (!data_check_string || !hash) {
+        throw new Error("Missing authentication data");
+      }
 
       // Validate Telegram authentication data
       const secret = crypto
@@ -43,11 +65,12 @@ export default function TelegramProvider(options: {
 
       const data = Object.fromEntries(
         new URLSearchParams(data_check_string)
-      );
+      ) as unknown as TelegramProfile;
 
       return {
         id: data.id,
         name: data.username || data.first_name,
+        email: null,
         image: data.photo_url,
       };
     },
