@@ -1,9 +1,11 @@
+// lib/auth.ts
 import { compare, hash } from 'bcryptjs';
 import {supabase, User} from './supabase';
-import type {NextAuthOptions} from "next-auth";
+import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import TelegramProvider from "./telegram-provider";
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -25,16 +27,19 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
         };
       }
+    }),
+    TelegramProvider({
+      clientId: process.env.TELEGRAM_BOT_ID!,
+      clientSecret: process.env.TELEGRAM_BOT_TOKEN!,
     })
   ],
   session: {
     strategy: 'jwt'
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id; // Add user ID to the token
-        token.email = user.email; // Add email to the token
+    async jwt({ token, user, account }) {
+      if (account?.provider === "telegram") {
+        token.telegramId = user.id;
       }
       return token;
     },
@@ -46,6 +51,9 @@ export const authOptions: NextAuthOptions = {
           session.user.id = user.id; // Add user ID to the session
           session.user.email = user.email; // Add email to the session
         }
+      }
+      if (token.telegramId) {
+        session.user.telegramId = token.telegramId as string;
       }
       return session;
     }
