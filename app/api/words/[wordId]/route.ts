@@ -1,13 +1,13 @@
 // app/api/words/[wordId]/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
 export async function PATCH(
-  req: NextRequest,
+  request: Request,
   { params }: { params: { wordId: string } }
 ) {
   try {
-    const updates = await req.json();
+    const updates = await request.json();
 
     // Validate the request
     if (!params.wordId) {
@@ -35,7 +35,7 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { wordId: string } }
 ) {
   try {
