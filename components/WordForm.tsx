@@ -27,11 +27,7 @@ export default function WordForm() {
         throw new Error('Word and definition are required');
       }
 
-      // Construct the full URL for the API endpoint
-      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-      const apiUrl = `${baseUrl}/api/words`;
-
-      const response = await fetch(apiUrl, {
+      const response = await fetch('/api/words', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

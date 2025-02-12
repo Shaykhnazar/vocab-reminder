@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation'; // Use `next/navigation` instead of `next/router`
+import TelegramLoginButton from '../TelegramLoginButton';
 
 export default function SignInForm() {
   const [email, setEmail] = useState('');
@@ -32,41 +33,92 @@ export default function SignInForm() {
     }
   }
 
+  const handleTelegramAuth = async (user: any) => {
+    console.log('Telegram auth data:', user); // Debug log
+    try {
+      const result = await signIn('telegram', {
+        ...user,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        console.error('Telegram signin error:', result.error); // Debug log
+        setError(result.error);
+      } else {
+        router.push('/');
+      }
+    } catch (error) {
+      console.error('Telegram auth error:', error); // Debug log
+      setError('An error occurred during Telegram sign in');
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email
-        </label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-          required
-        />
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            required
+          />
+        </div>
+        {error && (
+          <div className="text-red-500 text-sm">{error}</div>
+        )}
+        <button
+          type="submit"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+        >
+          Sign In
+        </button>
+      </form>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-300"/>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-white text-gray-500">Or continue with</span>
+        </div>
       </div>
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-          required
-        />
+
+      <div className="flex justify-center mt-4">
+        {process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME ? (
+          <>
+            <div className="text-xs text-gray-500 mb-2">
+              Debug: Using bot name: {process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME}
+            </div>
+            <TelegramLoginButton
+              botName={process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME}
+              onAuth={handleTelegramAuth}
+            />
+          </>
+        ) : (
+          <div className="text-red-500 text-sm">
+            Telegram bot name not configured. Please set NEXT_PUBLIC_TELEGRAM_BOT_NAME in your environment variables.
+          </div>
+        )}
       </div>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      <button
-        type="submit"
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-      >
-        Sign In
-      </button>
-    </form>
+    </div>
   );
 }
