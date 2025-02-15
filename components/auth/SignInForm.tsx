@@ -3,14 +3,16 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation'; // Use `next/navigation` instead of `next/router`
-import TelegramLoginButton from '../TelegramLoginButton';
+import { useRouter } from 'next/navigation';
+import { LoginButton } from "@telegram-auth/react";
 
 export default function SignInForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+
+  const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,20 +35,10 @@ export default function SignInForm() {
     }
   }
 
-  const handleTelegramAuth = async (user: any) => {
-    console.log('Telegram auth data:', user); // Debug log
+  const handleTelegramAuth = async (data: any) => {
+    console.log('Telegram auth data:', data); // Debug log
     try {
-      const result = await signIn('telegram', {
-        ...user,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        console.error('Telegram signin error:', result.error); // Debug log
-        setError(result.error);
-      } else {
-        router.push('/');
-      }
+      await signIn("telegram-login", {callbackUrl: "/"}, data);
     } catch (error) {
       console.error('Telegram auth error:', error); // Debug log
       setError('An error occurred during Telegram sign in');
@@ -103,19 +95,16 @@ export default function SignInForm() {
       </div>
 
       <div className="flex justify-center mt-4">
-        {process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME ? (
-          <>
-            <div className="text-xs text-gray-500 mb-2">
-              Debug: Using bot name: {process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME}
-            </div>
-            <TelegramLoginButton
-              botName={process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME}
-              onAuth={handleTelegramAuth}
-            />
-          </>
+        {botUsername ? (
+          <LoginButton
+            botUsername={botUsername}
+            onAuthCallback={(data) => {
+              handleTelegramAuth(data);
+            }}
+          />
         ) : (
           <div className="text-red-500 text-sm">
-            Telegram bot name not configured. Please set NEXT_PUBLIC_TELEGRAM_BOT_NAME in your environment variables.
+            Telegram bot username not configured
           </div>
         )}
       </div>

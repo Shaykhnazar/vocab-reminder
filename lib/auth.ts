@@ -3,7 +3,7 @@ import { compare, hash } from 'bcryptjs';
 import {supabase, User} from './supabase';
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import TelegramProvider from "./telegram-provider";
+import { objectToAuthDataMap, AuthDataValidator } from "@telegram-auth/server";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -28,32 +28,68 @@ export const authOptions: AuthOptions = {
         };
       }
     }),
-    TelegramProvider({
-      clientId: process.env.TELEGRAM_BOT_ID!,
-      clientSecret: process.env.TELEGRAM_BOT_TOKEN!,
-    })
+    CredentialsProvider({
+      id: "telegram-login",
+      name: "Telegram Login",
+      credentials: {},
+      async authorize(credentials, req) {
+        const validator = new AuthDataValidator({
+          botToken: process.env.TELEGRAM_BOT_TOKEN!,
+        });
+
+        const data = objectToAuthDataMap(req.query || {});
+        const user = await validator.validate(data);
+
+        if (user.id && user.first_name) {
+          // Check if user exists in your database
+          const existingUser = await findUserByTelegramId(user.id.toString());
+
+          if (!existingUser) {
+            // Create new user if doesn't exist
+            await createTelegramUser({
+              telegramId: user.id.toString(),
+              firstName: user.first_name,
+              lastName: user.last_name || "",
+              username: user.username || "",
+              photoUrl: user.photo_url || "",
+            });
+          }
+
+          return {
+            id: user.id.toString(),
+            name: [user.first_name, user.last_name || ""].join(" "),
+            image: user.photo_url,
+            email: `${user.id}@telegram.user`, // Create a placeholder email
+          };
+        }
+        return null;
+      },
+    }),
   ],
   session: {
     strategy: 'jwt'
   },
   callbacks: {
     async jwt({ token, user, account }) {
-      if (account?.provider === "telegram") {
+      if (account?.provider === "telegram-login") {
         token.telegramId = user.id;
+        token.name = user.name;
+        token.image = user.image;
       }
       return token;
     },
     async session({ session, token }) {
-      // Fetch user role from the token if available, else fetch from DB
       if (token?.email) {
         const user = await findUserByEmail(token.email);
         if (user) {
-          session.user.id = user.id; // Add user ID to the session
-          session.user.email = user.email; // Add email to the session
+          session.user.id = user.id;
+          session.user.email = user.email;
         }
       }
       if (token.telegramId) {
         session.user.telegramId = token.telegramId as string;
+        session.user.name = token.name;
+        session.user.image = token.image as string;
       }
       return session;
     }
@@ -110,3 +146,58 @@ export async function validatePassword(user: User, password: string) {
   const isValid = await compare(password, user.password);
   return isValid;
 }
+
+
+// Add these new functions to handle Telegram users
+async function createTelegramUser({
+                                    telegramId,
+                                    firstName,
+                                    lastName,
+                                    username,
+                                    photoUrl,
+                                  }: {
+  telegramId: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  photoUrl: string;
+}) {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .insert([
+        {
+          telegramId: telegramId,
+          first_name: firstName,
+          last_name: lastName,
+          username: username,
+          photo_url: photoUrl,
+          created_at: new Date(),
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) throw new Error(`Supabase error: ${error.message}`);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function findUserByTelegramId(telegramId: string) {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('telegramId', telegramId)
+      .single();
+
+    if (error) throw new Error(`Supabase error: ${error.message}`);
+    return data;
+  } catch (error) {
+    console.error('Error finding user by Telegram ID:', error);
+    return null;
+  }
+}
+
