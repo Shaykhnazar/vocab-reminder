@@ -174,7 +174,7 @@ export const Footer = () => (
       </div>
 
       <div className="mt-8 pt-8 border-t text-center text-sm text-gray-600">
-        <p>© {new Date().getFullYear()} VocabMaster. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} VocabRY. All rights reserved.</p>
       </div>
     </div>
   </footer>
