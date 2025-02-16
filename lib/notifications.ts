@@ -136,7 +136,7 @@ export async function processUserNotifications(userId: string) {
 
       // Queue email sending instead of sending directly
       await emailQueue.enqueueJSON({
-        url: `https://vocab-reminder.vercel.app/api/notifications/send-email`,
+        url: `https://www.vocabry.com/api/notifications/send-email`,
         body: {
           to: user.email,
           words: wordsToReview

@@ -30,7 +30,7 @@ async function handler() {
     const queueResults = await Promise.all(userIds.map(async userId => {
       try {
         await notificationQueue.enqueueJSON({
-          url: `https://vocab-reminder.vercel.app/api/cron/process-user`,
+          url: `https://www.vocabry.com/api/cron/process-user`,
           body: { userId },
           retries: 3,
         });
