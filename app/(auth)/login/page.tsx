@@ -1,4 +1,4 @@
-// auth/signin.tsx
+// auth/login.tsx
 import SignInForm from '@/components/auth/SignInForm';
 import Link from "next/link";
 import {getServerSession} from "next-auth/next";

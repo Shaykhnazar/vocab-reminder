@@ -1,4 +1,4 @@
-// app/page.tsx
+// app/(app)/dashboard/page.tsx
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import WordForm from "@/components/WordForm";
