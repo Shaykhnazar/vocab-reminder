@@ -1,6 +1,5 @@
 // app/(auth)/login.tsx
 import SignInForm from '@/components/auth/SignInForm';
-import Link from "next/link";
 import {getServerSession} from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import {redirect} from "next/navigation";
