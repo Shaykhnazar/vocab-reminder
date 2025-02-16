@@ -97,7 +97,6 @@ const ProfilePage = () => {
         toast({
           title: "Error",
           description: "Failed to load user data",
-          variant: "destructive",
         });
       }
     };
@@ -125,7 +124,6 @@ const ProfilePage = () => {
       toast({
         title: "Error",
         description: "Failed to update profile",
-        variant: "destructive",
       });
     }
   };
@@ -156,7 +154,6 @@ const ProfilePage = () => {
       toast({
         title: "Error",
         description: "Failed to update notification preferences",
-        variant: "destructive",
       });
     }
   };

@@ -25,7 +25,6 @@ export default function ForgotPasswordForm() {
       })
     } catch (error) {
       toast({
-        variant: "destructive",
         title: "Error",
         description: "Something went wrong. Please try again.",
       })

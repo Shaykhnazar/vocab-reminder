@@ -220,7 +220,6 @@ export default function WordsList() {
     } catch (error) {
       console.error('Error fetching words:', error);
       toast({
-        variant: "destructive",
         title: "Error",
         description: "Failed to fetch words"
       });
@@ -253,7 +252,6 @@ export default function WordsList() {
     } catch (error) {
       console.error('Error updating word:', error);
       toast({
-        variant: "destructive",
         title: "Error",
         description: "Failed to update word"
       });
@@ -280,7 +278,6 @@ export default function WordsList() {
     } catch (error) {
       console.error('Error deleting word:', error);
       toast({
-        variant: "destructive",
         title: "Error",
         description: "Failed to delete word"
       });

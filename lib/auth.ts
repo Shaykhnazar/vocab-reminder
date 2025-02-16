@@ -147,7 +147,7 @@ export async function createUser(email: string, password: string) {
     const hashedPassword = await hash(password, 12);
     const verificationToken = generateVerificationToken();
     const hashedToken = hashToken(verificationToken);
-    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
     const { data, error } = await supabase
       .from('users')
@@ -158,7 +158,7 @@ export async function createUser(email: string, password: string) {
           verification_token: hashedToken,
           verification_token_expires: tokenExpiry,
           email_verified: false,
-          created_at: new Date(),
+          created_at: new Date().toISOString(),
         }
       ])
       .select()
@@ -262,13 +262,14 @@ async function findUserByTelegramId(telegramId: string) {
 export async function verifyEmail(token: string) {
   try {
     const hashedToken = hashToken(token);
+    const now = new Date().toISOString();
 
     // Find user with matching token that hasn't expired
     const { data: user, error } = await supabase
       .from('users')
       .select()
       .eq('verification_token', hashedToken)
-      .gt('verification_token_expires', new Date())
+      .gt('verification_token_expires', now)
       .single();
 
     if (error || !user) {
@@ -304,7 +305,8 @@ export async function generatePasswordResetToken(email: string) {
   // Generate reset token
   const resetToken = generateVerificationToken();
   const hashedToken = hashToken(resetToken);
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+  // Use UTC ISO string for the expiry date
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
   // Save token to database
   const { error } = await supabase
@@ -327,13 +329,14 @@ export async function generatePasswordResetToken(email: string) {
 
 export async function resetPassword(token: string, newPassword: string) {
   const hashedToken = hashToken(token);
+  const now = new Date().toISOString();
 
-  // Find user with valid token
+  // Find user with valid token using ISO string for date comparison
   const { data: user, error } = await supabase
     .from('users')
     .select()
     .eq('reset_token', hashedToken)
-    .gt('reset_token_expires', new Date())
+    .gt('reset_token_expires', now)
     .single();
 
   if (error || !user) {
