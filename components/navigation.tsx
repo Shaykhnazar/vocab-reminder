@@ -163,8 +163,8 @@ export const Footer = () => (
         <div>
           <h3 className="font-semibold mb-4">Contact</h3>
           <div className="flex flex-col space-y-2">
-            <a href="mailto:support@vocaby.com" className="text-sm text-gray-600 hover:text-purple-600 transition-colors">
-              support@vocaby.com
+            <a href="mailto:support@vocabry.com" className="text-sm text-gray-600 hover:text-purple-600 transition-colors">
+              support@vocabry.com
             </a>
             <div className="flex space-x-4 mt-4">
               {/* Add your social media links here */}
