@@ -201,7 +201,7 @@ export async function sendBatchedEmail({ to, words }: { to: string; words: WordT
 
   try {
     await  resend.emails.send({
-      from: 'Vocab Reminder <onboarding@resend.dev>',
+      from: 'Vocabry <no-reply@vocabry.com>',
       to,
       subject,
       html,
