@@ -52,7 +52,7 @@ const profileFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  telegramId: z.string().optional(),
+  telegram_id: z.string().optional(),
 });
 
 const ProfilePage = () => {
@@ -65,13 +65,13 @@ const ProfilePage = () => {
       last_name: "",
       username: "",
       email: "",
-      telegramId: "",
+      telegram_id: "",
     },
   });
 
   const [notificationPreferences, setNotificationPreferences] = React.useState({
     email: true,
-    telegram: false
+    telegram: true
   });
 
   // Fetch user data
@@ -87,7 +87,7 @@ const ProfilePage = () => {
           last_name: userData.last_name || "",
           username: userData.username || "",
           email: userData.email || "",
-          telegramId: userData.telegramId || "",
+          telegram_id: userData.telegram_id || "",
         });
 
         // Set notification preferences
@@ -246,12 +246,12 @@ const ProfilePage = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="telegramId"
+                    name="telegram_id"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Telegram ID</FormLabel>
                         <FormControl>
-                          <Input placeholder="@yourusername" {...field} />
+                          <Input placeholder="Your Telegram ID, e.g. 123456789" {...field} />
                         </FormControl>
                         <FormDescription>
                           Your Telegram username for receiving word reminders.
@@ -291,7 +291,7 @@ const ProfilePage = () => {
                 </div>
                 <Switch
                   id="email-notifications"
-                  checked={notificationPreferences.email}
+                  checked={notificationPreferences?.email}
                   onCheckedChange={(checked) => handleNotificationPreferenceChange('email', checked)}
                 />
               </div>
@@ -309,7 +309,7 @@ const ProfilePage = () => {
                 </div>
                 <Switch
                   id="telegram-notifications"
-                  checked={notificationPreferences.telegram}
+                  checked={notificationPreferences?.telegram}
                   onCheckedChange={(checked) => handleNotificationPreferenceChange('telegram', checked)}
                 />
               </div>
