@@ -136,7 +136,7 @@ export async function processUserNotifications(userId: string) {
 
       // Queue email sending instead of sending directly
       await emailQueue.enqueueJSON({
-        url: `https://www.vocabry.com/api/notifications/send-email`,
+        url: `${process.env.NEXT_PUBLIC_APP_URL}/api/notifications/send-email`,
         body: {
           to: user.email,
           words: wordsToReview
@@ -207,9 +207,9 @@ export async function sendBatchedEmail({ to, words }: { to: string; words: WordT
       html,
       text
     });
-    console.log('Email sent successfully');
+    console.log('Word review email sent successfully');
   } catch (error) {
-    console.error('Error sending batched email:', error);
+    console.error('Error sending word review email:', error);
     throw error;
   }
 }
