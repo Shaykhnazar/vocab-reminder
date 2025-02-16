@@ -7,27 +7,51 @@ import { createUser } from '@/lib/auth';
 import { signIn } from "next-auth/react"
 import { Icons } from "@/components/icons"
 import { AuthCard, AuthInput, AuthButton, AuthSocialButton } from "./auth-form"
+import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
 
 
 export default function SignUpForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+  const { toast } = useToast();
   const router = useRouter()
 
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setIsLoading(true)
-    setError("")
 
     try {
       await createUser(email, password)
-      router.push("/login")
-    } catch (error: any) {
-      console.error(error)
-      setError(error?.message || "An error occurred during sign up")
+      router.push("/verify-email")
+    } catch (err: any) {
+      console.error('Signup error:', err)
+
+      if (err.message?.includes('already registered')) {
+        toast({
+          variant: "default",
+          title: "Email already registered",
+          description: (
+            <div className="flex flex-col space-y-2">
+              <p>This email is already registered.</p>
+              <Link
+                href="/login"
+                className="font-medium text-primary hover:underline"
+              >
+                Sign in instead
+              </Link>
+            </div>
+          ),
+        })
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: err.message || 'An error occurred during sign up',
+        })
+      }
     } finally {
       setIsLoading(false)
     }
@@ -73,9 +97,6 @@ export default function SignUpForm() {
           required
           disabled={isLoading}
         />
-        {error && (
-          <p className="text-sm text-red-500">{error}</p>
-        )}
         <AuthButton type="submit" disabled={isLoading}>
           {isLoading ? (
             <>

@@ -6,7 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { objectToAuthDataMap, AuthDataValidator } from "@telegram-auth/server";
 import GoogleProvider from "next-auth/providers/google";
 import {generateVerificationToken, hashToken} from "@/lib/token";
-import {sendVerificationEmail} from "@/lib/email";
+import {sendVerificationEmail, sendPasswordResetEmail} from "@/lib/email";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -164,7 +164,13 @@ export async function createUser(email: string, password: string) {
       .select()
       .single();
 
-    if (error) throw new Error(`Supabase error: ${error.message}`);
+    if (error) {
+      // Handle other potential Supabase errors
+      if (error.code === '23505') { // Unique constraint error
+        throw new Error('This email is already registered. Please sign in instead.');
+      }
+      throw new Error(`Failed to create account. Please try again.`);
+    }
 
     // Send verification email
     await sendVerificationEmail(email, verificationToken);
@@ -286,4 +292,70 @@ export async function verifyEmail(token: string) {
     console.error('Error verifying email:', error);
     throw error;
   }
+}
+
+export async function generatePasswordResetToken(email: string) {
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    throw new Error("No user found with this email");
+  }
+
+  // Generate reset token
+  const resetToken = generateVerificationToken();
+  const hashedToken = hashToken(resetToken);
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+  // Save token to database
+  const { error } = await supabase
+    .from('users')
+    .update({
+      reset_token: hashedToken,
+      reset_token_expires: expires,
+    })
+    .eq('id', user.id);
+
+  if (error) {
+    throw new Error("Error generating reset token");
+  }
+
+  // Send reset email
+  await sendPasswordResetEmail(email, resetToken);
+
+  return true;
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  const hashedToken = hashToken(token);
+
+  // Find user with valid token
+  const { data: user, error } = await supabase
+    .from('users')
+    .select()
+    .eq('reset_token', hashedToken)
+    .gt('reset_token_expires', new Date())
+    .single();
+
+  if (error || !user) {
+    throw new Error("Invalid or expired reset token");
+  }
+
+  // Hash new password
+  const hashedPassword = await hash(newPassword, 12);
+
+  // Update user password and remove reset token
+  const { error: updateError } = await supabase
+    .from('users')
+    .update({
+      password: hashedPassword,
+      reset_token: null,
+      reset_token_expires: null,
+    })
+    .eq('id', user.id);
+
+  if (updateError) {
+    throw new Error("Error resetting password");
+  }
+
+  return true;
 }

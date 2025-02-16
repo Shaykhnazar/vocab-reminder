@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { LoginButton } from "@telegram-auth/react";
 import { AuthCard, AuthInput, AuthButton, AuthSocialButton } from "./auth-form"
 import { Icons } from "@/components/icons"
+import Link from "next/link";
 
 export default function SignInForm() {
   const [email, setEmail] = useState('');
@@ -95,14 +96,24 @@ export default function SignInForm() {
           required
           disabled={isLoading}
         />
-        <AuthInput
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          disabled={isLoading}
-        />
+        <div className="space-y-2">
+          <AuthInput
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={isLoading}
+          />
+          <div className="flex justify-end">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-muted-foreground hover:text-primary"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        </div>
         {error && (
           <p className="text-sm text-red-500">{error}</p>
         )}
