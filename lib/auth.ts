@@ -103,7 +103,7 @@ export const authOptions: AuthOptions = {
               email: user.email,
               email_verified: true, // Google accounts are pre-verified
               name: user.name,
-              avatar_url: user.image,
+              photo_url: user.image,
               provider: 'google',
               provider_id: profile?.sub,
               created_at: new Date().toISOString(), // Use ISO string format
