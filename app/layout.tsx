@@ -5,6 +5,8 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { Toaster } from "@/components/shadcn-ui/toaster";
 import { NextAuthProvider } from "@/components/NextAuthProvider";
+import { Navbar } from "@/components/navigation/Navbar";
+import { Footer } from "@/components/navigation/Footer";
 import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,13 +23,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
-        <div className="relative">
-          <Toaster />
-            <NextAuthProvider>{children}</NextAuthProvider>
-          <Analytics />
-        </div>
-      </body>
+    <body className={`${inter.className} antialiased`}>
+    <div className="flex min-h-screen flex-col">
+      <NextAuthProvider>
+        <Navbar />
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
+      </NextAuthProvider>
+      <Toaster />
+      <Analytics />
+    </div>
+    </body>
     </html>
   );
 }
