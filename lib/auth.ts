@@ -82,29 +82,44 @@ export const authOptions: AuthOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      // Auto-verify Google users' email
-      if (account?.provider === 'google') {
-        const { data: existingUser } = await supabase
-          .from('users')
-          .select()
-          .eq('email', user.email)
-          .single();
+      try {
+        // Auto-verify Google users' email
+        if (account?.provider === 'google') {
+          // First check if user exists
+          const { data: existingUser, error: findError } = await supabase
+            .from('users')
+            .select()
+            .eq('email', user.email)
+            .single();
 
-        if (!existingUser) {
-          const { error } = await supabase.from('users').insert({
-            email: user.email,
-            email_verified: true, // Google accounts are pre-verified
-            name: user.name,
-            avatar_url: user.image,
-            provider: 'google',
-            provider_id: profile?.sub,
-            created_at: new Date(),
-          });
+          if (findError && findError.code !== 'PGRST116') { // PGRST116 is "not found" error
+            console.error('Error checking existing user:', findError);
+            return false;
+          }
 
-          if (error) return false;
+          // If user doesn't exist, create new user
+          if (!existingUser) {
+            const { error: insertError } = await supabase.from('users').insert({
+              email: user.email,
+              email_verified: true, // Google accounts are pre-verified
+              name: user.name,
+              avatar_url: user.image,
+              provider: 'google',
+              provider_id: profile?.sub,
+              created_at: new Date().toISOString(), // Use ISO string format
+            });
+
+            if (insertError) {
+              console.error('Error creating user:', insertError);
+              return false;
+            }
+          }
         }
+        return true;
+      } catch (error) {
+        console.error('Error in signIn callback:', error);
+        return false;
       }
-      return true;
     },
     async jwt({ token, user, account, profile }) {
       if (account?.provider === "google") {
