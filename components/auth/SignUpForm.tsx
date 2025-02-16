@@ -47,7 +47,6 @@ export default function SignUpForm() {
         })
       } else {
         toast({
-          variant: "destructive",
           title: "Error",
           description: err.message || 'An error occurred during sign up',
         })

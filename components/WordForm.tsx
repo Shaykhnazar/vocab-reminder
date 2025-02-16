@@ -63,7 +63,6 @@ export default function WordForm() {
       const errorMessage = error instanceof Error ? error.message : 'Failed to add word';
 
       toast({
-        variant: "destructive",
         title: "Error",
         description: errorMessage
       });

@@ -20,7 +20,6 @@ export default function ResetPasswordForm() {
     e.preventDefault()
     if (!token) {
       toast({
-        variant: "destructive",
         title: "Error",
         description: "Invalid reset token",
       })
@@ -40,7 +39,6 @@ export default function ResetPasswordForm() {
       router.push("/login")
     } catch (error) {
       toast({
-        variant: "destructive",
         title: "Error",
         description: "Failed to reset password. Please try again.",
       })
