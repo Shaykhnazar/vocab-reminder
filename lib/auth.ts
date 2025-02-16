@@ -102,7 +102,7 @@ export const authOptions: AuthOptions = {
             const { error: insertError } = await supabase.from('users').insert({
               email: user.email,
               email_verified: true, // Google accounts are pre-verified
-              name: user.name,
+              first_name: user.name,
               photo_url: user.image,
               provider: 'google',
               provider_id: profile?.sub,
