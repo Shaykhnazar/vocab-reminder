@@ -9,7 +9,7 @@ async function setupSchedules() {
   try {
     // Create a schedule to run every 5 minutes
     const schedule = await qstash.schedules.create({
-      destination: `${process.env.VERCEL_URL}/api/cron/process-notifications`,
+      destination: `${process.env.NEXT_PUBLIC_APP_URL}/api/cron/process-notifications`,
       cron: '*/5 * * * *', // Every 5 minutes
     });
 

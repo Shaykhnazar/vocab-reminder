@@ -57,7 +57,7 @@ export const GuestNavbar = () => {
                 <Link href="/about" onClick={() => setIsOpen(false)} className="text-lg font-medium">
                   About
                 </Link>
-                <Button onClick={handleGetStarted} className="w-full">
+                <Button onClick={handleGetStarted} className="w-full" variant="cta" >
                   Sign In
                 </Button>
               </nav>
@@ -72,7 +72,7 @@ export const GuestNavbar = () => {
             <Link href="/about" className="text-sm font-medium hover:text-purple-600 transition-colors">
               About
             </Link>
-            <Button onClick={handleGetStarted}>Sign In</Button>
+            <Button onClick={handleGetStarted} variant="cta">Sign In</Button>
           </nav>
         </div>
       </div>
@@ -174,7 +174,7 @@ export const Footer = () => (
       </div>
 
       <div className="mt-8 pt-8 border-t text-center text-sm text-gray-600">
-        <p>© {new Date().getFullYear()} VocabRY. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Vocabry. All rights reserved.</p>
       </div>
     </div>
   </footer>

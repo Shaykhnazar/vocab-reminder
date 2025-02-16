@@ -9,6 +9,8 @@ declare module "next-auth" {
       name?: string | null
       image?: string | null
       telegramId?: string | null
+      provider?: string
+      providerId?: string
     }
   }
 
@@ -17,6 +19,8 @@ declare module "next-auth" {
     email: string
     name?: string | null
     image?: string | null
-    telegramId?: string | null
+    telegramId?: string | null,
+    provider?: string
+    providerId?: string
   }
 }
