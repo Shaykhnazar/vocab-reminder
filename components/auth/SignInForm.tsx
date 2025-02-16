@@ -5,10 +5,13 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { LoginButton } from "@telegram-auth/react";
+import { AuthCard, AuthInput, AuthButton, AuthSocialButton } from "./auth-form"
+import { Icons } from "@/components/icons"
 
 export default function SignInForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -16,6 +19,8 @@ export default function SignInForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setIsLoading(true)
+    setError("")
 
     try {
       const result = await signIn('credentials', {
@@ -25,13 +30,17 @@ export default function SignInForm() {
       });
 
       if (result?.error) {
-        setError(result.error);
-      } else {
-        router.push('/');
+        setError("Invalid email or password")
+        return
       }
+
+      router.push("/")
+      router.refresh()
     } catch (error) {
       console.error(error);
       setError('An error occurred during sign in');
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -45,69 +54,62 @@ export default function SignInForm() {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-            required
-          />
-        </div>
-        {error && (
-          <div className="text-red-500 text-sm">{error}</div>
-        )}
-        <button
-          type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-        >
-          Sign In
-        </button>
-      </form>
+  const socialButtons = (
+    <>
+      <AuthSocialButton
+        type="button"
+        onClick={() => signIn("google", {callbackUrl: "/"})}
+        disabled={isLoading}
+      >
+        <Icons.google className="mr-2 h-4 w-4"/>
+        Google
+      </AuthSocialButton>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300"/>
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Or continue with</span>
-        </div>
-      </div>
-
-      <div className="flex justify-center mt-4">
-        {botUsername ? (
+      {botUsername ? (
+        <div className="flex justify-center">
           <LoginButton
             botUsername={botUsername}
-            onAuthCallback={(data) => {
-              handleTelegramAuth(data);
-            }}
+            onAuthCallback={handleTelegramAuth}
           />
-        ) : (
-          <div className="text-red-500 text-sm">
-            Telegram bot username not configured
-          </div>
+        </div>
+      ) : null}
+    </>
+  )
+
+  return (
+    <AuthCard
+      title="Sign In"
+      socialButtons={socialButtons}
+      footerText="Don't have an account?"
+      footerLink={{
+        text: "Sign Up",
+        href: "/signup"
+      }}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <AuthInput
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          disabled={isLoading}
+        />
+        <AuthInput
+          label="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          disabled={isLoading}
+        />
+        {error && (
+          <p className="text-sm text-red-500">{error}</p>
         )}
-      </div>
-    </div>
+        <AuthButton type="submit" disabled={isLoading}>
+          {isLoading ? "Signing in..." : "Sign In"}
+        </AuthButton>
+      </form>
+    </AuthCard>
   );
 }

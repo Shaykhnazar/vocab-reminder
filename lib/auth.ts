@@ -4,9 +4,21 @@ import {supabase, User} from './supabase';
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { objectToAuthDataMap, AuthDataValidator } from "@telegram-auth/server";
+import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: AuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
+    }),
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
@@ -70,7 +82,34 @@ export const authOptions: AuthOptions = {
     strategy: 'jwt'
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select()
+          .eq('email', user.email)
+          .single();
+
+        if (!existingUser) {
+          const { error } = await supabase.from('users').insert({
+            email: user.email,
+            name: user.name,
+            avatar_url: user.image,
+            provider: 'google',
+            provider_id: profile?.sub,
+            created_at: new Date(),
+          });
+
+          if (error) return false;
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, account, profile }) {
+      if (account?.provider === "google") {
+        token.provider = account.provider;
+        token.providerId = profile?.sub;
+      }
       if (account?.provider === "telegram-login") {
         token.telegramId = user.id;
         token.name = user.name;
@@ -84,6 +123,8 @@ export const authOptions: AuthOptions = {
         if (user) {
           session.user.id = user.id;
           session.user.email = user.email;
+          session.user.provider = token.provider as string;
+          session.user.providerId = token.providerId as string;
         }
       }
       if (token.telegramId) {
@@ -150,12 +191,12 @@ export async function validatePassword(user: User, password: string) {
 
 // Add these new functions to handle Telegram users
 async function createTelegramUser({
-                                    telegramId,
-                                    firstName,
-                                    lastName,
-                                    username,
-                                    photoUrl,
-                                  }: {
+  telegramId,
+  firstName,
+  lastName,
+  username,
+  photoUrl,
+}: {
   telegramId: string;
   firstName: string;
   lastName: string;
