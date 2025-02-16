@@ -8,6 +8,7 @@ import { LoginButton } from "@telegram-auth/react";
 import { AuthCard, AuthInput, AuthButton, AuthSocialButton } from "./auth-form"
 import { Icons } from "@/components/icons"
 import Link from "next/link";
+import {useToast} from "@/hooks/use-toast";
 
 export default function SignInForm() {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ export default function SignInForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('');
   const router = useRouter();
-
+  const { toast } = useToast();
   const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
 
   async function handleSubmit(e: React.FormEvent) {
@@ -45,13 +46,32 @@ export default function SignInForm() {
     }
   }
 
+  // Add to SignUpForm.tsx
   const handleTelegramAuth = async (data: any) => {
-    console.log('Telegram auth data:', data); // Debug log
+    setIsLoading(true);
     try {
-      await signIn("telegram-login", {callbackUrl: "/"}, data);
+      const result = await signIn("telegram-login", {
+        callbackUrl: "/",
+        redirect: false, // Don't redirect automatically
+      }, data);
+
+      if (result?.error) {
+        toast({
+          title: "Error",
+          description: result.error,
+        });
+      } else {
+        // Successful login - redirect to dashboard
+        router.push("/dashboard");
+      }
     } catch (error) {
-      console.error('Telegram auth error:', error); // Debug log
-      setError('An error occurred during Telegram sign in');
+      console.error('Telegram auth error:', error);
+      toast({
+        title: "Error",
+        description: 'An error occurred during Telegram sign in',
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 

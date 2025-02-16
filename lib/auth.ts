@@ -44,37 +44,60 @@ export const authOptions: AuthOptions = {
       name: "Telegram Login",
       credentials: {},
       async authorize(credentials, req) {
-        const validator = new AuthDataValidator({
-          botToken: process.env.TELEGRAM_BOT_TOKEN!,
-        });
+        try {
+          const validator = new AuthDataValidator({
+            botToken: process.env.TELEGRAM_BOT_TOKEN!,
+          });
 
-        const data = objectToAuthDataMap(req.query || {});
-        const user = await validator.validate(data);
+          const data = objectToAuthDataMap(req.query || {});
+          console.log('Telegram auth data:', data); // Debug log
 
-        if (user.id && user.first_name) {
-          // Check if user exists in your database
-          const existingUser = await findUserByTelegramId(user.id.toString());
+          const telegramUser = await validator.validate(data);
+          console.log('Validated Telegram user:', telegramUser);
 
-          if (!existingUser) {
-            // Create new user if doesn't exist
-            await createTelegramUser({
-              telegramId: user.id.toString(),
-              firstName: user.first_name,
-              lastName: user.last_name || "",
-              username: user.username || "",
-              photoUrl: user.photo_url || "",
-            });
+          if (telegramUser.id && telegramUser.first_name) {
+            // Check if user exists
+            let dbUser = await findUserByTelegramId(telegramUser.id.toString());
+
+            if (dbUser) {
+              console.log('Existing user found:', dbUser);
+              // User exists - return existing user data
+              return {
+                id: dbUser.id,
+                name: [dbUser.first_name, dbUser.last_name || ""].join(" "),
+                image: dbUser.photo_url,
+                telegram_id: dbUser.telegram_id,
+              };
+            } else {
+              console.log('No existing user found, creating new user');
+              // Create new user if doesn't exist
+              dbUser = await createTelegramUser({
+                telegram_id: telegramUser.id.toString(),
+                firstName: telegramUser.first_name,
+                lastName: telegramUser.last_name || "",
+                username: telegramUser.username || "",
+                photoUrl: telegramUser.photo_url || "",
+              });
+
+              if (!dbUser) {
+                console.error('Failed to create Telegram user');
+                return null;
+              }
+
+              return {
+                id: dbUser.id,
+                name: [telegramUser.first_name, telegramUser.last_name || ""].join(" "),
+                image: telegramUser.photo_url,
+                telegram_id: dbUser.telegram_id,
+              };
+            }
           }
-
-          return {
-            id: user.id.toString(),
-            name: [user.first_name, user.last_name || ""].join(" "),
-            image: user.photo_url,
-            email: `${user.id}@telegram.user`, // Create a placeholder email
-          };
+          return null;
+        } catch (error) {
+          console.error('Error in Telegram authorize:', error);
+          return null;
         }
-        return null;
-      },
+      }
     }),
   ],
   session: {
@@ -127,28 +150,38 @@ export const authOptions: AuthOptions = {
         token.providerId = profile?.sub;
       }
       if (account?.provider === "telegram-login") {
-        token.telegramId = user.id;
-        token.name = user.name;
-        token.image = user.image;
+        token.telegram_id = user.telegram_id || user.id;
+        token.name = user.name || "";
+        token.image = user.image || "";
       }
       return token;
     },
     async session({ session, token }) {
-      if (token?.email) {
-        const user = await findUserByEmail(token.email);
-        if (user) {
-          session.user.id = user.id;
-          session.user.email = user.email;
-          session.user.provider = token.provider as string;
-          session.user.providerId = token.providerId as string;
+      try {
+        if (token?.email) {
+          const user = await findUserByEmail(token.email);
+          if (user) {
+            session.user.id = user.id;
+            session.user.email = user.email;
+            session.user.provider = token.provider as string;
+            session.user.providerId = token.providerId as string;
+          }
         }
+        if (token.telegram_id) {
+          // Find user by telegram_id instead of creating a new one
+          const user = await findUserByTelegramId(token.telegram_id);
+          if (user) {
+            session.user.id = user.id;
+            session.user.telegram_id = user.telegram_id;
+            session.user.name = token.name || '';
+            session.user.image = token.image || '';
+          }
+        }
+        return session;
+      } catch (error) {
+        console.error('Error in session callback:', error);
+        return session; // Return session even if there's an error
       }
-      if (token.telegramId) {
-        session.user.telegramId = token.telegramId as string;
-        session.user.name = token.name;
-        session.user.image = token.image as string;
-      }
-      return session;
     }
   },
   pages: {
@@ -198,14 +231,31 @@ export async function createUser(email: string, password: string) {
 
 export async function findUserByEmail(email: string) {
   try {
+    console.log('Finding user by email:', email);
+
+    if (!email) {
+      console.log('No email provided');
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('users')
       .select('*')
       .eq('email', email)
-      .single();
+      .limit(1); // Add limit to handle multiple results
 
-    if (error) throw new Error(`Supabase error: ${error.message}`);
-    return data;
+    if (error) {
+      console.error('Supabase query error:', error);
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+
+    // Handle case where no user is found
+    if (!data || data.length === 0) {
+      console.log('No user found with email:', email);
+      return null;
+    }
+
+    return data[0];
   } catch (error) {
     console.error('Error finding user by email:', error);
     return null;
@@ -223,51 +273,79 @@ export async function validatePassword(user: User, password: string) {
 
 // Add these new functions to handle Telegram users
 async function createTelegramUser({
-  telegramId,
+  telegram_id,
   firstName,
   lastName,
   username,
   photoUrl,
 }: {
-  telegramId: string;
+  telegram_id: string;
   firstName: string;
   lastName: string;
   username: string;
   photoUrl: string;
 }) {
   try {
+    console.log('Creating new Telegram user:', { telegram_id, firstName });
+
     const { data, error } = await supabase
       .from('users')
       .insert([
         {
-          telegramId: telegramId,
+          telegram_id: telegram_id,
           first_name: firstName,
           last_name: lastName,
           username: username,
           photo_url: photoUrl,
-          created_at: new Date(),
+          // email_verified: true, // Telegram users are pre-verified
+          created_at: new Date().toISOString(),
+          provider: 'telegram',
+          // password: await hash(generateVerificationToken(), 12), // Generate random password
+          notification_preferences: {
+            email: false,
+            telegram: true
+          }
         }
       ])
       .select()
       .single();
 
-    if (error) throw new Error(`Supabase error: ${error.message}`);
+    if (error) {
+      console.error('Error creating Telegram user:', error);
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+
     return data;
   } catch (error) {
+    console.error('Error in createTelegramUser:', error);
     throw error;
   }
 }
 
-async function findUserByTelegramId(telegramId: string) {
+async function findUserByTelegramId(telegram_id: string) {
   try {
+    // Add a log to debug the telegram_id value
+    console.log('Searching for Telegram user with ID:', telegram_id);
+
     const { data, error } = await supabase
       .from('users')
-      .select('*')
-      .eq('telegramId', telegramId)
-      .single();
+      .select('id, first_name, last_name, username, email, telegram_id, photo_url, notification_preferences')
+      .eq('telegram_id', telegram_id)
+      .limit(1);
 
-    if (error) throw new Error(`Supabase error: ${error.message}`);
-    return data;
+    if (error) {
+      console.error('Supabase query error:', error);
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+
+    // Handle case where no user is found
+    if (!data || data.length === 0) {
+      console.log('No user found with Telegram ID:', telegram_id);
+      return null;
+    }
+
+    // Return the first matching user
+    return data[0];
   } catch (error) {
     console.error('Error finding user by Telegram ID:', error);
     return null;

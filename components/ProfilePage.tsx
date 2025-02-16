@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Button } from "@/components/shadcn-ui/button";
 import {
   Card,
@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import { useSession } from "next-auth/react";
 
+// Update the form schema to make email optional for Telegram users
 const profileFormSchema = z.object({
   first_name: z.string().min(2, {
     message: "First name must be at least 2 characters.",
@@ -51,13 +52,18 @@ const profileFormSchema = z.object({
   }),
   email: z.string().email({
     message: "Please enter a valid email address.",
-  }),
-  telegramId: z.string().optional(),
+  }).optional(),
+  telegram_id: z.string().optional(),
 });
 
 const ProfilePage = () => {
   const { data: session } = useSession();
   const { toast } = useToast();
+  // Check if user is authenticated via Telegram
+  const isTelegramUser = !!session?.user?.telegram_id;
+  // Add loading state
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -65,13 +71,13 @@ const ProfilePage = () => {
       last_name: "",
       username: "",
       email: "",
-      telegramId: "",
+      telegram_id: "",
     },
   });
 
   const [notificationPreferences, setNotificationPreferences] = React.useState({
     email: true,
-    telegram: false
+    telegram: true
   });
 
   // Fetch user data
@@ -87,7 +93,7 @@ const ProfilePage = () => {
           last_name: userData.last_name || "",
           username: userData.username || "",
           email: userData.email || "",
-          telegramId: userData.telegramId || "",
+          telegram_id: userData.telegram_id || "",
         });
 
         // Set notification preferences
@@ -105,7 +111,11 @@ const ProfilePage = () => {
   }, [form, toast]);
 
   const onSubmit = async (data: z.infer<typeof profileFormSchema>) => {
+    setIsLoading(true);
     try {
+      // Check if email is being changed
+      const emailChanged = data.email !== form.getValues('email');
+
       const response = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: {
@@ -116,15 +126,27 @@ const ProfilePage = () => {
 
       if (!response.ok) throw new Error('Failed to update profile');
 
-      toast({
-        title: "Profile updated",
-        description: "Your profile settings have been saved successfully.",
-      });
+      const result = await response.json();
+
+      // If email was changed and needs verification
+      if (emailChanged && result.verificationRequired) {
+        toast({
+          title: "Verification Required",
+          description: "Please check your email to verify your new email address.",
+        });
+      } else {
+        toast({
+          title: "Profile updated",
+          description: "Your profile settings have been saved successfully.",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update profile",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -246,15 +268,21 @@ const ProfilePage = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="telegramId"
+                    name="telegram_id"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Telegram ID</FormLabel>
                         <FormControl>
-                          <Input placeholder="@yourusername" {...field} />
+                          <Input
+                            placeholder="Your Telegram ID, e.g. 123456789"
+                            {...field}
+                            disabled={isTelegramUser}
+                          />
                         </FormControl>
                         <FormDescription>
-                          Your Telegram username for receiving word reminders.
+                          {isTelegramUser
+                            ? "Telegram ID cannot be changed when signed in with Telegram"
+                            : "Your Telegram username for receiving word reminders."}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -291,7 +319,7 @@ const ProfilePage = () => {
                 </div>
                 <Switch
                   id="email-notifications"
-                  checked={notificationPreferences.email}
+                  checked={notificationPreferences?.email}
                   onCheckedChange={(checked) => handleNotificationPreferenceChange('email', checked)}
                 />
               </div>
@@ -309,7 +337,7 @@ const ProfilePage = () => {
                 </div>
                 <Switch
                   id="telegram-notifications"
-                  checked={notificationPreferences.telegram}
+                  checked={notificationPreferences?.telegram}
                   onCheckedChange={(checked) => handleNotificationPreferenceChange('telegram', checked)}
                 />
               </div>
