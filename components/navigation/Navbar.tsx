@@ -48,7 +48,8 @@ export const Navbar = () => {
   ];
 
   const authLinks = [
-    { href: '/dashboard', label: 'Dashboard' },
+    // { href: '/dashboard', label: 'Dashboard' },
+    { href: '/words', label: 'My Words' },
     { href: '/profile', label: 'Profile' },
   ];
 

@@ -1,11 +1,11 @@
-// app/(app)/dashboard/page.tsx
+// app/(app)/words/page.tsx
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import WordForm from "@/components/WordForm";
 import WordsList from "@/components/WordsList";
 import { authOptions } from "@/lib/auth";
 
-export default async function Home() {
+export default async function Words() {
   const session = await getServerSession(authOptions);
 
   // If no session, redirect to sign in
