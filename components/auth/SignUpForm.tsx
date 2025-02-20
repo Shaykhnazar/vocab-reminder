@@ -73,8 +73,8 @@ export default function SignUpForm() {
           description: result.error,
         });
       } else {
-        // Successful login - redirect to dashboard
-        router.push("/dashboard");
+        // Successful login - redirect to words
+        router.push("/words");
       }
     } catch (error) {
       console.error('Telegram auth error:', error);
