@@ -10,7 +10,7 @@ interface NotificationQueueItem {
   userId: string;
   wordId: string;
   scheduledFor: Date;
-  type: 'email' | 'telegram';
+  type: 'email' | 'telegram' | 'both';
 }
 
 interface WordToReview {
@@ -28,17 +28,46 @@ const emailQueue = qstashClient.queue({
   queueName: "email-sending"
 });
 
+const telegramQueue = qstashClient.queue({
+  queueName: "telegram-sending"
+});
+
 /**
  * Add notifications for all review stages when a word is added
  */
 export async function addToNotificationQueue(notification: NotificationQueueItem) {
   try {
+    // If type is not specified, determine it based on user preferences
+    let notificationType = notification.type;
+    if (!notificationType) {
+      const { data: user, error } = await supabase
+        .from('users')
+        .select('notification_preferences, telegram_id')
+        .eq('id', notification.userId)
+        .single();
+
+      if (error) throw error;
+
+      const hasEmail = user?.notification_preferences?.email;
+      const hasTelegram = user?.notification_preferences?.telegram && user?.telegram_id;
+
+      if (hasEmail && hasTelegram) {
+        notificationType = 'both';
+      } else if (hasEmail) {
+        notificationType = 'email';
+      } else if (hasTelegram) {
+        notificationType = 'telegram';
+      } else {
+        notificationType = 'email'; // Default to email if no preferences set
+      }
+    }
+
     // Create a single notification for the current review stage
     const notificationData = {
       user_id: notification.userId,
       word_id: notification.wordId,
       scheduled_for: notification.scheduledFor.toISOString(),
-      type: notification.type,
+      type: notificationType,
       status: 'scheduled'
     };
 
@@ -119,22 +148,24 @@ export async function processUserNotifications(userId: string) {
   console.log('User preferences:', user.notification_preferences);
 
   try {
-    if (user.notification_preferences.email) {
-      const wordsToReview = notifications.map(notification => ({
-        word: notification.words.word,
-        definition: notification.words.definition,
-        context: notification.words.context
-      }));
+    // First update status to 'processing' to prevent duplicate processing
+    await supabase
+      .from('notification_queue')
+      .update({ status: 'processing' })
+      .in('id', notifications.map(n => n.id));
 
-      console.log('Preparing to send email for words:', wordsToReview);
+    const wordsToReview = notifications.map(notification => ({
+      word: notification.words.word,
+      definition: notification.words.definition,
+      context: notification.words.context
+    }));
 
-      // First update status to 'processing' to prevent duplicate processing
-      await supabase
-        .from('notification_queue')
-        .update({ status: 'processing' })
-        .in('id', notifications.map(n => n.id));
+    console.log('Preparing to send notifications for words:', wordsToReview);
 
-      // Queue email sending instead of sending directly
+    // Handle email notifications
+    if (user.notification_preferences?.email) {
+      console.log('Queueing email notification');
+      // Queue email sending
       await emailQueue.enqueueJSON({
         url: `${process.env.NEXT_PUBLIC_APP_URL}/api/notifications/send-email`,
         body: {
@@ -143,8 +174,20 @@ export async function processUserNotifications(userId: string) {
         },
         retries: 3,
       });
-    } else {
-      console.log('User has email notifications disabled');
+    }
+
+    // Handle telegram notifications
+    if (user.notification_preferences?.telegram && user.telegram_id) {
+      console.log('Queueing telegram notification');
+      // Queue telegram notification
+      await telegramQueue.enqueueJSON({
+        url: `${process.env.NEXT_PUBLIC_APP_URL}/api/notifications/send-telegram`,
+        body: {
+          to: user.telegram_id,
+          words: wordsToReview
+        },
+        retries: 3,
+      });
     }
 
     // Update all notifications and words in a transaction
@@ -158,15 +201,6 @@ export async function processUserNotifications(userId: string) {
 
       const nextStage = currentStage + 1;
       const interval = REVIEW_INTERVALS[nextStage];
-
-      // console.log('Calculating next review:', {
-      //   wordId: n.words.id,
-      //   word: n.words.word,
-      //   currentStage,
-      //   nextStage,
-      //   interval,
-      //   nextReview: new Date(Date.now() + interval).toISOString()
-      // });
 
       return new Date(Date.now() + interval).toISOString();
     });
@@ -198,9 +232,8 @@ export async function sendBatchedEmail({ to, words }: { to: string; words: WordT
 
   const { subject, html, text } = getWordReviewTemplate(words);
 
-
   try {
-    await  resend.emails.send({
+    await resend.emails.send({
       from: 'Vocabry <no-reply@vocabry.com>',
       to,
       subject,
