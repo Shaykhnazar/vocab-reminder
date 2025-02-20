@@ -25,6 +25,31 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
+    // Get user notification preferences
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('notification_preferences, telegram_id')
+      .eq('id', userId)
+      .single();
+
+    if (userError) {
+      console.error('Error fetching user data:', userError);
+      // Continue with default preferences if we can't fetch user data
+    }
+
+    // Determine notification type based on user preferences
+    let notificationType = 'email';
+    if (userData) {
+      const hasEmail = userData.notification_preferences?.email;
+      const hasTelegram = userData.notification_preferences?.telegram && userData.telegram_id;
+
+      if (hasEmail && hasTelegram) {
+        notificationType = 'both';
+      } else if (!hasEmail && hasTelegram) {
+        notificationType = 'telegram';
+      }
+    }
+
     const firstReviewTime = new Date(Date.now() + REVIEW_INTERVALS[0]);
 
     // Insert the word
@@ -52,7 +77,7 @@ export async function POST(req: NextRequest) {
         userId,
         wordId: wordData.id,
         scheduledFor: firstReviewTime,
-        type: 'email'
+        type: notificationType as 'email' | 'telegram' | 'both'
       });
     } catch (notificationError) {
       // Log notification error but don't fail the word creation

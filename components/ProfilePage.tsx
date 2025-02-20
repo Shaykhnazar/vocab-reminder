@@ -35,9 +35,16 @@ import {
   Mail,
   MessageCircle,
   User,
-  BarChart
+  BarChart,
+  RefreshCw,
+  AlertTriangle,
+  Check,
+  ExternalLink
 } from 'lucide-react';
 import { useSession } from "next-auth/react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/shadcn-ui/alert";
+import { Badge } from "@/components/shadcn-ui/badge";
+import { Separator } from "@/components/shadcn-ui/separator";
 
 // Update the form schema to make email optional for Telegram users
 const profileFormSchema = z.object({
@@ -63,6 +70,11 @@ const ProfilePage = () => {
   const isTelegramUser = !!session?.user?.telegram_id;
   // Add loading state
   const [isLoading, setIsLoading] = useState(false);
+  const [telegramStatus, setTelegramStatus] = useState({
+    connected: false,
+    connecting: false,
+    refreshing: false
+  });
 
   const form = useForm({
     resolver: zodResolver(profileFormSchema),
@@ -80,7 +92,8 @@ const ProfilePage = () => {
     telegram: true
   });
 
-  // Fetch user data
+  const [successMessage, setSuccessMessage] = useState('');
+// Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -97,7 +110,13 @@ const ProfilePage = () => {
         });
 
         // Set notification preferences
-        setNotificationPreferences(userData.notification_preferences);
+        setNotificationPreferences(userData.notification_preferences || { email: true, telegram: false });
+
+        // Set Telegram connection status
+        setTelegramStatus(prev => ({
+          ...prev,
+          connected: !!userData.telegram_id
+        }));
       } catch (error) {
         console.error('Error fetching user data:', error);
         toast({
@@ -157,13 +176,35 @@ const ProfilePage = () => {
         [type]: enabled
       };
 
-      const response = await fetch('/api/user/notifications', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ notification_preferences: newPreferences }),
-      });
+      // For Telegram notifications, we need to check connection status first
+      if (type === 'telegram' && enabled && !telegramStatus.connected) {
+        toast({
+          title: "Telegram not connected",
+          description: "Please connect your Telegram account first",
+        });
+        return;
+      }
+
+      let response;
+      if (type === 'telegram') {
+        // Use the dedicated Telegram notification endpoint
+        response = await fetch('/api/user/telegram-notifications', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ enabled }),
+        });
+      } else {
+        // Use the general notification preferences endpoint
+        response = await fetch('/api/user/notifications', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ notification_preferences: newPreferences }),
+        });
+      }
 
       if (!response.ok) throw new Error('Failed to update notification preferences');
 
@@ -180,6 +221,72 @@ const ProfilePage = () => {
     }
   };
 
+  // Connect Telegram account
+  const handleConnectTelegram = () => {
+    if (!session?.user?.id) return;
+
+    setTelegramStatus(prev => ({ ...prev, connecting: true }));
+    const telegramBotUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
+
+    // Open Telegram in new window with deep link containing user ID
+    window.open(`https://t.me/${telegramBotUsername}?start=${session.user.id}`, '_blank');
+
+    // Show success message
+    setSuccessMessage('Telegram window opened. Please complete connection there and refresh status when done.');
+
+    // Reset connecting state after a delay
+    setTimeout(() => {
+      setTelegramStatus(prev => ({ ...prev, connecting: false }));
+    }, 3000);
+  };
+
+  // Refresh Telegram connection status
+  const refreshTelegramStatus = async () => {
+    if (!session?.user) return;
+
+    try {
+      setTelegramStatus(prev => ({ ...prev, refreshing: true }));
+
+      // First check Telegram-specific endpoint
+      const telegramRes = await fetch('/api/user/telegram-notifications');
+      if (!telegramRes.ok) throw new Error('Failed to fetch Telegram status');
+
+      const telegramData = await telegramRes.json();
+
+      // Then refresh general profile data to ensure everything is in sync
+      const profileRes = await fetch('/api/user/profile');
+      if (!profileRes.ok) throw new Error('Failed to fetch profile');
+      const profileData = await profileRes.json();
+
+      // Update states
+      setTelegramStatus(prev => ({
+        ...prev,
+        connected: telegramData.connected,
+        refreshing: false
+      }));
+
+      setNotificationPreferences(profileData.notification_preferences || { email: true, telegram: false });
+
+      // Update form data in case telegram_id changed
+      if (telegramData.connected && !form.getValues('telegram_id')) {
+        form.setValue('telegram_id', profileData.telegram_id || '');
+      }
+
+      // Show success message if connection was established
+      if (telegramData.connected && !telegramStatus.connected) {
+        setSuccessMessage('Telegram successfully connected!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
+    } catch (error) {
+      console.error('Error refreshing Telegram status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to refresh Telegram connection status",
+      });
+    } finally {
+      setTelegramStatus(prev => ({ ...prev, refreshing: false }));
+    }
+  };
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Profile Settings</h1>
@@ -295,16 +402,25 @@ const ProfilePage = () => {
           </Card>
         </TabsContent>
 
-        {/* Notifications Tab */}
+        {/* Notifications Tab - Enhanced with Telegram connection UI */}
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
               <CardTitle>Notification Preferences</CardTitle>
               <CardDescription>
-                Customize how and when you receive reminders.
+                Customize how and when you receive vocabulary reminders.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {successMessage && (
+                <Alert className="bg-green-50 border-green-200 text-green-700">
+                  <Check className="h-4 w-4 text-green-600" />
+                  <AlertTitle>Success</AlertTitle>
+                  <AlertDescription>{successMessage}</AlertDescription>
+                </Alert>
+              )}
+
+              {/* Email Notifications */}
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
@@ -323,24 +439,84 @@ const ProfilePage = () => {
                   onCheckedChange={(checked) => handleNotificationPreferenceChange('email', checked)}
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <MessageCircle className="h-4 w-4" />
-                    <label htmlFor="telegram-notifications" className="font-medium">
-                      Telegram Notifications
-                    </label>
+
+              <Separator />
+
+              {/* Telegram Notifications - Enhanced with connection status */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4" />
+                      <label htmlFor="telegram-notifications" className="font-medium">
+                        Telegram Notifications
+                      </label>
+                      {telegramStatus.connected && (
+                        <Badge variant="outline" className="ml-2 text-xs bg-blue-50">Connected</Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      {telegramStatus.connected
+                        ? "Receive word reminders via Telegram"
+                        : "Connect your Telegram account for notifications"}
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-500">
-                    Receive word reminders via Telegram
-                  </p>
+
+                  {telegramStatus.connected ? (
+                    <Switch
+                      id="telegram-notifications"
+                      checked={notificationPreferences?.telegram}
+                      onCheckedChange={(checked) => handleNotificationPreferenceChange('telegram', checked)}
+                    />
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleConnectTelegram}
+                      disabled={telegramStatus.connecting}
+                    >
+                      {telegramStatus.connecting ? 'Connecting...' : 'Connect'}
+                      <ExternalLink className="ml-1 h-3 w-3" />
+                    </Button>
+                  )}
                 </div>
-                <Switch
-                  id="telegram-notifications"
-                  checked={notificationPreferences?.telegram}
-                  onCheckedChange={(checked) => handleNotificationPreferenceChange('telegram', checked)}
-                />
+
+                {!telegramStatus.connected && (
+                  <Alert className="bg-blue-50 border-blue-100">
+                    <AlertDescription className="flex justify-between items-center">
+                      <div className="text-sm">
+                        After connecting in Telegram, refresh status to confirm
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={refreshTelegramStatus}
+                        disabled={telegramStatus.refreshing}
+                        className="h-8 px-2"
+                      >
+                        <RefreshCw className={`h-4 w-4 mr-1 ${telegramStatus.refreshing ? 'animate-spin' : ''}`} />
+                        Refresh
+                      </Button>
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
+
+              <Alert className="bg-amber-50 border-amber-100 mt-6">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertTitle>About Spaced Repetition</AlertTitle>
+                <AlertDescription className="text-sm">
+                  <p>You'll receive reminders on this schedule for optimal learning:</p>
+                  <ul className="list-disc pl-5 mt-2 space-y-1">
+                    <li>1 hour after adding a word</li>
+                    <li>3 hours later</li>
+                    <li>8 hours later</li>
+                    <li>1 day later</li>
+                    <li>3 days later</li>
+                    <li>7 days later</li>
+                  </ul>
+                </AlertDescription>
+              </Alert>
             </CardContent>
           </Card>
         </TabsContent>
