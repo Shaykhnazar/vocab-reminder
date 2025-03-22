@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import { useToast } from "@/hooks/use-toast";
-import { useWords } from '@/hooks/use-words';
+import { useWordsStore } from '@/lib/stores/use-words-store';
 import { Word } from "@/lib/supabase";
 import {
   Dialog,
@@ -199,7 +199,7 @@ export default function WordsList() {
 
   const { data: session } = useSession();
   const { toast } = useToast();
-  const { words, setWords } = useWords();
+  const { words, setWords } = useWordsStore();
 
   const fetchWords = async (pageNum: number = 1, replace: boolean = true) => {
     if (!session?.user?.id) return;
