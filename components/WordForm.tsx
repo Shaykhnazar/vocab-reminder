@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useToast } from "@/hooks/use-toast";
-import { useWords } from '@/hooks/use-words';
+import { useWordsStore } from '@/lib/stores/use-words-store';
 
 
 export default function WordForm() {
@@ -14,7 +14,7 @@ export default function WordForm() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { data: session } = useSession();
-  const { addWord } = useWords();
+  const { addWord } = useWordsStore();
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,7 +47,7 @@ export default function WordForm() {
       }
 
       if (data.data) {
-        addWord(data.data);  // If the API returns { data: newWord }
+        addWord(data.data);
       }
 
       toast({
