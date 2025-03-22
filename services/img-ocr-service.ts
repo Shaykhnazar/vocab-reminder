@@ -13,13 +13,12 @@ export const extractWordsFromImage = async (image: File): Promise<ExtractedWord[
     const base64Image = await fileToBase64(image);
 
     // API call to ImgOCR
-    const response = await fetch('https://www.imgocr.com/api/imgocr_get_text', {
+    const response = await fetch('/api/extract-text', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        api_key: process.env.NEXT_PUBLIC_IMGOCR_API_KEY, // Make sure to set this in your .env.local
         image: base64Image,
       }),
     });
