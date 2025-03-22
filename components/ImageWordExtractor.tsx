@@ -5,6 +5,7 @@ import { useState, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useToast } from "@/hooks/use-toast";
 import { useWordsStore } from '@/lib/stores/use-words-store';
+import { extractWordsFromImage, ExtractedWord } from '@/services/img-ocr-service';
 import { Button } from "@/components/shadcn-ui/button";
 import { Input } from "@/components/shadcn-ui/input";
 import { Loader2, Upload, X, Check, Filter } from 'lucide-react';
@@ -34,12 +35,6 @@ import { Badge } from '@/components/shadcn-ui/badge';
 import { Switch } from '@/components/shadcn-ui/switch';
 import { Label } from '@/components/shadcn-ui/label';
 
-interface ExtractedWord {
-  word: string;
-  definition: string;
-  selected: boolean;
-}
-
 export default function ImageWordExtractor() {
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -68,16 +63,10 @@ export default function ImageWordExtractor() {
       };
       reader.readAsDataURL(file);
 
-      setIsUploading(true);
-
-      // In a real implementation, you would upload to a secure URL and then process
-      setTimeout(() => {
-        setIsUploading(false);
-        toast({
-          title: "Upload successful",
-          description: "Your image has been uploaded successfully.",
-        });
-      }, 1500);
+      toast({
+        title: "Image loaded",
+        description: "Your image has been loaded successfully. Click 'Extract Words' to process it.",
+      });
     }
   };
 
@@ -90,39 +79,45 @@ export default function ImageWordExtractor() {
   };
 
   const processImage = async () => {
-    if (!image || !session?.user?.id) return;
+    if (!image || !session?.user?.id) {
+      toast({
+        title: "Error",
+        description: "Please upload an image and ensure you're logged in.",
+
+      });
+      return;
+    }
 
     setIsProcessing(true);
 
     try {
-      // In a real implementation, you would call your AI service here
-      // For now, we'll simulate with a timeout and mock data
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Use the OCR service to extract words
+      const words = await extractWordsFromImage(image);
 
-      // Mock extracted words
-      const mockWords: ExtractedWord[] = [
-        { word: "ephemeral", definition: "Lasting for a very short time", selected: true },
-        { word: "serendipity", definition: "The occurrence of events by chance in a happy way", selected: true },
-        { word: "eloquent", definition: "Fluent or persuasive in speaking or writing", selected: true },
-        { word: "meticulous", definition: "Showing great attention to detail", selected: true },
-        { word: "ubiquitous", definition: "Present, appearing, or found everywhere", selected: true },
-        { word: "superfluous", definition: "Unnecessary, especially through being more than enough", selected: true },
-        { word: "quintessential", definition: "Representing the most perfect example of a quality or class", selected: true },
-      ];
+      // Check if any words were found
+      if (words.length === 0) {
+        toast({
+          title: "No words found",
+          description: "We couldn't find any meaningful vocabulary words in this image. Try another image with clearer text.",
 
-      setExtractedWords(mockWords);
+        });
+        setIsProcessing(false);
+        return;
+      }
+
+      setExtractedWords(words);
       setShowExtractedDialog(true);
 
       toast({
         title: "Success",
-        description: `Extracted ${mockWords.length} words from your image.`,
+        description: `Extracted ${words.length} words from your image.`,
       });
     } catch (error) {
       console.error("Error processing image:", error);
       toast({
         title: "Error",
-        description: "Failed to process image. Please try again.",
-        variant: "destructive",
+        description: "Failed to process image. Please check your API key or try again later.",
+
       });
     } finally {
       setIsProcessing(false);
@@ -144,14 +139,21 @@ export default function ImageWordExtractor() {
   };
 
   const addSelectedWords = async () => {
-    if (!session?.user?.id) return;
+    if (!session?.user?.id) {
+      toast({
+        title: "Not logged in",
+        description: "Please log in to add words to your vocabulary.",
+
+      });
+      return;
+    }
 
     const selectedWords = extractedWords.filter(w => w.selected);
     if (selectedWords.length === 0) {
       toast({
         title: "No words selected",
         description: "Please select at least one word to add.",
-        variant: "destructive",
+
       });
       return;
     }
@@ -159,7 +161,7 @@ export default function ImageWordExtractor() {
     setIsAddingWords(true);
 
     try {
-      // In a real implementation, you would batch add the words via your API
+      // Convert selected words to the expected format
       const wordsToAdd = selectedWords.map(w => ({
         word: w.word,
         definition: w.definition,
@@ -167,15 +169,12 @@ export default function ImageWordExtractor() {
         userId: session.user.id,
       }));
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // Call your hooks' addWords method
-      addWords(wordsToAdd);
+      // Add words to store (this will be updated to add to Supabase in the API service)
+      await addWords(wordsToAdd);
 
       toast({
         title: "Success",
-        description: `Added ${selectedWords.length} words to your vocabulary.`,
+        description: `Added ${selectedWords.length} words to your vocabulary. Reminders have been scheduled.`,
       });
 
       // Close dialog and reset state
@@ -187,17 +186,25 @@ export default function ImageWordExtractor() {
       toast({
         title: "Error",
         description: "Failed to add words. Please try again.",
-        variant: "destructive",
+
       });
     } finally {
       setIsAddingWords(false);
     }
   };
 
+  // Filter words based on search term
   const filteredWords = extractedWords.filter(word =>
     word.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
     word.definition.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Remove duplicates if the option is enabled
+  const displayedWords = removeDuplicates
+    ? filteredWords.filter((word, index, self) =>
+        index === self.findIndex((w) => w.word.toLowerCase() === word.word.toLowerCase())
+      )
+    : filteredWords;
 
   return (
     <>
@@ -329,8 +336,8 @@ export default function ImageWordExtractor() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredWords.length > 0 ? (
-                  filteredWords.map((word, index) => (
+                {displayedWords.length > 0 ? (
+                  displayedWords.map((word, index) => (
                     <TableRow key={index}>
                       <TableCell>
                         <div className="flex items-center justify-center">
@@ -338,7 +345,9 @@ export default function ImageWordExtractor() {
                             variant={word.selected ? "default" : "outline"}
                             size="icon"
                             className="h-6 w-6"
-                            onClick={() => toggleWordSelection(index)}
+                            onClick={() => toggleWordSelection(
+                              extractedWords.findIndex(w => w.word === word.word && w.definition === word.definition)
+                            )}
                           >
                             {word.selected && <Check className="h-4 w-4" />}
                           </Button>
