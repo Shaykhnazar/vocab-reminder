@@ -158,7 +158,7 @@ export default function DictionarySubscription() {
       toast({
         title: "Error",
         description: "Failed to load dictionaries. Please try again.",
-        variant: "destructive",
+
       });
     } finally {
       setIsLoading(false);
@@ -182,7 +182,7 @@ export default function DictionarySubscription() {
       toast({
         title: "Error",
         description: "Failed to load your subscriptions.",
-        variant: "destructive",
+
       });
     }
   };
@@ -235,7 +235,7 @@ export default function DictionarySubscription() {
       toast({
         title: "Error",
         description: "Failed to subscribe to dictionary. Please try again.",
-        variant: "destructive",
+
       });
     } finally {
       setIsSubscribing(false);
@@ -272,7 +272,7 @@ export default function DictionarySubscription() {
       toast({
         title: "Error",
         description: "Failed to import words. Please try again.",
-        variant: "destructive",
+
       });
     }
   };

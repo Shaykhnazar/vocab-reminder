@@ -97,7 +97,7 @@ export default function BulkWordAdder() {
         toast({
           title: "Error",
           description: "Failed to read file",
-          variant: "destructive",
+
         });
       };
 
@@ -125,7 +125,7 @@ export default function BulkWordAdder() {
       toast({
         title: "Error",
         description: "No content to parse",
-        variant: "destructive",
+
       });
       setIsProcessing(false);
       return;
@@ -206,7 +206,7 @@ export default function BulkWordAdder() {
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to parse words",
-        variant: "destructive",
+
       });
     } finally {
       setIsProcessing(false);
@@ -235,7 +235,7 @@ export default function BulkWordAdder() {
       toast({
         title: "No words selected",
         description: "Please select at least one word to add.",
-        variant: "destructive",
+
       });
       return;
     }
@@ -272,7 +272,7 @@ export default function BulkWordAdder() {
       toast({
         title: "Error",
         description: "Failed to add words. Please try again.",
-        variant: "destructive",
+
       });
     } finally {
       setIsAddingWords(false);
