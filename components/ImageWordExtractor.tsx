@@ -1,20 +1,21 @@
 // components/ImageWordExtractor.tsx
 'use client';
 
-import { useState, useRef } from 'react';
+import {useState, useRef, useEffect} from 'react';
 import { useSession } from 'next-auth/react';
 import { useToast } from "@/hooks/use-toast";
 import { useWordsStore } from '@/lib/stores/use-words-store';
 import { extractWordsFromImage, ExtractedWord } from '@/services/img-ocr-service';
 import { Button } from "@/components/shadcn-ui/button";
 import { Input } from "@/components/shadcn-ui/input";
-import { Loader2, Upload, X, Check, Filter } from 'lucide-react';
+import { Loader2, Upload, X, Check, Filter, Settings } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogTrigger,
 } from "@/components/shadcn-ui/dialog";
 import {
   Table,
@@ -30,10 +31,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/shadcn-ui/card";
 import { Badge } from '@/components/shadcn-ui/badge';
 import { Switch } from '@/components/shadcn-ui/switch';
 import { Label } from '@/components/shadcn-ui/label';
+import AppConfig from "@/lib/config";
+import AiModelSelector from './AiModelSelector';
 
 export default function ImageWordExtractor() {
   const [image, setImage] = useState<File | null>(null);
@@ -45,11 +49,28 @@ export default function ImageWordExtractor() {
   const [isAddingWords, setIsAddingWords] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [removeDuplicates, setRemoveDuplicates] = useState(true);
+  const [showAiSettings, setShowAiSettings] = useState(false);
+  const [currentAiModel, setCurrentAiModel] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { toast } = useToast();
   const { data: session } = useSession();
   const { addWords } = useWordsStore();
+
+  // Load the currently selected AI model
+  useEffect(() => {
+    setCurrentAiModel(AppConfig.getCurrentAiModel());
+
+    // Set up an interval to check for model changes
+    const interval = setInterval(() => {
+      const newModel = AppConfig.getCurrentAiModel();
+      if (newModel !== currentAiModel) {
+        setCurrentAiModel(newModel);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [currentAiModel]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -83,7 +104,16 @@ export default function ImageWordExtractor() {
       toast({
         title: "Error",
         description: "Please upload an image and ensure you're logged in.",
+      });
+      return;
+    }
 
+    // Check if the current AI model has its API key configured
+    const modelKey = currentAiModel as 'gemini' | 'gpt4vision' | 'claude' | 'imgocr';
+    if (!AppConfig.isApiKeyConfigured(modelKey)) {
+      toast({
+        title: "API Key Missing",
+        description: `The ${modelKey} API key is not configured. Please check your environment variables.`,
       });
       return;
     }
@@ -99,7 +129,6 @@ export default function ImageWordExtractor() {
         toast({
           title: "No words found",
           description: "We couldn't find any meaningful vocabulary words in this image. Try another image with clearer text.",
-
         });
         setIsProcessing(false);
         return;
@@ -110,14 +139,13 @@ export default function ImageWordExtractor() {
 
       toast({
         title: "Success",
-        description: `Extracted ${words.length} words from your image.`,
+        description: `Extracted ${words.length} words from your image using ${getModelDisplayName()}.`,
       });
     } catch (error) {
       console.error("Error processing image:", error);
       toast({
         title: "Error",
-        description: "Failed to process image. Please check your API key or try again later.",
-
+        description: "Failed to process image. Please check your API key or try another AI model.",
       });
     } finally {
       setIsProcessing(false);
@@ -143,7 +171,6 @@ export default function ImageWordExtractor() {
       toast({
         title: "Not logged in",
         description: "Please log in to add words to your vocabulary.",
-
       });
       return;
     }
@@ -153,7 +180,6 @@ export default function ImageWordExtractor() {
       toast({
         title: "No words selected",
         description: "Please select at least one word to add.",
-
       });
       return;
     }
@@ -186,10 +212,25 @@ export default function ImageWordExtractor() {
       toast({
         title: "Error",
         description: "Failed to add words. Please try again.",
-
       });
     } finally {
       setIsAddingWords(false);
+    }
+  };
+
+  // Get a user-friendly display name for the current AI model
+  const getModelDisplayName = (): string => {
+    switch (currentAiModel) {
+      case 'gemini':
+        return 'Google Gemini';
+      case 'gpt4vision':
+        return 'GPT-4 Vision';
+      case 'claude':
+        return 'Claude';
+      case 'imgocr':
+        return 'ImgOCR';
+      default:
+        return currentAiModel;
     }
   };
 
@@ -210,10 +251,29 @@ export default function ImageWordExtractor() {
     <>
       <Card className="w-full mb-6">
         <CardHeader>
-          <CardTitle>Extract Words from Image</CardTitle>
-          <CardDescription>
-            Upload an image containing text to automatically extract vocabulary words
-          </CardDescription>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle>Extract Words from Image</CardTitle>
+              <CardDescription>
+                Upload an image containing text to automatically extract vocabulary words
+              </CardDescription>
+            </div>
+            {AppConfig.features.enableAiModelSelection && (
+              <Dialog open={showAiSettings} onOpenChange={setShowAiSettings}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>AI Model Settings</DialogTitle>
+                  </DialogHeader>
+                  <AiModelSelector />
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -282,6 +342,16 @@ export default function ImageWordExtractor() {
             )}
           </div>
         </CardContent>
+        {AppConfig.features.enableAiModelSelection && (
+          <CardFooter className="border-t bg-muted/50 px-6 py-3">
+            <div className="flex items-center text-xs text-muted-foreground">
+              <span>Using:</span>
+              <Badge variant="outline" className="ml-2">
+                {getModelDisplayName()}
+              </Badge>
+            </div>
+          </CardFooter>
+        )}
       </Card>
 
       <Dialog open={showExtractedDialog} onOpenChange={setShowExtractedDialog}>

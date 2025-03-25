@@ -27,28 +27,12 @@ export default function WordForm() {
         throw new Error('Word and definition are required');
       }
 
-      const response = await fetch('/api/words', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          word: word,
-          definition: definition,
-          context: context || null,
-          userId: session.user.id, // Use session.user.id directly
-        }),
+      addWord({
+        word: word,
+        definition: definition,
+        context: context || null,
+        userId: session.user.id, // Use session.user.id directly
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to add word');
-      }
-
-      if (data.data) {
-        addWord(data.data);
-      }
 
       toast({
         title: "Success",
