@@ -38,6 +38,21 @@ export const Footer = () => (
             <Link href="/about" className="text-sm text-gray-600 hover:text-purple-600 transition-colors">
               About
             </Link>
+            {/*<Link href="/dashboard" className="text-sm text-gray-600 hover:text-purple-600 transition-colors">*/}
+            {/*  Dashboard*/}
+            {/*</Link>*/}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="font-semibold mb-4">Plans & Policies</h3>
+          <div className="flex flex-col space-y-2">
+            <Link href="/pricing" className="text-sm text-gray-600 hover:text-purple-600 transition-colors">
+              Pricing
+            </Link>
+            <Link href="/refund-policy" className="text-sm text-gray-600 hover:text-purple-600 transition-colors">
+              Refund Policy
+            </Link>
             <Link href="/privacy" className="text-sm text-gray-600 hover:text-purple-600 transition-colors">
               Privacy Policy
             </Link>
