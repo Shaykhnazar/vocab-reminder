@@ -26,7 +26,7 @@ const RefundPolicyPage = () => {
           <section>
             <h2 className="text-xl font-semibold">Overview</h2>
             <p>
-              At WordMinder, we are committed to ensuring your satisfaction with our vocabulary learning service.
+              At Vocabry, we are committed to ensuring your satisfaction with our vocabulary learning service.
               This refund policy outlines the terms and conditions for requesting and receiving refunds for
               purchased subscriptions or lifetime access.
             </p>
@@ -90,7 +90,7 @@ const RefundPolicyPage = () => {
           <section>
             <h2 className="text-xl font-semibold">How to Request a Refund</h2>
             <p>
-              To request a refund, please contact our support team at <a href="mailto:support@wordminder.com" className="text-blue-600 hover:underline">support@wordminder.com</a> with the following information:
+              To request a refund, please contact our support team at <a href="mailto:support@vocabry.com" className="text-blue-600 hover:underline">support@vocabry.com</a> with the following information:
             </p>
 
             <ol className="list-decimal pl-5 space-y-1">
@@ -167,7 +167,7 @@ const RefundPolicyPage = () => {
           <section>
             <h2 className="text-xl font-semibold">Changes to Refund Policy</h2>
             <p>
-              WordMinder reserves the right to modify this refund policy at any time. Any changes will be
+              Vocabry reserves the right to modify this refund policy at any time. Any changes will be
               effective immediately upon posting on our website. It is your responsibility to review this
               policy periodically.
             </p>
@@ -183,10 +183,10 @@ const RefundPolicyPage = () => {
 
             <ul className="list-disc pl-5 space-y-1 mt-2">
               <li>
-                Email: <a href="mailto:support@wordminder.com" className="text-blue-600 hover:underline">support@wordminder.com</a>
+                Email: <a href="mailto:support@vocabry.com" className="text-blue-600 hover:underline">support@vocabry.com</a>
               </li>
               <li>
-                Contact form: <a href="https://wordminder.com/contact" className="text-blue-600 hover:underline">wordminder.com/contact</a>
+                Contact form: <a href="https://vocabry.com/contact" className="text-blue-600 hover:underline">vocabry.com/contact</a>
               </li>
             </ul>
           </section>
