@@ -1,3 +1,4 @@
+// components/AboutPage.tsx
 "use client";
 
 import React from 'react';
@@ -9,7 +10,8 @@ import {
   CardTitle,
 } from "@/components/shadcn-ui/card";
 import { Brain, TrendingUp, Clock, Zap, BookOpen, BarChart } from 'lucide-react';
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import GumroadPurchaseLink from "@/components/payment/GumroadPurchaseLink";
 
 const AboutPage = () => {
   const router = useRouter();
@@ -134,13 +136,22 @@ const AboutPage = () => {
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Join thousands of learners who have already transformed their vocabulary learning journey with our scientifically-proven system.
           </p>
-          <Button
-            size="lg"
-            className="bg-purple-600 hover:bg-purple-700"
-            onClick={handleStartLearning}
-          >
-            Start Learning Now
-          </Button>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button
+              size="lg"
+              className="bg-purple-600 hover:bg-purple-700"
+              onClick={handleStartLearning}
+            >
+              Start Free Trial
+            </Button>
+            <GumroadPurchaseLink
+              planType="yearly"
+              className="bg-blue-600 hover:bg-blue-700"
+              size="lg"
+            >
+              Get Premium (30% Off)
+            </GumroadPurchaseLink>
+          </div>
         </section>
       </div>
     </div>

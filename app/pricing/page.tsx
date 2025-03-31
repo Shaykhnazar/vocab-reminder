@@ -1,25 +1,31 @@
 // app/pricing/page.tsx
 'use client';
 
-import { Metadata } from "next"
-//
-// export const metadata: Metadata = {
-//   title: "Privacy Policy - Vocabry",
-//   description: "Privacy policy and data protection information for Vocabry users",
-// }
-
 import React, { useState } from 'react';
-import { Button } from '@/components/shadcn-ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/shadcn-ui/card';
 import { Switch } from '@/components/shadcn-ui/switch';
 import { Check } from 'lucide-react';
+import GumroadPurchaseLink from '@/components/payment/GumroadPurchaseLink';
+import { Button } from '@/components/shadcn-ui/button';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react'; // Import useSession
 
 const PricingPage = () => {
   const [billingCycle, setBillingCycle] = useState('monthly');
+  const { data: session, status } = useSession(); // Use NextAuth session
+  const router = useRouter();
+  const isLoading = status === 'loading';
+  const isAuthenticated = status === 'authenticated';
 
   const toggleBillingCycle = () => {
     setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly');
   };
+
+  // Calculate yearly price with 30% discount
+  const yearlyPrice = (0.99 * 12 * 0.7).toFixed(2);
+
+  // Calculate lifetime price
+  const lifetimePrice = 39;
 
   return (
     <div className="flex flex-col items-center py-12 px-4 bg-slate-50 min-h-screen">
@@ -28,6 +34,12 @@ const PricingPage = () => {
         <p className="text-slate-600 max-w-lg mx-auto">
           Select the perfect plan to accelerate your vocabulary growth and retention.
         </p>
+      </div>
+
+      <div className="text-center mb-4">
+        <span className="text-sm font-semibold bg-green-100 text-green-800 px-3 py-1 rounded-full">
+          🎁 1 month FREE trial on all paid plans! No credit card required.
+        </span>
       </div>
 
       <div className="flex items-center gap-4 mb-12">
@@ -65,7 +77,17 @@ const PricingPage = () => {
             </ul>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full">Get Started</Button>
+            {isLoading ? (
+              <Button variant="outline" className="w-full" disabled>Loading...</Button>
+            ) : !isAuthenticated ? (
+              <Button variant="outline" className="w-full" onClick={() => router.push('/signup')}>
+                Get Started
+              </Button>
+            ) : (
+              <Button variant="outline" className="w-full" onClick={() => router.push('/dashboard')}>
+                Current Plan
+              </Button>
+            )}
           </CardFooter>
         </Card>
 
@@ -79,7 +101,7 @@ const PricingPage = () => {
             <CardDescription>Perfect for serious language learners</CardDescription>
             <div className="mt-4">
               <span className="text-3xl font-bold">
-                {billingCycle === 'monthly' ? '$6' : '$49'}
+                {billingCycle === 'monthly' ? '$0.99' : '$' + yearlyPrice}
               </span>
               <span className="text-slate-500 ml-1">
                 {billingCycle === 'monthly' ? '/month' : '/year'}
@@ -100,9 +122,21 @@ const PricingPage = () => {
             </ul>
           </CardContent>
           <CardFooter>
-            <Button className="w-full bg-blue-600 hover:bg-blue-700">
-              {billingCycle === 'monthly' ? 'Start Monthly Plan' : 'Start Yearly Plan'}
-            </Button>
+            {isLoading ? (
+              <Button className="w-full bg-blue-600 hover:bg-blue-700" disabled>Loading...</Button>
+            ) : !isAuthenticated ? (
+              <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => router.push('/signup?plan=' + billingCycle)}>
+                Start 1-Month Free Trial
+              </Button>
+            ) : (
+              <GumroadPurchaseLink
+                planType={billingCycle === 'monthly' ? 'monthly' : 'yearly'}
+                email={session?.user?.email}
+                className="w-full bg-blue-600 hover:bg-blue-700"
+              >
+                Upgrade to Premium
+              </GumroadPurchaseLink>
+            )}
           </CardFooter>
         </Card>
 
@@ -112,7 +146,7 @@ const PricingPage = () => {
             <CardTitle className="text-xl">Lifetime</CardTitle>
             <CardDescription>One-time payment, lifetime access</CardDescription>
             <div className="mt-4">
-              <span className="text-3xl font-bold">$129</span>
+              <span className="text-3xl font-bold">${lifetimePrice}</span>
               <span className="text-slate-500 ml-1">one-time</span>
             </div>
           </CardHeader>
@@ -127,9 +161,22 @@ const PricingPage = () => {
             </ul>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full border-purple-300 hover:bg-purple-50">
-              Buy Lifetime
-            </Button>
+            {isLoading ? (
+              <Button variant="outline" className="w-full border-purple-300 hover:bg-purple-50" disabled>Loading...</Button>
+            ) : !isAuthenticated ? (
+              <Button variant="outline" className="w-full border-purple-300 hover:bg-purple-50" onClick={() => router.push('/signup?plan=lifetime')}>
+                Start 1-Month Free Trial
+              </Button>
+            ) : (
+              <GumroadPurchaseLink
+                planType="lifetime"
+                email={session?.user?.email}
+                variant="outline"
+                className="w-full border-purple-300 hover:bg-purple-50"
+              >
+                Get Lifetime Access
+              </GumroadPurchaseLink>
+            )}
           </CardFooter>
         </Card>
       </div>
@@ -143,11 +190,11 @@ const PricingPage = () => {
           />
           <FAQ
             question="What payment methods do you accept?"
-            answer="We accept all major credit cards, PayPal, and for users in Uzbekistan, we also support Click, Payme, and Uzum payment methods."
+            answer="We process payments through Gumroad, which accepts all major credit cards, PayPal, and Apple Pay. For users in Uzbekistan, we're also exploring additional local payment options."
           />
           <FAQ
-            question="Is there a free trial for paid plans?"
-            answer="Yes, all paid plans come with a 7-day free trial. No credit card required to start your trial."
+            question="How does the 1-month free trial work?"
+            answer="All paid plans come with a generous 1-month free trial. You'll get full access to all premium features with no limitations. No credit card required to start your trial - simply create an account and start learning."
           />
           <FAQ
             question="What happens to my words if I downgrade to Free?"

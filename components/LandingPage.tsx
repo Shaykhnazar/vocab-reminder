@@ -12,7 +12,8 @@ import {
 } from "@/components/shadcn-ui/card";
 import { Brain, Clock, Bell, Mail } from 'lucide-react';
 import Link from "next/link";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import GumroadPurchaseLink from "@/components/payment/GumroadPurchaseLink";
 
 const LandingPage = () => {
   const router = useRouter();
@@ -32,13 +33,22 @@ const LandingPage = () => {
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Smart spaced repetition system that helps you remember vocabulary forever through perfectly timed notifications
           </p>
-          <Button
-            size="lg"
-            className="bg-purple-600 hover:bg-purple-700"
-            onClick={handleGetStarted}
-          >
-            Start Learning for Free
-          </Button>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button
+              size="lg"
+              className="bg-purple-600 hover:bg-purple-700"
+              onClick={handleGetStarted}
+            >
+              Start Free Trial
+            </Button>
+            <GumroadPurchaseLink
+              planType="monthly"
+              className="bg-blue-600 hover:bg-blue-700"
+              size="lg"
+            >
+              Buy Premium Now
+            </GumroadPurchaseLink>
+          </div>
         </div>
 
         {/* Features Grid */}
@@ -88,23 +98,31 @@ const LandingPage = () => {
           <h2 className="text-3xl font-bold mb-6">
             Ready to Expand Your Vocabulary?
           </h2>
-          <Link href="/about" passHref>
-            <Button size="lg" variant="outline" className="mr-4">
-              Learn More
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link href="/about" passHref>
+              <Button size="lg" variant="outline">
+                Learn More
+              </Button>
+            </Link>
+            <Button
+              size="lg"
+              className="bg-purple-600 hover:bg-purple-700"
+              onClick={handleGetStarted}
+            >
+              Get Started
             </Button>
-          </Link>
-          <Button
-            size="lg"
-            className="bg-purple-600 hover:bg-purple-700"
-            onClick={handleGetStarted}
-          >
-            Get Started
-          </Button>
+            <GumroadPurchaseLink
+              planType="yearly"
+              className="bg-blue-600 hover:bg-blue-700"
+              size="lg"
+            >
+              Get Premium (30% Off)
+            </GumroadPurchaseLink>
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
 
 export default LandingPage;
