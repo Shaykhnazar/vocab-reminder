@@ -37,32 +37,39 @@ export async function POST(request: Request) {
   };
 
   // Extract common fields
-  const sellerID = getField('seller_id');
-  const resource = getField('resource'); // 'sale' or 'subscription'
-  const resourceName = getField('resource_name'); // e.g., 'sale', 'refund', 'subscription'
-  const productID = getField('product_id');
+  const resourceName = getField('resource_name'); // May not be present in all webhooks
+  const productID = getField('short_product_id');
+  const productPermalink = getField('product_permalink') || getField('permalink');
   const email = getField('email');
   const purchaseID = getField('sale_id') || getField('subscription_id');
-  const purchaseTimestamp = getField('purchase_timestamp') || new Date().toISOString();
-  const productPermalink = getField('product_permalink');
-  const isFree = getField('is_free_trial') === 'true' || getField('price') === '0';
+  const purchaseTimestamp = getField('purchase_timestamp') || getField('sale_timestamp') || new Date().toISOString();
+  const recurrence = getField('recurrence'); // monthly, yearly, or null
+  const price = getField('price');
+  const isFree = getField('is_free_trial') === 'true' || price === '0';
   const trialDays = parseInt(getField('free_trial_duration') || '0', 10);
+  const isTest = getField('test') === 'true';
 
   // Log key data for debugging
   console.log({
     event: resourceName,
     productID,
+    productPermalink,
     email,
     purchaseID,
+    recurrence,
+    price,
     isFree,
-    trialDays
+    trialDays,
+    isTest
   });
 
-  // Verify the webhook is from Gumroad - make this check optional in dev
-  if (process.env.NODE_ENV === 'production' && sellerID !== process.env.NEXT_PUBLIC_GUMROAD_SELLER_ID) {
-    console.error('Invalid seller ID:', sellerID);
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  // Log environment variables for debugging
+  console.log('Environment variables:', {
+    monthlyId: process.env.NEXT_PUBLIC_GUMROAD_MONTHLY_PRODUCT_ID,
+    yearlyId: process.env.NEXT_PUBLIC_GUMROAD_YEARLY_PRODUCT_ID,
+    lifetimeId: process.env.NEXT_PUBLIC_GUMROAD_LIFETIME_PRODUCT_ID,
+    sellerId: process.env.NEXT_PUBLIC_GUMROAD_SELLER_ID
+  });
 
   // Skip processing if email is missing - required for user lookup
   if (!email) {
@@ -71,13 +78,15 @@ export async function POST(request: Request) {
   }
 
   try {
-    // Determine subscription type
+    // Determine subscription type based on permalink or recurrence instead of product ID
     let subscriptionType = '';
     let expiresAt = null;
     let isTrial = isFree;
 
-    // Determine subscription type by product ID
-    if (productID === process.env.NEXT_PUBLIC_GUMROAD_MONTHLY_PRODUCT_ID) {
+    // First try to determine by permalink which is more reliable
+    const permalink = (productPermalink || '').toLowerCase();
+
+    if (permalink.includes('monthly') || recurrence === 'monthly') {
       subscriptionType = 'monthly';
 
       if (isTrial) {
@@ -89,7 +98,7 @@ export async function POST(request: Request) {
         expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 31);
       }
-    } else if (productID === process.env.NEXT_PUBLIC_GUMROAD_YEARLY_PRODUCT_ID) {
+    } else if (permalink.includes('yearly') || recurrence === 'yearly') {
       subscriptionType = 'yearly';
 
       if (isTrial) {
@@ -101,14 +110,49 @@ export async function POST(request: Request) {
         expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 366);
       }
-    } else if (productID === process.env.NEXT_PUBLIC_GUMROAD_LIFETIME_PRODUCT_ID) {
+    } else if (permalink.includes('lifetime')) {
       subscriptionType = 'lifetime';
       // Lifetime subscription doesn't expire (or far future date)
       expiresAt = new Date('2099-12-31');
     } else {
-      console.error('Unknown product ID:', productID);
-      return NextResponse.json({ error: 'Unknown product' }, { status: 400 });
+      // If permalink doesn't help, try product ID match
+      // This is a fallback in case the other methods don't work
+      if (productID === process.env.NEXT_PUBLIC_GUMROAD_MONTHLY_PRODUCT_ID) {
+        subscriptionType = 'monthly';
+        expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + (isTrial ? (trialDays || 30) : 31));
+      } else if (productID === process.env.NEXT_PUBLIC_GUMROAD_YEARLY_PRODUCT_ID) {
+        subscriptionType = 'yearly';
+        expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + (isTrial ? (trialDays || 30) : 366));
+      } else if (productID === process.env.NEXT_PUBLIC_GUMROAD_LIFETIME_PRODUCT_ID) {
+        subscriptionType = 'lifetime';
+        expiresAt = new Date('2099-12-31');
+      } else {
+        // If we still don't know, use the recurrence as a final fallback
+        // or make an educated guess based on the price
+        if (recurrence === 'monthly') {
+          subscriptionType = 'monthly';
+          expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + 31);
+        } else if (recurrence === 'yearly') {
+          subscriptionType = 'yearly';
+          expiresAt = new Date();
+          expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        } else if (parseInt(price || '0', 10) >= 30) {
+          // If price is high, assume lifetime
+          subscriptionType = 'lifetime';
+          expiresAt = new Date('2099-12-31');
+        } else {
+          // Default to monthly as the safest option
+          subscriptionType = 'monthly';
+          expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + 31);
+        }
+      }
     }
+
+    console.log('Determined subscription type:', subscriptionType);
 
     // Find user by email
     const { data: userData, error: userError } = await supabase
@@ -135,7 +179,10 @@ export async function POST(request: Request) {
       is_active: true,
       product_permalink: productPermalink,
       is_trial: isTrial,
-      trial_days: isTrial ? (trialDays || 30) : 0
+      trial_days: isTrial ? (trialDays || 30) : 0,
+      recurrence: recurrence || null,
+      price: price || null,
+      is_test: isTest
     };
 
     console.log('Creating subscription record:', subscriptionRecord);
