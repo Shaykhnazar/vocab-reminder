@@ -1,0 +1,692 @@
+{
+  "Common": {
+    "selectLanguage": "Tilni tanlang"
+  },
+  "Navigation": {
+    "home": "Bosh sahifa",
+    "about": "Biz haqimizda",
+    "myWords": "Mening so'zlarim",
+    "profile": "Profil",
+    "signIn": "Kirish",
+    "signOut": "Chiqish",
+    "selectLanguage": "Tilni tanlang"
+  },
+  "Footer": {
+    "tagline": "Ilmiy asoslangan oraliq takrorlash tizimimiz bilan yangi so'zlarni samarali o'rganing.",
+    "quickLinks": "Tezkor havolalar",
+    "home": "Bosh sahifa",
+    "about": "Biz haqimizda",
+    "plansAndPolicies": "Rejalar va qoidalar",
+    "pricing": "Narxlar",
+    "refundPolicy": "Pul qaytarish siyosati",
+    "privacyPolicy": "Maxfiylik siyosati",
+    "termsOfService": "Xizmat ko'rsatish shartlari",
+    "language": "Til",
+    "contact": "Aloqa",
+    "copyright": "© {year} Vocabry. Barcha huquqlar himoyalangan."
+  },
+  "Home": {
+    "Metadata": {
+      "title": "Vocabulary Reminder - Yangi so'zlarni samarali o'zlashtirish",
+      "description": "Mukammal vaqtlangan bildirishnomalar orqali so'z boyligini doimiy eslab qolishga yordam beradigan aqlli takrorlash tizimi"
+    },
+    "hero": {
+      "title": "Ilmiy asoslangan eslatmalar bilan yangi so'zlarni o'rganing",
+      "subtitle": "Mukammal vaqtlangan bildirishnomalar orqali so'z boyligini doimiy eslab qolishga yordam beradigan aqlli oraliq takrorlash tizimi",
+      "startFreeTrial": "Bepul sinovni boshlash",
+      "buyPremium": "Premium sotib olish",
+      "getStarted": "Boshlash",
+      "demo": "Namoyishni ko'rish"
+    },
+    "features": {
+      "title": "Imkoniyatlar",
+      "subtitle": "So'z boyligingizni kengaytirish uchun zarur bo'lgan barcha narsalar",
+      "spaced": {
+        "title": "Aqlli eslatmalar",
+        "subtitle": "Eng ko'p eslab qolish uchun ilmiy optimallashtirilgan oraliqlar",
+        "description": "1 soat, 3 soat, 8 soat, 1 kun, 3 kun va 7 kunlik mukammal vaqt oraliqlari"
+      },
+      "notifications": {
+        "title": "Ko'p kanalli bildirishnomalar",
+        "subtitle": "Hech qachon takrorlash seansini o'tkazib yubormang",
+        "description": "Qayerda bo'lishingizdan qat'i nazar, Telegram va elektron pochta orqali eslatmalar oling"
+      },
+      "effortless": {
+        "title": "Oson o'rganish",
+        "subtitle": "Kun davomida tabiiy ravishda o'rganing",
+        "description": "Shunchaki yangi so'zlar qo'shing va tizim qolgan hamma narsani o'zi bajaradi"
+      }
+    },
+    "howItWorks": {
+      "title": "Bu qanday ishlaydi",
+      "subtitle": "Uch oddiy bosqichda oddiy va samarali o'rganish",
+      "step1": {
+        "title": "So'zlar qo'shing",
+        "description": "Yangi so'zlarni ta'riflari va misol kontekstlari bilan osonlikcha qo'shing"
+      },
+      "step2": {
+        "title": "Eslatmalar oling",
+        "description": "Ilmiy optimallashtirilgan vaqt oraliqlarida bildirishnomalar oling"
+      },
+      "step3": {
+        "title": "So'z boyligini egallang",
+        "description": "So'zlarni ko'rib chiqing va ularni uzoq muddatli xotiraga ko'chirish uchun o'rganilgan deb belgilang"
+      }
+    },
+    "testimonials": {
+      "title": "Foydalanuvchilar nima deyishadi",
+      "subtitle": "Minglab mamnun til o'rganuvchilarga qo'shiling",
+      "quote1": "Bu ilova mening til o'rganish sayohatimni butunlay o'zgartirdi. Men an'anaviy o'qishning bir yilida qilganimdan ko'ra bir oyda ko'proq so'zlarni eslab qoldim.",
+      "author1": "Alisher Rahimov",
+      "role1": "Ingliz tili o'qituvchisi",
+      "quote2": "Oraliq takrorlash tizimi ajoyib. Men endi o'rgangan so'zlarimni unutmayman, chunki ular aynan to'g'ri vaqtda mustahkamlanadi.",
+      "author2": "Malohat Karimova",
+      "role2": "Tilshunoslik ishqibozi"
+    },
+    "cta": {
+      "title": "So'z boyligingizni kengaytirishga tayyormisiz?",
+      "subtitle": "Yangi so'zlarni samarali o'zlashtirgan minglab o'quvchilarga qo'shiling",
+      "getStarted": "Boshlash",
+      "learnMore": "Ko'proq ma'lumot olish",
+      "getPremium": "Premium olish (30% chegirma)",
+      "button": "Bepul ro'yxatdan o'tish"
+    }
+  },
+  "About": {
+    "Metadata": {
+      "title": "Biz haqimizda - Vocabulary Reminder",
+      "description": "Samarali so'z boyligini o'rganish orqali odamlarga yangi tillarni o'zlashtirishga yordam berish missiyamiz haqida bilib oling"
+    },
+    "hero": {
+      "title": "Vocabulary Reminder haqida",
+      "titlePrefix": "So'z boyligini",
+      "titleHighlight": "samarali o'rganish ortidagi fan",
+      "subtitle": "Bizning ilmiy isbotlangan oraliq takrorlash tizimimiz an'anaviy usullarga qaraganda yangi so'zlarni o'rganish va eslab qolishga 3 baravar ko'proq yordam berishini bilib oling."
+    },
+    "science": {
+      "title": "Usulimiz ortidagi tadqiqotlar",
+      "forgettingCurve": {
+        "title": "Ebbinhaus unutish egri chizig'i",
+        "description": "1885 yilda German Ebbinhaus xotira saqlash vaqt o'tishi bilan eksponensial ravishda pasayishini aniqladi. Biroq, har bir takrorlash xotirani mustahkamlaydi, uni unutishga qarshi yanada chidamliroq qiladi. Bizning oraliqlarimiz aynan shu egri chiziqqa qarshi kurashish uchun aniq belgilangan."
+      },
+      "spacedRepetition": {
+        "title": "Oraliq takrorlash samaradorligi",
+        "description": "Tadqiqotlar shuni ko'rsatadiki, oraliq takrorlash uzoq muddatli eslab qolishni to'planib o'rganishga qaraganda 200% gacha oshirishi mumkin. Bizning tizimimiz bu vaqt oraliqlarini kognitiv fan tadqiqotlari asosida optimallashtiradi."
+      }
+    },
+    "benefits": {
+      "title": "Bizning tizimimiz nima uchun ishlaydi",
+      "timing": {
+        "title": "Optimallashtirilgan vaqt",
+        "description": "Bizning ehtiyotkorlik bilan hisoblangan oraliqlarimiz (1s, 3s, 8s, 1k, 3k, 7k) takrorlar sonini minimallashtirib, maksimal eslab qolishni ta'minlash uchun mo'ljallangan."
+      },
+      "multiChannel": {
+        "title": "Ko'p kanalli o'rganish",
+        "description": "Elektron pochta va Telegram bildirishnomalarini birlashtirish bilan, siz hech qachon takrorlash seansini o'tkazib yubormasligingizni, o'rganish izchilligi va samaradorligini oshirishini ta'minlaymiz."
+      },
+      "integration": {
+        "title": "Oson integratsiya",
+        "description": "Bizning tizimimiz kundalik tartibingizga oson qo'shiladi, so'z boyligini o'rganishni alohida o'quv mashg'uloti emas, balki kunning tabiiy qismiga aylantiradi."
+      }
+    },
+    "stats": {
+      "title": "Raqamlar o'z-o'zidan gapiradi",
+      "retention": {
+        "value": "95%",
+        "description": "An'anaviy usullarga qaraganda yuqoriroq saqlash darajasi"
+      },
+      "time": {
+        "value": "67%",
+        "description": "So'z boyligini takrorlashga kam vaqt sarflanadi"
+      },
+      "acquisition": {
+        "value": "3x",
+        "description": "Tezroq so'z boyligini o'zlashtirish"
+      }
+    },
+    "cta": {
+      "title": "So'z boyligini o'rganishni inqilob qilishga tayyormisiz?",
+      "subtitle": "Ilmiy asoslangan tizimimiz yordamida so'z boyligini o'rganish yo'lini allaqachon o'zgartirgan minglab o'quvchilarga qo'shiling.",
+      "startTrial": "Bepul sinovni boshlash",
+      "getPremium": "Premium olish (30% chegirma)"
+    }
+  },
+  "Profile": {
+    "Metadata": {
+      "title": "Profil - Vocabry",
+      "description": "Profilingizni va bildirishnoma sozlamalarini boshqaring"
+    },
+    "title": "Profil sozlamalari",
+    "tabs": {
+      "profile": "Profil",
+      "notifications": "Bildirishnomalar",
+      "statistics": "Statistika"
+    },
+    "profileTab": {
+      "title": "Profil ma'lumotlari",
+      "description": "Shaxsiy ma'lumotlaringizni va aloqa tafsilotlaringizni yangilang."
+    },
+    "form": {
+      "firstName": "Ism",
+      "firstNamePlaceholder": "Ismingiz",
+      "lastName": "Familiya",
+      "lastNamePlaceholder": "Familiyangiz",
+      "username": "Foydalanuvchi nomi",
+      "usernamePlaceholder": "Foydalanuvchi nomingiz",
+      "email": "Elektron pochta",
+      "emailPlaceholder": "sizning.pochta@misol.com",
+      "telegramId": "Telegram ID",
+      "telegramIdPlaceholder": "Telegram ID raqamingiz, masalan, 123456789",
+      "telegramIdLocked": "Telegram orqali kirganingizda Telegram ID ni o'zgartirib bo'lmaydi",
+      "telegramIdDescription": "So'z eslatmalari uchun Telegram foydalanuvchi nomingiz.",
+      "saving": "Saqlanmoqda...",
+      "saveChanges": "O'zgarishlarni saqlash",
+      "validation": {
+        "firstNameLength": "Ism kamida 2 ta belgidan iborat bo'lishi kerak.",
+        "lastNameLength": "Familiya kamida 2 ta belgidan iborat bo'lishi kerak.",
+        "usernameLength": "Foydalanuvchi nomi kamida 2 ta belgidan iborat bo'lishi kerak.",
+        "emailValid": "Iltimos, yaroqli elektron pochta manzilini kiriting."
+      }
+    },
+    "notificationsTab": {
+      "title": "Bildirishnoma sozlamalari",
+      "description": "Lug'at so'zlari bo'yicha eslatmalarni qanday va qachon olishni sozlang.",
+      "emailNotifications": "Elektron pochta bildirishnomalari",
+      "emailDescription": "So'z eslatmalarini elektron pochta orqali qabul qiling",
+      "telegramNotifications": "Telegram bildirishnomalari",
+      "telegramConnectedDesc": "So'z eslatmalarini Telegram orqali qabul qiling",
+      "telegramNotConnectedDesc": "Bildirishnomalarni olish uchun Telegram hisobingizni ulang",
+      "spacedRepetition": {
+        "title": "Intervallar bilan takrorlash haqida",
+        "description": "Optimal o'rganish uchun jadval bo'yicha eslatmalar olasiz:",
+        "schedule": {
+          "oneHour": "So'zni qo'shgandan 1 soat keyin",
+          "threeHours": "3 soat o'tgach",
+          "eightHours": "8 soat o'tgach",
+          "oneDay": "1 kundan so'ng",
+          "threeDays": "3 kundan so'ng",
+          "sevenDays": "7 kundan so'ng"
+        }
+      }
+    },
+    "statsTab": {
+      "totalWords": {
+        "title": "Jami so'zlar",
+        "description": "To'plamingizga qo'shilgan so'zlar",
+        "weekChange": "Bu hafta +{count}"
+      },
+      "reviewSuccess": {
+        "title": "Takrorlash muvaffaqiyati",
+        "description": "O'rtacha eslatmalarga javob berish darajasi",
+        "period": "So'nggi 30 kun"
+      },
+      "streak": {
+        "title": "O'quv seriyasi",
+        "description": "Ketma-ket faoliyat kunlari",
+        "unit": "kun"
+      }
+    },
+    "telegram": {
+      "windowOpened": "Telegram oynasi ochildi. Iltimos, ulanishni u yerda yakunlang va holatni yangilang.",
+      "successfullyConnected": "Telegram muvaffaqiyatli ulandi!",
+      "refreshAfterConnecting": "Telegramda ulanishdan so'ng, tasdiqlash uchun holatni yangilang"
+    },
+    "toast": {
+      "error": "Xato",
+      "errorFetchUserData": "Foydalanuvchi ma'lumotlarini yuklab bo'lmadi",
+      "errorUpdateProfile": "Profilni yangilashda xatolik yuz berdi",
+      "errorUpdateNotification": "Bildirishnoma sozlamalarini yangilashda xatolik yuz berdi",
+      "errorRefreshTelegram": "Telegram ulanish holatini yangilashda xatolik yuz berdi",
+      "verificationRequired": "Tasdiqlash talab qilinadi",
+      "checkEmail": "Yangi elektron pochta manzilingizni tasdiqlash uchun pochtangizni tekshiring.",
+      "profileUpdated": "Profil yangilandi",
+      "profileUpdateSuccess": "Profil sozlamalaringiz muvaffaqiyatli saqlandi.",
+      "preferencesUpdated": "Sozlamalar yangilandi",
+      "notificationToggle": "{type} bildirishnomalari {status}.",
+      "telegramNotConnected": "Telegram ulanmagan",
+      "connectTelegramFirst": "Iltimos, avval Telegram hisobingizni ulang"
+    }
+  },
+  "common": {
+    "enabled": "yoqilgan",
+    "disabled": "o'chirilgan",
+    "connected": "Ulangan",
+    "connecting": "Ulanmoqda...",
+    "connect": "Ulash",
+    "refresh": "Yangilash",
+    "success": "Muvaffaqiyat"
+  },
+  "Dashboard": {
+    "Metadata": {
+      "title": "Boshqaruv paneli - Vocabry",
+      "description": "Lug'at o'rganish boshqaruv panelingiz"
+    },
+    "subtitle": "Shaxsiy lug'at qurilish vositangiz",
+    "reviews": "Takrorlashlar: {count}",
+    "addWord": "So'z qo'shish",
+    "cards": {
+      "progress": {
+        "title": "O'rganish jarayoni",
+        "new": "Yangi",
+        "learning": "O'rganilmoqda",
+        "mastered": "O'zlashtirilgan",
+        "wordCount": "{count} ta so'z"
+      },
+      "upcoming": {
+        "title": "Kelgusi takrorlashlar",
+        "today": "Bugun",
+        "tomorrow": "Ertaga",
+        "inDays": "{days} kundan so'ng",
+        "wordCount": "{count} ta so'z"
+      },
+      "stats": {
+        "title": "Statistika",
+        "successRate": "Muvaffaqiyat darajasi",
+        "retention": "Saqlash darajasi",
+        "streak": "Ketma-ketlik",
+        "totalWords": "Jami so'zlar",
+        "days": "{count} kun"
+      }
+    },
+    "tabs": {
+      "all": "Barcha so'zlar",
+      "new": "Yangi",
+      "learning": "O'rganilmoqda",
+      "mastered": "O'zlashtirilgan"
+    },
+    "wordList": {
+      "title": "Barcha so'zlar",
+      "description": "Lug'at so'zlaringizni boshqaring",
+      "stage": "Bosqich {stage}",
+      "review": "Takrorlash"
+    },
+    "pagination": {
+      "previous": "Oldingi",
+      "next": "Keyingi"
+    },
+    "exampleWords": {
+      "ephemeral": "qisqa vaqt davom etadigan",
+      "ubiquitous": "hamma joyda mavjud, hamma yerda uchraydigan",
+      "serendipity": "tasodifiy va omadli kashfiyot",
+      "eloquent": "notiqlik, ifodali gapirish yoki yozish qobiliyatiga ega",
+      "pragmatic": "amaliy, voqelikka asoslangan"
+    }
+  },
+  "Words": {
+    "Metadata": {
+      "title": "So'zlar - Vocabry",
+      "description": "Lug'at so'zlarini boshqarish"
+    },
+    "title": "So'z eslatmalari",
+    "tabs": {
+      "addWords": "So'z qo'shish",
+      "myWords": "Mening so'zlarim",
+      "dictionaries": "Lug'atlar"
+    },
+    "addSingle": {
+      "title": "Bitta so'z qo'shish"
+    },
+    "extractImage": {
+      "title": "Rasmdan so'zlarni ajratib olish"
+    },
+    "addMultiple": {
+      "title": "Bir nechta so'z qo'shish"
+    },
+    "yourWords": {
+      "title": "Sizning so'zlaringiz"
+    },
+    "dictionaries": {
+      "title": "Lug'at obunalari"
+    }
+  },
+  "WordForm": {
+    "fields": {
+      "word": {
+        "label": "So'z",
+        "placeholder": "So'zni kiriting"
+      },
+      "definition": {
+        "label": "Ta'rif",
+        "placeholder": "Ta'rifni kiriting"
+      },
+      "context": {
+        "label": "Kontekst (Ixtiyoriy)",
+        "placeholder": "So'zni eslab qolishga yordam beruvchi jumla yoki kontekst qo'shing"
+      }
+    },
+    "buttons": {
+      "addWord": "So'z qo'shish",
+      "adding": "Qo'shilmoqda..."
+    },
+    "errors": {
+      "requiredFields": "So'z va ta'rif kiritilishi shart",
+      "addWordFailed": "So'z qo'shib bo'lmadi"
+    },
+    "toast": {
+      "success": "Muvaffaqiyat",
+      "wordAdded": "So'z muvaffaqiyatli qo'shildi!",
+      "error": "Xato"
+    }
+  },
+  "WordsList": {
+    "context": "Kontekst",
+    "mastered": "O'zlashtirilgan",
+    "stage": "Bosqich {stage}/{total}",
+    "edit": "Tahrirlash",
+    "delete": "O'chirish",
+    "added": "Qo'shilgan",
+    "nextReview": "Keyingi takrorlash",
+    "wordPlaceholder": "So'z",
+    "definitionPlaceholder": "Ta'rif",
+    "contextPlaceholder": "Kontekst (ixtiyoriy)",
+    "cancel": "Bekor qilish",
+    "saveChanges": "O'zgarishlarni saqlash",
+    "errors": {
+      "fetchFailed": "So'zlarni yuklashda xatolik yuz berdi",
+      "updateFailed": "So'zni yangilashda xatolik yuz berdi",
+      "deleteFailed": "So'zni o'chirishda xatolik yuz berdi"
+    },
+    "toast": {
+      "error": "Xato",
+      "fetchError": "So'zlarni yuklashda xatolik yuz berdi",
+      "updateError": "So'zni yangilashda xatolik yuz berdi",
+      "deleteError": "So'zni o'chirishda xatolik yuz berdi",
+      "success": "Muvaffaqiyat",
+      "updateSuccess": "So'z muvaffaqiyatli yangilandi",
+      "deleteSuccess": "So'z muvaffaqiyatli o'chirildi"
+    },
+    "filterPlaceholder": "Holat bo'yicha filtrlash",
+    "filters": {
+      "all": "Barcha so'zlar",
+      "mastered": "O'zlashtirilgan",
+      "learning": "O'rganilayotgan"
+    },
+    "noWordsFound": "So'zlar topilmadi. Yangi so'z qo'shishdan boshlang!",
+    "loading": "Yuklanmoqda...",
+    "loadMore": "Ko'proq yuklash",
+    "editWord": "So'zni tahrirlash",
+    "deleteConfirmation": {
+      "title": "Ishonchingiz komilmi?",
+      "description": "Bu amalni ortga qaytarib bo'lmaydi. Bu so'z va unga bog'liq barcha ma'lumotlar butunlay o'chiriladi."
+    }
+  },
+  "ImageExtractor": {
+    "title": "Rasmdan so'zlarni ajratib olish",
+    "description": "So'zlarni avtomatik ajratib olish uchun matn mavjud bo'lgan rasmni yuklang",
+    "aiSettings": {
+      "title": "Sun'iy intellekt modeli sozlamalari"
+    },
+    "uploading": "Yuklash...",
+    "uploadImage": "Rasm yuklash",
+    "uploadedImageAlt": "Yuklangan",
+    "processingImage": "Rasm qayta ishlanmoqda...",
+    "extractWords": "So'zlarni ajratib olish",
+    "using": "Foydalanilmoqda",
+    "extractedWords": {
+      "title": "Ajratilgan so'zlar",
+      "searchPlaceholder": "So'zlarni qidirish...",
+      "removeDuplicates": "Takrorlanishlarni olib tashlash",
+      "selectAll": "Barchasini tanlash",
+      "deselectAll": "Tanlovni bekor qilish",
+      "table": {
+        "select": "Tanlash",
+        "word": "So'z",
+        "definition": "Ta'rif"
+      },
+      "noWordsFound": "Qidiruv mezonlaringizga mos keladigan so'zlar topilmadi",
+      "selectionCount": "{total} dan {selected} tasi tanlangan",
+      "addingWords": "So'zlar qo'shilmoqda...",
+      "addSelectedWords": "Tanlangan so'zlarni qo'shish"
+    },
+    "models": {
+      "gemini": "Google Gemini",
+      "gpt4vision": "GPT-4 Vision",
+      "claude": "Claude",
+      "imgocr": "ImgOCR"
+    },
+    "toast": {
+      "imageLoaded": "Rasm yuklandi",
+      "imageLoadedDesc": "Rasmingiz muvaffaqiyatli yuklandi. Uni qayta ishlash uchun 'So'zlarni ajratib olish'ni bosing.",
+      "error": "Xato",
+      "uploadError": "Iltimos, rasm yuklang va tizimga kirilganligiga ishonch hosil qiling.",
+      "apiKeyMissing": "API kaliti yo'q",
+      "apiKeyMissingDesc": "{model} API kaliti sozlanmagan. Iltimos, muhit o'zgaruvchilarini tekshiring.",
+      "noWordsFound": "So'zlar topilmadi",
+      "noWordsFoundDesc": "Bu rasmda ma'noli so'zlarni topa olmadik. Aniqroq matnli boshqa rasmni sinab ko'ring.",
+      "success": "Muvaffaqiyat",
+      "extractSuccess": "Rasmingizdan {model} yordamida {count} ta so'z ajratib olindi.",
+      "processError": "Rasmni qayta ishlashda xatolik yuz berdi. Iltimos, API kalitini tekshiring yoki boshqa sun'iy intellekt modelini sinab ko'ring.",
+      "notLoggedIn": "Tizimga kirilmagan",
+      "loginRequired": "So'zlarni lug'atingizga qo'shish uchun iltimos tizimga kiring.",
+      "noWordsSelected": "Hech qanday so'z tanlanmagan",
+      "selectWords": "Iltimos, qo'shish uchun kamida bitta so'zni tanlang.",
+      "addSuccess": "Lug'atingizga {count} ta so'z qo'shildi. Eslatmalar rejalashtirildi.",
+      "addError": "So'zlarni qo'shib bo'lmadi. Iltimos, qayta urinib ko'ring."
+    },
+    "cancel": "Bekor qilish"
+  },
+  "AiModelSelector": {
+    "title": "Sun'iy intellekt modeli sozlamalari",
+    "description": "Rasmlardan so'zlarni ajratib olish uchun qaysi sun'iy intellekt modelidan foydalanishni tanlang",
+    "selectModelPlaceholder": "Sun'iy intellekt modelini tanlang",
+    "aiModelsLabel": "Sun'iy intellekt modellari",
+    "models": {
+      "gemini": {
+        "name": "Google Gemini",
+        "description": "Google'ning kuchli vizual tushunish imkoniyatiga ega bo'lgan multimodal sun'iy intellekt modeli"
+      },
+      "gpt4vision": {
+        "name": "GPT-4 Vision",
+        "description": "OpenAI'ning ajoyib matn ajratish va ta'rif berish imkoniyatlariga ega vizual modeli"
+      },
+      "claude": {
+        "name": "Claude",
+        "description": "Anthropic'ning vizual tushunish imkoniyatlariga ega Claude modeli"
+      },
+      "imgocr": {
+        "name": "ImgOCR",
+        "description": "Lug'at API integratsiyasi bilan an'anaviy OCR yechimi"
+      }
+    },
+    "toast": {
+      "modelUpdated": "Sun'iy intellekt modeli yangilandi",
+      "usingModel": "Endi rasmdan so'z ajratish uchun {model} ishlatilmoqda"
+    }
+  },
+  "BulkWordAdder": {
+    "title": "Ko'p so'zlarni qo'shish",
+    "description": "So'zlarni yozish, nusxalash yoki fayl yuklash orqali ko'plab qo'shing",
+    "tabs": {
+      "typeOrPaste": "Yozish yoki joylashtirish",
+      "uploadFile": "Fayl yuklash",
+      "advancedFormat": "Kengaytirilgan format"
+    },
+    "text": {
+      "instructions": "Har bir qatorda bitta so'zni kiriting: so'z{separator}ta'rif formatida",
+      "placeholder": "olma{separator}daraxtlarda o'sadigan qizil meva\ntirishqoq{separator}qattiq va ehtiyotkorlik bilan ishlaydigan",
+      "helpText": "Har bir qatorda so'z va uning ta'rifi \"{separator}\" bilan ajratilgan bo'lishi kerak"
+    },
+    "file": {
+      "label": "Fayl",
+      "formatLabel": "Fayl formati",
+      "selectFormatPlaceholder": "Format tanlang",
+      "formats": {
+        "text": "Matn (so'z{separator}ta'rif)",
+        "csv": "CSV (so'z,ta'rif)",
+        "json": "JSON massivi"
+      }
+    },
+    "advanced": {
+      "formatTypeLabel": "Format turi",
+      "selectFormatPlaceholder": "Format tanlang",
+      "separatorLabel": "Ajratgich",
+      "separatorPlaceholder": "masalan - yoki : yoki |",
+      "pasteLabel": "Kontentni joylashtiring",
+      "formats": {
+        "text": "Matn (so'z{separator}ta'rif)",
+        "csv": "CSV (so'z,ta'rif)",
+        "json": "JSON massivi"
+      },
+      "placeholders": {
+        "json": "[{\"word\":\"olma\",\"definition\":\"qizil meva\"},{\"word\":\"banan\",\"definition\":\"sariq meva\"}]",
+        "csv": "so'z,ta'rif\nolma,qizil meva\nbanan,sariq meva",
+        "text": "olma{separator}qizil meva\nbanan{separator}sariq meva"
+      }
+    },
+    "removeDuplicates": "Takrorlanishlarni olib tashlash",
+    "processing": "Qayta ishlanmoqda...",
+    "processWords": "So'zlarni qayta ishlash",
+    "processedWords": {
+      "title": "Qayta ishlangan so'zlar",
+      "searchPlaceholder": "So'zlarni qidirish...",
+      "sortBy": "Saralash",
+      "sortOptions": {
+        "word": "So'z",
+        "definition": "Ta'rif"
+      },
+      "selectAll": "Barchasini tanlash",
+      "deselectAll": "Tanlovni bekor qilish",
+      "table": {
+        "select": "Tanlash",
+        "word": "So'z",
+        "definition": "Ta'rif"
+      },
+      "noWordsFound": "Qidiruv mezonlaringizga mos keladigan so'zlar topilmadi",
+      "selectionCount": "{total} dan {selected} tasi tanlangan",
+      "addingWords": "So'zlar qo'shilmoqda...",
+      "addSelectedWords": "Tanlangan so'zlarni qo'shish"
+    },
+    "cancel": "Bekor qilish",
+    "toast": {
+      "fileLoaded": "Fayl yuklandi",
+      "fileLoadedDesc": "{filename} muvaffaqiyatli yuklandi",
+      "error": "Xato",
+      "fileReadError": "Faylni o'qib bo'lmadi",
+      "noContent": "Qayta ishlash uchun kontent yo'q",
+      "noWordsSelected": "Hech qanday so'z tanlanmagan",
+      "selectWords": "Iltimos, qo'shish uchun kamida bitta so'zni tanlang.",
+      "success": "Muvaffaqiyat",
+      "parseSuccess": "Muvaffaqiyatli {count} ta so'z qayta ishlandi.",
+      "addSuccess": "Lug'atingizga {count} ta so'z qo'shildi.",
+      "addError": "So'zlarni qo'shib bo'lmadi. Iltimos, qayta urinib ko'ring."
+    },
+    "errors": {
+      "invalidJson": "Noto'g'ri JSON formati",
+      "noValidWords": "Taqdim etilgan kontentda hech qanday to'g'ri so'z topilmadi",
+      "parseError": "So'zlarni qayta ishlashda xatolik yuz berdi"
+    }
+  },
+  "Auth": {
+    "Metadata": {
+      "login": {
+        "title": "Kirish - Vocabry",
+        "description": "So'z boyligingizni o'rganishni boshqarish uchun Vocabry hisobingizga kiring"
+      },
+      "signup": {
+        "title": "Ro'yxatdan o'tish - Vocabry",
+        "description": "So'z o'rganishni boshlash uchun Vocabry-da yangi hisob yarating"
+      },
+      "forgotPassword": {
+        "title": "Parolni unutdingizmi - Vocabry",
+        "description": "Vocabry hisobingiz uchun parolni tiklang"
+      },
+      "resetPassword": {
+        "title": "Parolni tiklash - Vocabry",
+        "description": "Vocabry hisobingiz uchun yangi parol o'rnating"
+      }
+    },
+    "SignIn": {
+      "title": "Kirish",
+      "form": {
+        "email": "Elektron pochta",
+        "password": "Parol",
+        "forgotPassword": "Parolni unutdingizmi?",
+        "signIn": "Kirish",
+        "signingIn": "Kirish jarayonida..."
+      },
+      "footer": {
+        "text": "Hisobingiz yo'qmi?",
+        "link": "Ro'yxatdan o'tish"
+      },
+      "social": {
+        "orContinueWith": "YOKI DAVOM ETING"
+      },
+      "errors": {
+        "invalidCredentials": "Noto'g'ri elektron pochta yoki parol",
+        "generic": "Kirish paytida xatolik yuz berdi",
+        "telegramAuth": "Telegram orqali kirishda xatolik yuz berdi"
+      },
+      "toast": {
+        "error": "Xato"
+      }
+    },
+    "SignUp": {
+      "title": "Ro'yxatdan o'tish",
+      "form": {
+        "email": "Elektron pochta",
+        "emailPlaceholder": "ism@misol.com",
+        "password": "Parol",
+        "passwordPlaceholder": "Parolingizni kiriting",
+        "createAccount": "Hisob yaratish",
+        "creatingAccount": "Hisob yaratilmoqda..."
+      },
+      "footer": {
+        "text": "Hisobingiz bormi?",
+        "link": "Kirish"
+      },
+      "social": {
+        "orContinueWith": "YOKI DAVOM ETING"
+      },
+      "errors": {
+        "generic": "Ro'yxatdan o'tishda xatolik yuz berdi",
+        "telegramAuth": "Telegram orqali kirishda xatolik yuz berdi"
+      },
+      "toast": {
+        "error": "Xato",
+        "emailRegistered": "Elektron pochta allaqachon ro'yxatdan o'tkazilgan",
+        "emailRegisteredDesc": "Bu elektron pochta allaqachon ro'yxatdan o'tkazilgan.",
+        "signInInstead": "Buning o'rniga kirish"
+      }
+    },
+    "ForgotPassword": {
+      "title": "Parolni unutdingizmi",
+      "form": {
+        "email": "Elektron pochta",
+        "emailPlaceholder": "ism@misol.com",
+        "sendResetLink": "Tiklash havolasini yuborish",
+        "sendingResetLink": "Tiklash havolasi yuborilmoqda..."
+      },
+      "footer": {
+        "text": "Parolingizni esladingizmi?",
+        "link": "Kirish"
+      },
+      "toast": {
+        "checkEmail": "Elektron pochtangizni tekshiring",
+        "resetLinkSent": "Sizga parolni tiklash havolasini yubordik.",
+        "error": "Xato",
+        "genericError": "Nimadir noto'g'ri bajarildi. Iltimos, qayta urinib ko'ring."
+      }
+    },
+    "ResetPassword": {
+      "title": "Parolni tiklash",
+      "form": {
+        "newPassword": "Yangi parol",
+        "newPasswordPlaceholder": "Yangi parolingizni kiriting",
+        "resetPassword": "Parolni tiklash",
+        "resettingPassword": "Parol tiklanmoqda..."
+      },
+      "footer": {
+        "text": "Parolingizni esladingizmi?",
+        "link": "Kirish"
+      },
+      "toast": {
+        "success": "Parol muvaffaqiyatli tiklandi",
+        "successDesc": "Endi yangi parolingiz bilan kirishingiz mumkin.",
+        "error": "Xato",
+        "invalidToken": "Yaroqsiz tiklash belgisi",
+        "failedReset": "Parolni tiklash amalga oshmadi. Iltimos, qayta urinib ko'ring."
+      }
+    }
+  }
+
+}
