@@ -38,8 +38,10 @@ import { Switch } from '@/components/shadcn-ui/switch';
 import { Label } from '@/components/shadcn-ui/label';
 import AppConfig from "@/lib/config";
 import AiModelSelector from './AiModelSelector';
+import { useTranslations } from 'next-intl';
 
 export default function ImageWordExtractor() {
+  const t = useTranslations('ImageExtractor');
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -85,8 +87,8 @@ export default function ImageWordExtractor() {
       reader.readAsDataURL(file);
 
       toast({
-        title: "Image loaded",
-        description: "Your image has been loaded successfully. Click 'Extract Words' to process it.",
+        title: t('toast.imageLoaded'),
+        description: t('toast.imageLoadedDesc'),
       });
     }
   };
@@ -102,8 +104,8 @@ export default function ImageWordExtractor() {
   const processImage = async () => {
     if (!image || !session?.user?.id) {
       toast({
-        title: "Error",
-        description: "Please upload an image and ensure you're logged in.",
+        title: t('toast.error'),
+        description: t('toast.uploadError'),
       });
       return;
     }
@@ -112,8 +114,8 @@ export default function ImageWordExtractor() {
     const modelKey = currentAiModel as 'gemini' | 'gpt4vision' | 'claude' | 'imgocr';
     if (!AppConfig.isApiKeyConfigured(modelKey)) {
       toast({
-        title: "API Key Missing",
-        description: `The ${modelKey} API key is not configured. Please check your environment variables.`,
+        title: t('toast.apiKeyMissing'),
+        description: t('toast.apiKeyMissingDesc', { model: modelKey }),
       });
       return;
     }
@@ -127,8 +129,8 @@ export default function ImageWordExtractor() {
       // Check if any words were found
       if (words.length === 0) {
         toast({
-          title: "No words found",
-          description: "We couldn't find any meaningful vocabulary words in this image. Try another image with clearer text.",
+          title: t('toast.noWordsFound'),
+          description: t('toast.noWordsFoundDesc'),
         });
         setIsProcessing(false);
         return;
@@ -138,14 +140,14 @@ export default function ImageWordExtractor() {
       setShowExtractedDialog(true);
 
       toast({
-        title: "Success",
-        description: `Extracted ${words.length} words from your image using ${getModelDisplayName()}.`,
+        title: t('toast.success'),
+        description: t('toast.extractSuccess', { count: words.length, model: getModelDisplayName() }),
       });
     } catch (error) {
       console.error("Error processing image:", error);
       toast({
-        title: "Error",
-        description: "Failed to process image. Please check your API key or try another AI model.",
+        title: t('toast.error'),
+        description: t('toast.processError'),
       });
     } finally {
       setIsProcessing(false);
@@ -169,8 +171,8 @@ export default function ImageWordExtractor() {
   const addSelectedWords = async () => {
     if (!session?.user?.id) {
       toast({
-        title: "Not logged in",
-        description: "Please log in to add words to your vocabulary.",
+        title: t('toast.notLoggedIn'),
+        description: t('toast.loginRequired'),
       });
       return;
     }
@@ -178,8 +180,8 @@ export default function ImageWordExtractor() {
     const selectedWords = extractedWords.filter(w => w.selected);
     if (selectedWords.length === 0) {
       toast({
-        title: "No words selected",
-        description: "Please select at least one word to add.",
+        title: t('toast.noWordsSelected'),
+        description: t('toast.selectWords'),
       });
       return;
     }
@@ -195,12 +197,12 @@ export default function ImageWordExtractor() {
         userId: session.user.id,
       }));
 
-      // Add words to store (this will be updated to add to Supabase in the API service)
+      // Add words to store
       await addWords(wordsToAdd);
 
       toast({
-        title: "Success",
-        description: `Added ${selectedWords.length} words to your vocabulary. Reminders have been scheduled.`,
+        title: t('toast.success'),
+        description: t('toast.addSuccess', { count: selectedWords.length }),
       });
 
       // Close dialog and reset state
@@ -210,8 +212,8 @@ export default function ImageWordExtractor() {
     } catch (error) {
       console.error("Error adding words:", error);
       toast({
-        title: "Error",
-        description: "Failed to add words. Please try again.",
+        title: t('toast.error'),
+        description: t('toast.addError'),
       });
     } finally {
       setIsAddingWords(false);
@@ -222,13 +224,13 @@ export default function ImageWordExtractor() {
   const getModelDisplayName = (): string => {
     switch (currentAiModel) {
       case 'gemini':
-        return 'Google Gemini';
+        return t('models.gemini');
       case 'gpt4vision':
-        return 'GPT-4 Vision';
+        return t('models.gpt4vision');
       case 'claude':
-        return 'Claude';
+        return t('models.claude');
       case 'imgocr':
-        return 'ImgOCR';
+        return t('models.imgocr');
       default:
         return currentAiModel;
     }
@@ -253,9 +255,9 @@ export default function ImageWordExtractor() {
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle>Extract Words from Image</CardTitle>
+              <CardTitle>{t('title')}</CardTitle>
               <CardDescription>
-                Upload an image containing text to automatically extract vocabulary words
+                {t('description')}
               </CardDescription>
             </div>
             {AppConfig.features.enableAiModelSelection && (
@@ -267,7 +269,7 @@ export default function ImageWordExtractor() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>AI Model Settings</DialogTitle>
+                    <DialogTitle>{t('aiSettings.title')}</DialogTitle>
                   </DialogHeader>
                   <AiModelSelector />
                 </DialogContent>
@@ -294,12 +296,12 @@ export default function ImageWordExtractor() {
                 {isUploading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Uploading...
+                    {t('uploading')}
                   </>
                 ) : (
                   <>
                     <Upload className="mr-2 h-4 w-4" />
-                    Upload Image
+                    {t('uploadImage')}
                   </>
                 )}
               </Button>
@@ -320,7 +322,7 @@ export default function ImageWordExtractor() {
                 <div className="relative rounded-md overflow-hidden border border-gray-200">
                   <img
                     src={imagePreview}
-                    alt="Uploaded"
+                    alt={t('uploadedImageAlt')}
                     className="max-h-64 w-auto mx-auto"
                   />
                 </div>
@@ -332,10 +334,10 @@ export default function ImageWordExtractor() {
                   {isProcessing ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing Image...
+                      {t('processingImage')}
                     </>
                   ) : (
-                    "Extract Words"
+                    t('extractWords')
                   )}
                 </Button>
               </div>
@@ -345,7 +347,7 @@ export default function ImageWordExtractor() {
         {AppConfig.features.enableAiModelSelection && (
           <CardFooter className="border-t bg-muted/50 px-6 py-3">
             <div className="flex items-center text-xs text-muted-foreground">
-              <span>Using:</span>
+              <span>{t('using')}:</span>
               <Badge variant="outline" className="ml-2">
                 {getModelDisplayName()}
               </Badge>
@@ -357,13 +359,13 @@ export default function ImageWordExtractor() {
       <Dialog open={showExtractedDialog} onOpenChange={setShowExtractedDialog}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
           <DialogHeader>
-            <DialogTitle>Extracted Words</DialogTitle>
+            <DialogTitle>{t('extractedWords.title')}</DialogTitle>
           </DialogHeader>
 
           <div className="flex items-center justify-between mb-4 gap-4">
             <div className="flex-1">
               <Input
-                placeholder="Search words..."
+                placeholder={t('extractedWords.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -375,7 +377,7 @@ export default function ImageWordExtractor() {
                   checked={removeDuplicates}
                   onCheckedChange={setRemoveDuplicates}
                 />
-                <Label htmlFor="remove-duplicates">Remove duplicates</Label>
+                <Label htmlFor="remove-duplicates">{t('extractedWords.removeDuplicates')}</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -383,14 +385,14 @@ export default function ImageWordExtractor() {
                   size="sm"
                   onClick={() => toggleAllWords(true)}
                 >
-                  Select All
+                  {t('extractedWords.selectAll')}
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => toggleAllWords(false)}
                 >
-                  Deselect All
+                  {t('extractedWords.deselectAll')}
                 </Button>
               </div>
             </div>
@@ -400,9 +402,9 @@ export default function ImageWordExtractor() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-12">Select</TableHead>
-                  <TableHead>Word</TableHead>
-                  <TableHead>Definition</TableHead>
+                  <TableHead className="w-12">{t('extractedWords.table.select')}</TableHead>
+                  <TableHead>{t('extractedWords.table.word')}</TableHead>
+                  <TableHead>{t('extractedWords.table.definition')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -430,7 +432,7 @@ export default function ImageWordExtractor() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center h-24">
-                      No words found matching your search criteria
+                      {t('extractedWords.noWordsFound')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -441,11 +443,14 @@ export default function ImageWordExtractor() {
           <DialogFooter className="mt-4">
             <div className="flex items-center justify-between w-full">
               <Badge variant="outline">
-                {extractedWords.filter(w => w.selected).length} of {extractedWords.length} selected
+                {t('extractedWords.selectionCount', {
+                  selected: extractedWords.filter(w => w.selected).length,
+                  total: extractedWords.length
+                })}
               </Badge>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setShowExtractedDialog(false)}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button
                   onClick={addSelectedWords}
@@ -454,10 +459,10 @@ export default function ImageWordExtractor() {
                   {isAddingWords ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Adding Words...
+                      {t('extractedWords.addingWords')}
                     </>
                   ) : (
-                    "Add Selected Words"
+                    t('extractedWords.addSelectedWords')
                   )}
                 </Button>
               </div>

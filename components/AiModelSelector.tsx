@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@/components/shadcn-ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from 'next-intl';
 
 interface AiModel {
   id: string;
@@ -27,32 +28,34 @@ interface AiModel {
   description: string;
 }
 
-const availableModels: AiModel[] = [
-  {
-    id: 'gemini',
-    name: 'Google Gemini',
-    description: 'Google\'s multimodal AI model with strong visual understanding'
-  },
-  {
-    id: 'gpt4vision',
-    name: 'GPT-4 Vision',
-    description: 'OpenAI\'s vision model with excellent text extraction and definition capabilities'
-  },
-  {
-    id: 'claude',
-    name: 'Claude',
-    description: 'Anthropic\'s Claude model with visual understanding capabilities'
-  },
-  {
-    id: 'imgocr',
-    name: 'ImgOCR',
-    description: 'Traditional OCR solution with dictionary API integration'
-  }
-];
-
-const AiModelSelector: React.FC = () => {
+export default function AiModelSelector() {
+  const t = useTranslations('AiModelSelector');
   const [selectedModel, setSelectedModel] = useState<string>('');
   const { toast } = useToast();
+
+  // Get available models with translations
+  const availableModels: AiModel[] = [
+    {
+      id: 'gemini',
+      name: t('models.gemini.name'),
+      description: t('models.gemini.description')
+    },
+    {
+      id: 'gpt4vision',
+      name: t('models.gpt4vision.name'),
+      description: t('models.gpt4vision.description')
+    },
+    {
+      id: 'claude',
+      name: t('models.claude.name'),
+      description: t('models.claude.description')
+    },
+    {
+      id: 'imgocr',
+      name: t('models.imgocr.name'),
+      description: t('models.imgocr.description')
+    }
+  ];
 
   // Load the currently selected model on component mount
   useEffect(() => {
@@ -79,8 +82,8 @@ const AiModelSelector: React.FC = () => {
     // Show a toast notification
     const modelName = availableModels.find(model => model.id === value)?.name || value;
     toast({
-      title: 'AI Model Updated',
-      description: `Now using ${modelName} for image word extraction`,
+      title: t('toast.modelUpdated'),
+      description: t('toast.usingModel', { model: modelName }),
     });
   };
 
@@ -91,20 +94,20 @@ const AiModelSelector: React.FC = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI Model Settings</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
         <CardDescription>
-          Choose which AI model to use for extracting vocabulary from images
+          {t('description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <Select value={selectedModel} onValueChange={handleModelChange}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select an AI model" />
+              <SelectValue placeholder={t('selectModelPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>AI Models</SelectLabel>
+                <SelectLabel>{t('aiModelsLabel')}</SelectLabel>
                 {availableModels.map(model => (
                   <SelectItem key={model.id} value={model.id}>
                     {model.name}
@@ -126,6 +129,4 @@ const AiModelSelector: React.FC = () => {
       </CardContent>
     </Card>
   );
-};
-
-export default AiModelSelector;
+}

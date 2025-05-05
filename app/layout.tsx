@@ -4,9 +4,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { Toaster } from "@/components/shadcn-ui/toaster";
-import { NextAuthProvider } from "@/components/NextAuthProvider";
-import { Navbar } from "@/components/navigation/Navbar";
-import { Footer } from "@/components/navigation/Footer";
 import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -16,26 +13,19 @@ export const metadata: Metadata = {
   description: "Smart spaced repetition system that helps you remember vocabulary forever through perfectly timed notifications",
 };
 
+// Root layout that only provides global styles and fonts
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-    <body className={`${inter.className} antialiased`}>
-    <div className="flex min-h-screen flex-col">
-      <NextAuthProvider>
-        <Navbar />
-        <main className="flex-1">
-          {children}
-        </main>
-        <Footer />
-      </NextAuthProvider>
-      <Toaster />
-      <Analytics />
-    </div>
-    </body>
+    <html>
+      <body className={`${inter.className} antialiased`}>
+        {children}
+        <Toaster />
+        <Analytics />
+      </body>
     </html>
   );
 }

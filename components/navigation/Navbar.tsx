@@ -3,17 +3,26 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import Image from "next/image";
 import { Button } from "@/components/shadcn-ui/button";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/shadcn-ui/sheet";
-import { Menu} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/shadcn-ui/dropdown-menu";
+import { Menu, Globe } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
-import { useRouter} from "next/navigation";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import LogoSvg from "../../public/logo.svg";
+import { locales, localeNames, type Locale } from '@/config/i18n';
 
 // Logo component
 export const Logo = () => (
@@ -28,11 +37,60 @@ export const Logo = () => (
   </Link>
 );
 
+// Language flags mapping
+const localeFlags: Record<Locale, string> = {
+  en: "🇺🇸",
+  ru: "🇷🇺",
+  uz: "🇺🇿"
+};
+
+// LanguageSelector component
+const LanguageSelector = () => {
+  const pathname = usePathname();
+  const locale = useLocale() as Locale;
+  const t = useTranslations('Common');
+
+  // Function to get the new path with the selected locale
+  const getLocalizedPath = (newLocale: string) => {
+    // The pathname already contains the current locale as the first segment
+    // We need to replace it with the new locale
+    const segments = pathname.split('/');
+    segments[1] = newLocale; // Replace the locale segment
+    return segments.join('/');
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="w-auto px-2 flex items-center gap-1">
+          <Globe className="h-4 w-4" />
+          <span className="ml-1">{localeFlags[locale]}</span>
+          <span className="sr-only md:not-sr-only md:ml-1 text-xs font-normal">{localeNames[locale]}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {locales.map((l) => (
+          <DropdownMenuItem key={l} asChild>
+            <Link
+              href={getLocalizedPath(l)}
+              className="flex items-center gap-2"
+            >
+              <span>{localeFlags[l]}</span>
+              <span>{localeNames[l]}</span>
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 export const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
   const isLoading = status === "loading";
+  const t = useTranslations('Navigation');
 
   const handleAuth = () => {
     if (session) {
@@ -43,14 +101,13 @@ export const Navbar = () => {
   };
 
   const guestLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/about', label: 'About' },
+    { href: '/', label: t('home') },
+    { href: '/about', label: t('about') },
   ];
 
   const authLinks = [
-    // { href: '/dashboard', label: 'Dashboard' },
-    { href: '/words', label: 'My Words' },
-    { href: '/profile', label: 'Profile' },
+    { href: '/words', label: t('myWords') },
+    { href: '/profile', label: t('profile') },
   ];
 
   const navLinks = session ? authLinks : guestLinks;
@@ -101,8 +158,12 @@ export const Navbar = () => {
                   variant={session ? "destructive" : "default"}
                   className="w-full"
                 >
-                  {session ? "Sign Out" : "Sign In"}
+                  {session ? t('signOut') : t('signIn')}
                 </Button>
+                <div className="mt-4 pt-4 border-t">
+                  <div className="text-sm font-medium mb-2">{t('selectLanguage')}</div>
+                  <LanguageSelector />
+                </div>
               </nav>
             </SheetContent>
           </Sheet>
@@ -118,11 +179,12 @@ export const Navbar = () => {
                 {link.label}
               </Link>
             ))}
+            <LanguageSelector />
             <Button
               onClick={handleAuth}
               variant={session ? "destructive" : "default"}
             >
-              {session ? "Sign Out" : "Sign In"}
+              {session ? t('signOut') : t('signIn')}
             </Button>
           </nav>
         </div>

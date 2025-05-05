@@ -5,17 +5,23 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useToast } from "@/hooks/use-toast";
 import { useWordsStore } from '@/lib/stores/use-words-store';
-
+import { useTranslations } from 'next-intl';
+import { Button } from "@/components/shadcn-ui/button";
+import { Input } from "@/components/shadcn-ui/input";
+import { Textarea } from "@/components/shadcn-ui/textarea";
+import { Label } from "@/components/shadcn-ui/label";
+import { Loader2 } from "lucide-react";
 
 export default function WordForm() {
+  const t = useTranslations('WordForm');
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
   const [context, setContext] = useState<string>('');
   const [loading, setLoading] = useState(false);
+
   const { toast } = useToast();
   const { data: session } = useSession();
   const { addWord } = useWordsStore();
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,19 +30,19 @@ export default function WordForm() {
 
     try {
       if (!word || !definition) {
-        throw new Error('Word and definition are required');
+        throw new Error(t('errors.requiredFields'));
       }
 
       addWord({
         word: word,
         definition: definition,
         context: context || null,
-        userId: session.user.id, // Use session.user.id directly
+        userId: session.user.id,
       });
 
       toast({
-        title: "Success",
-        description: "Word added successfully!",
+        title: t('toast.success'),
+        description: t('toast.wordAdded'),
       });
 
       // Reset form state
@@ -44,10 +50,10 @@ export default function WordForm() {
       setDefinition('');
       setContext('');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to add word';
+      const errorMessage = error instanceof Error ? error.message : t('errors.addWordFailed');
 
       toast({
-        title: "Error",
+        title: t('toast.error'),
         description: errorMessage
       });
     } finally {
@@ -58,53 +64,60 @@ export default function WordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="word" className="block text-sm font-medium text-gray-700">
-          Word
-        </label>
-        <input
+        <Label htmlFor="word" className="block text-sm font-medium">
+          {t('fields.word.label')}
+        </Label>
+        <Input
           type="text"
           id="word"
           value={word}
           onChange={(e) => setWord(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          placeholder={t('fields.word.placeholder')}
           required
         />
       </div>
 
       <div>
-        <label htmlFor="definition" className="block text-sm font-medium text-gray-700">
-          Definition
-        </label>
-        <input
+        <Label htmlFor="definition" className="block text-sm font-medium">
+          {t('fields.definition.label')}
+        </Label>
+        <Input
           type="text"
           id="definition"
           value={definition}
           onChange={(e) => setDefinition(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          placeholder={t('fields.definition.placeholder')}
           required
         />
       </div>
 
       <div>
-        <label htmlFor="context" className="block text-sm font-medium text-gray-700">
-          Context (Optional)
-        </label>
-        <textarea
+        <Label htmlFor="context" className="block text-sm font-medium">
+          {t('fields.context.label')}
+        </Label>
+        <Textarea
           id="context"
           value={context}
           onChange={(e) => setContext(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          placeholder={t('fields.context.placeholder')}
           rows={3}
         />
       </div>
 
-      <button
+      <Button
         type="submit"
-        disabled={loading || !word || !definition}  // Add validation to disable button
-        className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+        disabled={loading || !word || !definition}
+        className="w-full"
       >
-        {loading ? 'Adding...' : 'Add Word'}
-      </button>
+        {loading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {t('buttons.adding')}
+          </>
+        ) : (
+          t('buttons.addWord')
+        )}
+      </Button>
     </form>
   );
 }

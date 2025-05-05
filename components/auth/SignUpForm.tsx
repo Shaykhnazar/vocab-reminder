@@ -2,17 +2,18 @@
 "use client"
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Use `next/navigation` instead of `next/router`
+import { useRouter } from 'next/navigation';
 import { createUser } from '@/lib/auth';
 import { signIn } from "next-auth/react"
 import { Icons } from "@/components/icons"
 import { AuthCard, AuthInput, AuthButton, AuthSocialButton } from "./auth-form"
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import {LoginButton} from "@telegram-auth/react";
-
+import { LoginButton } from "@telegram-auth/react";
+import { useTranslations } from 'next-intl';
 
 export default function SignUpForm() {
+  const t = useTranslations('Auth.SignUp');
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -34,23 +35,23 @@ export default function SignUpForm() {
       if (err.message?.includes('already registered')) {
         toast({
           variant: "default",
-          title: "Email already registered",
+          title: t('toast.emailRegistered'),
           description: (
             <div className="flex flex-col space-y-2">
-              <p>This email is already registered.</p>
+              <p>{t('toast.emailRegisteredDesc')}</p>
               <Link
                 href="/login"
                 className="font-medium text-primary hover:underline"
               >
-                Sign in instead
+                {t('toast.signInInstead')}
               </Link>
             </div>
           ),
         })
       } else {
         toast({
-          title: "Error",
-          description: err.message || 'An error occurred during sign up',
+          title: t('toast.error'),
+          description: err.message || t('errors.generic'),
         })
       }
     } finally {
@@ -58,7 +59,6 @@ export default function SignUpForm() {
     }
   }
 
-  // Add to SignUpForm.tsx
   const handleTelegramAuth = async (data: any) => {
     setIsLoading(true);
     try {
@@ -69,7 +69,7 @@ export default function SignUpForm() {
 
       if (result?.error) {
         toast({
-          title: "Error",
+          title: t('toast.error'),
           description: result.error,
         });
       } else {
@@ -79,8 +79,8 @@ export default function SignUpForm() {
     } catch (error) {
       console.error('Telegram auth error:', error);
       toast({
-        title: "Error",
-        description: 'An error occurred during Telegram sign in',
+        title: t('toast.error'),
+        description: t('errors.telegramAuth'),
       });
     } finally {
       setIsLoading(false);
@@ -111,30 +111,30 @@ export default function SignUpForm() {
 
   return (
     <AuthCard
-      title="Sign Up"
+      title={t('title')}
       socialButtons={socialButtons}
-      footerText="Already have an account?"
+      footerText={t('footer.text')}
       footerLink={{
-        text: "Sign In",
+        text: t('footer.link'),
         href: "/login"
       }}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <AuthInput
-          label="Email"
+          label={t('form.email')}
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="name@example.com"
+          placeholder={t('form.emailPlaceholder')}
           required
           disabled={isLoading}
         />
         <AuthInput
-          label="Password"
+          label={t('form.password')}
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter your password"
+          placeholder={t('form.passwordPlaceholder')}
           required
           disabled={isLoading}
         />
@@ -142,10 +142,10 @@ export default function SignUpForm() {
           {isLoading ? (
             <>
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              Creating account...
+              {t('form.creatingAccount')}
             </>
           ) : (
-            "Create account"
+            t('form.createAccount')
           )}
         </AuthButton>
       </form>

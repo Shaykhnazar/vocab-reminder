@@ -1,0 +1,691 @@
+{
+  "Common": {
+    "selectLanguage": "Select Language"
+  },
+  "Navigation": {
+    "home": "Home",
+    "about": "About",
+    "myWords": "My Words",
+    "profile": "Profile",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "selectLanguage": "Select Language"
+  },
+  "Footer": {
+    "tagline": "Master new words efficiently with our science-backed spaced repetition system.",
+    "quickLinks": "Quick Links",
+    "home": "Home",
+    "about": "About",
+    "plansAndPolicies": "Plans & Policies",
+    "pricing": "Pricing",
+    "refundPolicy": "Refund Policy",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "language": "Language",
+    "contact": "Contact",
+    "copyright": "© {year} Vocabry. All rights reserved."
+  },
+  "Home": {
+    "Metadata": {
+      "title": "Vocabulary Reminder - Master New Words Efficiently",
+      "description": "Smart spaced repetition system that helps you remember vocabulary forever through perfectly timed notifications"
+    },
+    "hero": {
+      "title": "Master New Words with Science-Backed Reminders",
+      "subtitle": "Smart spaced repetition system that helps you remember vocabulary forever through perfectly timed notifications",
+      "startFreeTrial": "Start Free Trial",
+      "buyPremium": "Buy Premium Now",
+      "getStarted": "Get Started",
+      "demo": "View Demo"
+    },
+    "features": {
+      "title": "Features",
+      "subtitle": "Everything you need to expand your vocabulary",
+      "spaced": {
+        "title": "Smart Reminders",
+        "subtitle": "Scientifically optimized intervals to maximize retention",
+        "description": "Perfect timing at 1h, 3h, 8h, 1d, 3d, and 7d intervals"
+      },
+      "notifications": {
+        "title": "Multi-Channel Notifications",
+        "subtitle": "Never miss a review session",
+        "description": "Get reminded via Telegram and email, wherever you are"
+      },
+      "effortless": {
+        "title": "Effortless Learning",
+        "subtitle": "Learn naturally throughout your day",
+        "description": "Just add new words and let the system handle the rest"
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Simple and effective learning in three easy steps",
+      "step1": {
+        "title": "Add Words",
+        "description": "Easily add new words with definitions and example contexts"
+      },
+      "step2": {
+        "title": "Get Reminders",
+        "description": "Receive notifications at scientifically optimized intervals"
+      },
+      "step3": {
+        "title": "Master Vocabulary",
+        "description": "Review and mark words as learned to move them to long-term memory"
+      }
+    },
+    "testimonials": {
+      "title": "What Users Say",
+      "subtitle": "Join thousands of satisfied language learners",
+      "quote1": "This app has transformed my language learning journey. I've retained more vocabulary in one month than I did in a year of traditional study.",
+      "author1": "Sarah Johnson",
+      "role1": "English Teacher",
+      "quote2": "The spaced repetition system is brilliant. I no longer forget words I've learned because they're reinforced at just the right time.",
+      "author2": "Michael Chen",
+      "role2": "Language Enthusiast"
+    },
+    "cta": {
+      "title": "Ready to Expand Your Vocabulary?",
+      "subtitle": "Join thousands of learners who have mastered new words efficiently",
+      "getStarted": "Get Started",
+      "learnMore": "Learn More",
+      "getPremium": "Get Premium (30% Off)",
+      "button": "Sign Up Free"
+    }
+  },
+  "About": {
+    "Metadata": {
+      "title": "About Us - Vocabulary Reminder",
+      "description": "Learn about our mission to help people master new languages through effective vocabulary learning"
+    },
+    "hero": {
+      "title": "About Vocabulary Reminder",
+      "titlePrefix": "The Science Behind",
+      "titleHighlight": "Effective Vocabulary Learning",
+      "subtitle": "Discover how our scientifically-proven spaced repetition system helps you learn and retain new words up to 3x more effectively than traditional methods."
+    },
+    "science": {
+      "title": "The Research Behind Our Method",
+      "forgettingCurve": {
+        "title": "Ebbinghaus Forgetting Curve",
+        "description": "In 1885, Hermann Ebbinghaus discovered that memory retention declines exponentially over time. However, each review strengthens the memory, making it more resistant to forgetting. Our intervals are precisely timed to counter this curve."
+      },
+      "spacedRepetition": {
+        "title": "Spaced Repetition Effectiveness",
+        "description": "Research shows that spaced repetition can increase long-term retention by up to 200% compared to cramming. Our system optimizes these spacing intervals based on cognitive science research."
+      }
+    },
+    "benefits": {
+      "title": "Why Our System Works",
+      "timing": {
+        "title": "Optimized Timing",
+        "description": "Our carefully calculated intervals (1h, 3h, 8h, 1d, 3d, 7d) are designed to maximize retention while minimizing the number of reviews needed."
+      },
+      "multiChannel": {
+        "title": "Multi-Channel Learning",
+        "description": "By combining email and Telegram notifications, we ensure you never miss a review session, increasing your learning consistency and effectiveness."
+      },
+      "integration": {
+        "title": "Effortless Integration",
+        "description": "Our system seamlessly integrates into your daily routine, making vocabulary learning a natural part of your day rather than a separate study session."
+      }
+    },
+    "stats": {
+      "title": "The Numbers Speak",
+      "retention": {
+        "value": "95%",
+        "description": "Higher retention rate compared to traditional methods"
+      },
+      "time": {
+        "value": "67%",
+        "description": "Less time spent on vocabulary review"
+      },
+      "acquisition": {
+        "value": "3x",
+        "description": "Faster vocabulary acquisition"
+      }
+    },
+    "cta": {
+      "title": "Ready to Revolutionize Your Vocabulary Learning?",
+      "subtitle": "Join thousands of learners who have already transformed their vocabulary learning journey with our scientifically-proven system.",
+      "startTrial": "Start Free Trial",
+      "getPremium": "Get Premium (30% Off)"
+    }
+  },
+  "Profile": {
+    "Metadata": {
+      "title": "Profile - Vocabry",
+      "description": "Manage your profile and notification preferences"
+    },
+    "title": "Profile Settings",
+    "tabs": {
+      "profile": "Profile",
+      "notifications": "Notifications",
+      "statistics": "Statistics"
+    },
+    "profileTab": {
+      "title": "Profile Information",
+      "description": "Update your personal information and contact details."
+    },
+    "form": {
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Your last name",
+      "username": "Username",
+      "usernamePlaceholder": "Your username",
+      "email": "Email",
+      "emailPlaceholder": "your.email@example.com",
+      "telegramId": "Telegram ID",
+      "telegramIdPlaceholder": "Your Telegram ID, e.g. 123456789",
+      "telegramIdLocked": "Telegram ID cannot be changed when signed in with Telegram",
+      "telegramIdDescription": "Your Telegram username for receiving word reminders.",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "validation": {
+        "firstNameLength": "First name must be at least 2 characters.",
+        "lastNameLength": "Last name must be at least 2 characters.",
+        "usernameLength": "Username must be at least 2 characters.",
+        "emailValid": "Please enter a valid email address."
+      }
+    },
+    "notificationsTab": {
+      "title": "Notification Preferences",
+      "description": "Customize how and when you receive vocabulary reminders.",
+      "emailNotifications": "Email Notifications",
+      "emailDescription": "Receive word reminders via email",
+      "telegramNotifications": "Telegram Notifications",
+      "telegramConnectedDesc": "Receive word reminders via Telegram",
+      "telegramNotConnectedDesc": "Connect your Telegram account for notifications",
+      "spacedRepetition": {
+        "title": "About Spaced Repetition",
+        "description": "You'll receive reminders on this schedule for optimal learning:",
+        "schedule": {
+          "oneHour": "1 hour after adding a word",
+          "threeHours": "3 hours later",
+          "eightHours": "8 hours later",
+          "oneDay": "1 day later",
+          "threeDays": "3 days later",
+          "sevenDays": "7 days later"
+        }
+      }
+    },
+    "statsTab": {
+      "totalWords": {
+        "title": "Total Words",
+        "description": "Words added to your collection",
+        "weekChange": "+{count} this week"
+      },
+      "reviewSuccess": {
+        "title": "Review Success",
+        "description": "Average reminder response rate",
+        "period": "Last 30 days"
+      },
+      "streak": {
+        "title": "Learning Streak",
+        "description": "Consecutive days of activity",
+        "unit": "days"
+      }
+    },
+    "telegram": {
+      "windowOpened": "Telegram window opened. Please complete connection there and refresh status when done.",
+      "successfullyConnected": "Telegram successfully connected!",
+      "refreshAfterConnecting": "After connecting in Telegram, refresh status to confirm"
+    },
+    "toast": {
+      "error": "Error",
+      "errorFetchUserData": "Failed to load user data",
+      "errorUpdateProfile": "Failed to update profile",
+      "errorUpdateNotification": "Failed to update notification preferences",
+      "errorRefreshTelegram": "Failed to refresh Telegram connection status",
+      "verificationRequired": "Verification Required",
+      "checkEmail": "Please check your email to verify your new email address.",
+      "profileUpdated": "Profile updated",
+      "profileUpdateSuccess": "Your profile settings have been saved successfully.",
+      "preferencesUpdated": "Preferences updated",
+      "notificationToggle": "{type} notifications {status}.",
+      "telegramNotConnected": "Telegram not connected",
+      "connectTelegramFirst": "Please connect your Telegram account first"
+    }
+  },
+  "common": {
+    "enabled": "enabled",
+    "disabled": "disabled",
+    "connected": "Connected",
+    "connecting": "Connecting...",
+    "connect": "Connect",
+    "refresh": "Refresh",
+    "success": "Success"
+  },
+  "Dashboard": {
+    "Metadata": {
+      "title": "Dashboard - Vocabry",
+      "description": "Your vocabulary learning dashboard"
+    },
+    "subtitle": "Your personal vocabulary builder",
+    "reviews": "Reviews: {count}",
+    "addWord": "Add Word",
+    "cards": {
+      "progress": {
+        "title": "Learning Progress",
+        "new": "New",
+        "learning": "Learning",
+        "mastered": "Mastered",
+        "wordCount": "{count} words"
+      },
+      "upcoming": {
+        "title": "Upcoming Reviews",
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "inDays": "In {days} days",
+        "wordCount": "{count} words"
+      },
+      "stats": {
+        "title": "Statistics",
+        "successRate": "Success Rate",
+        "retention": "Retention",
+        "streak": "Streak",
+        "totalWords": "Total Words",
+        "days": "{count} days"
+      }
+    },
+    "tabs": {
+      "all": "All Words",
+      "new": "New",
+      "learning": "Learning",
+      "mastered": "Mastered"
+    },
+    "wordList": {
+      "title": "All Words",
+      "description": "Manage all your vocabulary words",
+      "stage": "Stage {stage}",
+      "review": "Review"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "exampleWords": {
+      "ephemeral": "lasting for a very short time",
+      "ubiquitous": "present, appearing, or found everywhere",
+      "serendipity": "the occurrence and development of events by chance",
+      "eloquent": "fluent or persuasive in speaking or writing",
+      "pragmatic": "dealing with things sensibly and realistically"
+    }
+  },
+  "Words": {
+    "Metadata": {
+      "title": "Words - Vocabry",
+      "description": "Manage your vocabulary words"
+    },
+    "title": "Vocabulary Reminder",
+    "tabs": {
+      "addWords": "Add Words",
+      "myWords": "My Words",
+      "dictionaries": "Dictionaries"
+    },
+    "addSingle": {
+      "title": "Add Single Word"
+    },
+    "extractImage": {
+      "title": "Extract Words from Image"
+    },
+    "addMultiple": {
+      "title": "Add Multiple Words"
+    },
+    "yourWords": {
+      "title": "Your Words"
+    },
+    "dictionaries": {
+      "title": "Dictionary Subscriptions"
+    }
+  },
+  "WordForm": {
+    "fields": {
+      "word": {
+        "label": "Word",
+        "placeholder": "Enter a word"
+      },
+      "definition": {
+        "label": "Definition",
+        "placeholder": "Enter the definition"
+      },
+      "context": {
+        "label": "Context (Optional)",
+        "placeholder": "Add a sentence or context to help remember the word"
+      }
+    },
+    "buttons": {
+      "addWord": "Add Word",
+      "adding": "Adding..."
+    },
+    "errors": {
+      "requiredFields": "Word and definition are required",
+      "addWordFailed": "Failed to add word"
+    },
+    "toast": {
+      "success": "Success",
+      "wordAdded": "Word added successfully!",
+      "error": "Error"
+    }
+  },
+  "WordsList": {
+    "context": "Context",
+    "mastered": "Mastered",
+    "stage": "Stage {stage}/{total}",
+    "edit": "Edit",
+    "delete": "Delete",
+    "added": "Added",
+    "nextReview": "Next review",
+    "wordPlaceholder": "Word",
+    "definitionPlaceholder": "Definition",
+    "contextPlaceholder": "Context (optional)",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "errors": {
+      "fetchFailed": "Failed to fetch words",
+      "updateFailed": "Failed to update word",
+      "deleteFailed": "Failed to delete word"
+    },
+    "toast": {
+      "error": "Error",
+      "fetchError": "Failed to fetch words",
+      "updateError": "Failed to update word",
+      "deleteError": "Failed to delete word",
+      "success": "Success",
+      "updateSuccess": "Word updated successfully",
+      "deleteSuccess": "Word deleted successfully"
+    },
+    "filterPlaceholder": "Filter by status",
+    "filters": {
+      "all": "All Words",
+      "mastered": "Mastered",
+      "learning": "Learning"
+    },
+    "noWordsFound": "No words found. Start by adding a new word!",
+    "loading": "Loading...",
+    "loadMore": "Load More",
+    "editWord": "Edit Word",
+    "deleteConfirmation": {
+      "title": "Are you sure?",
+      "description": "This action cannot be undone. This will permanently delete the word and all associated data."
+    }
+  },
+  "ImageExtractor": {
+    "title": "Extract Words from Image",
+    "description": "Upload an image containing text to automatically extract vocabulary words",
+    "aiSettings": {
+      "title": "AI Model Settings"
+    },
+    "uploading": "Uploading...",
+    "uploadImage": "Upload Image",
+    "uploadedImageAlt": "Uploaded",
+    "processingImage": "Processing Image...",
+    "extractWords": "Extract Words",
+    "using": "Using",
+    "extractedWords": {
+      "title": "Extracted Words",
+      "searchPlaceholder": "Search words...",
+      "removeDuplicates": "Remove duplicates",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "table": {
+        "select": "Select",
+        "word": "Word",
+        "definition": "Definition"
+      },
+      "noWordsFound": "No words found matching your search criteria",
+      "selectionCount": "{selected} of {total} selected",
+      "addingWords": "Adding Words...",
+      "addSelectedWords": "Add Selected Words"
+    },
+    "models": {
+      "gemini": "Google Gemini",
+      "gpt4vision": "GPT-4 Vision",
+      "claude": "Claude",
+      "imgocr": "ImgOCR"
+    },
+    "toast": {
+      "imageLoaded": "Image loaded",
+      "imageLoadedDesc": "Your image has been loaded successfully. Click 'Extract Words' to process it.",
+      "error": "Error",
+      "uploadError": "Please upload an image and ensure you're logged in.",
+      "apiKeyMissing": "API Key Missing",
+      "apiKeyMissingDesc": "The {model} API key is not configured. Please check your environment variables.",
+      "noWordsFound": "No words found",
+      "noWordsFoundDesc": "We couldn't find any meaningful vocabulary words in this image. Try another image with clearer text.",
+      "success": "Success",
+      "extractSuccess": "Extracted {count} words from your image using {model}.",
+      "processError": "Failed to process image. Please check your API key or try another AI model.",
+      "notLoggedIn": "Not logged in",
+      "loginRequired": "Please log in to add words to your vocabulary.",
+      "noWordsSelected": "No words selected",
+      "selectWords": "Please select at least one word to add.",
+      "addSuccess": "Added {count} words to your vocabulary. Reminders have been scheduled.",
+      "addError": "Failed to add words. Please try again."
+    },
+    "cancel": "Cancel"
+  },
+  "AiModelSelector": {
+    "title": "AI Model Settings",
+    "description": "Choose which AI model to use for extracting vocabulary from images",
+    "selectModelPlaceholder": "Select an AI model",
+    "aiModelsLabel": "AI Models",
+    "models": {
+      "gemini": {
+        "name": "Google Gemini",
+        "description": "Google's multimodal AI model with strong visual understanding"
+      },
+      "gpt4vision": {
+        "name": "GPT-4 Vision",
+        "description": "OpenAI's vision model with excellent text extraction and definition capabilities"
+      },
+      "claude": {
+        "name": "Claude",
+        "description": "Anthropic's Claude model with visual understanding capabilities"
+      },
+      "imgocr": {
+        "name": "ImgOCR",
+        "description": "Traditional OCR solution with dictionary API integration"
+      }
+    },
+    "toast": {
+      "modelUpdated": "AI Model Updated",
+      "usingModel": "Now using {model} for image word extraction"
+    }
+  },
+  "BulkWordAdder": {
+    "title": "Add Multiple Words",
+    "description": "Add words in bulk by typing, pasting, or uploading a file",
+    "tabs": {
+      "typeOrPaste": "Type or Paste",
+      "uploadFile": "Upload File",
+      "advancedFormat": "Advanced Format"
+    },
+    "text": {
+      "instructions": "Enter one word per line using the format: word{separator}definition",
+      "placeholder": "apple{separator}a red fruit that grows on trees\ndiligent{separator}working hard and being careful",
+      "helpText": "Each line should contain a word and its definition separated by \"{separator}\""
+    },
+    "file": {
+      "label": "File",
+      "formatLabel": "File Format",
+      "selectFormatPlaceholder": "Select format",
+      "formats": {
+        "text": "Text (word{separator}definition)",
+        "csv": "CSV (word,definition)",
+        "json": "JSON Array"
+      }
+    },
+    "advanced": {
+      "formatTypeLabel": "Format Type",
+      "selectFormatPlaceholder": "Select format",
+      "separatorLabel": "Separator",
+      "separatorPlaceholder": "e.g. - or : or |",
+      "pasteLabel": "Paste Your Content",
+      "formats": {
+        "text": "Text (word{separator}definition)",
+        "csv": "CSV (word,definition)",
+        "json": "JSON Array"
+      },
+      "placeholders": {
+        "json": "[{\"word\":\"apple\",\"definition\":\"a red fruit\"},{\"word\":\"banana\",\"definition\":\"a yellow fruit\"}]",
+        "csv": "word,definition\napple,a red fruit\nbanana,a yellow fruit",
+        "text": "apple{separator}a red fruit\nbanana{separator}a yellow fruit"
+      }
+    },
+    "removeDuplicates": "Remove duplicates",
+    "processing": "Processing...",
+    "processWords": "Process Words",
+    "processedWords": {
+      "title": "Processed Words",
+      "searchPlaceholder": "Search words...",
+      "sortBy": "Sort by",
+      "sortOptions": {
+        "word": "Word",
+        "definition": "Definition"
+      },
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "table": {
+        "select": "Select",
+        "word": "Word",
+        "definition": "Definition"
+      },
+      "noWordsFound": "No words found matching your search criteria",
+      "selectionCount": "{selected} of {total} selected",
+      "addingWords": "Adding Words...",
+      "addSelectedWords": "Add Selected Words"
+    },
+    "cancel": "Cancel",
+    "toast": {
+      "fileLoaded": "File loaded",
+      "fileLoadedDesc": "Successfully loaded {filename}",
+      "error": "Error",
+      "fileReadError": "Failed to read file",
+      "noContent": "No content to parse",
+      "noWordsSelected": "No words selected",
+      "selectWords": "Please select at least one word to add.",
+      "success": "Success",
+      "parseSuccess": "Parsed {count} words successfully.",
+      "addSuccess": "Added {count} words to your vocabulary.",
+      "addError": "Failed to add words. Please try again."
+    },
+    "errors": {
+      "invalidJson": "Invalid JSON format",
+      "noValidWords": "No valid words found in the provided content",
+      "parseError": "Failed to parse words"
+    }
+  },
+  "Auth": {
+    "Metadata": {
+      "login": {
+        "title": "Sign In - Vocabry",
+        "description": "Sign in to your Vocabry account to manage your vocabulary learning"
+      },
+      "signup": {
+        "title": "Sign Up - Vocabry",
+        "description": "Create a new account on Vocabry to start learning vocabulary"
+      },
+      "forgotPassword": {
+        "title": "Forgot Password - Vocabry",
+        "description": "Reset your password for your Vocabry account"
+      },
+      "resetPassword": {
+        "title": "Reset Password - Vocabry",
+        "description": "Set a new password for your Vocabry account"
+      }
+    },
+    "SignIn": {
+      "title": "Sign In",
+      "form": {
+        "email": "Email",
+        "password": "Password",
+        "forgotPassword": "Forgot password?",
+        "signIn": "Sign In",
+        "signingIn": "Signing in..."
+      },
+      "footer": {
+        "text": "Don't have an account?",
+        "link": "Sign Up"
+      },
+      "social": {
+        "orContinueWith": "OR CONTINUE WITH"
+      },
+      "errors": {
+        "invalidCredentials": "Invalid email or password",
+        "generic": "An error occurred during sign in",
+        "telegramAuth": "An error occurred during Telegram sign in"
+      },
+      "toast": {
+        "error": "Error"
+      }
+    },
+    "SignUp": {
+      "title": "Sign Up",
+      "form": {
+        "email": "Email",
+        "emailPlaceholder": "name@example.com",
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "createAccount": "Create account",
+        "creatingAccount": "Creating account..."
+      },
+      "footer": {
+        "text": "Already have an account?",
+        "link": "Sign In"
+      },
+      "social": {
+        "orContinueWith": "OR CONTINUE WITH"
+      },
+      "errors": {
+        "generic": "An error occurred during sign up",
+        "telegramAuth": "An error occurred during Telegram sign in"
+      },
+      "toast": {
+        "error": "Error",
+        "emailRegistered": "Email already registered",
+        "emailRegisteredDesc": "This email is already registered.",
+        "signInInstead": "Sign in instead"
+      }
+    },
+    "ForgotPassword": {
+      "title": "Forgot Password",
+      "form": {
+        "email": "Email",
+        "emailPlaceholder": "name@example.com",
+        "sendResetLink": "Send reset link",
+        "sendingResetLink": "Sending reset link..."
+      },
+      "footer": {
+        "text": "Remember your password?",
+        "link": "Sign in"
+      },
+      "toast": {
+        "checkEmail": "Check your email",
+        "resetLinkSent": "We've sent you a password reset link.",
+        "error": "Error",
+        "genericError": "Something went wrong. Please try again."
+      }
+    },
+    "ResetPassword": {
+      "title": "Reset Password",
+      "form": {
+        "newPassword": "New Password",
+        "newPasswordPlaceholder": "Enter your new password",
+        "resetPassword": "Reset password",
+        "resettingPassword": "Resetting password..."
+      },
+      "footer": {
+        "text": "Remember your password?",
+        "link": "Sign in"
+      },
+      "toast": {
+        "success": "Password reset successful",
+        "successDesc": "You can now sign in with your new password.",
+        "error": "Error",
+        "invalidToken": "Invalid reset token",
+        "failedReset": "Failed to reset password. Please try again."
+      }
+    }
+  }
+}

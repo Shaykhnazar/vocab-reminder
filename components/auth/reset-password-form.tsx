@@ -7,8 +7,10 @@ import { AuthCard, AuthInput, AuthButton } from "./auth-form"
 import { useToast } from "@/hooks/use-toast"
 import { Icons } from "@/components/icons"
 import { resetPassword } from "@/lib/auth"
+import { useTranslations } from 'next-intl';
 
 export default function ResetPasswordForm() {
+  const t = useTranslations('Auth.ResetPassword');
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
@@ -20,8 +22,8 @@ export default function ResetPasswordForm() {
     e.preventDefault()
     if (!token) {
       toast({
-        title: "Error",
-        description: "Invalid reset token",
+        title: t('toast.error'),
+        description: t('toast.invalidToken'),
       })
       return
     }
@@ -32,15 +34,15 @@ export default function ResetPasswordForm() {
       await resetPassword(token, password)
 
       toast({
-        title: "Password reset successful",
-        description: "You can now sign in with your new password.",
+        title: t('toast.success'),
+        description: t('toast.successDesc'),
       })
 
       router.push("/login")
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to reset password. Please try again.",
+        title: t('toast.error'),
+        description: t('toast.failedReset'),
       })
     } finally {
       setIsLoading(false)
@@ -49,20 +51,20 @@ export default function ResetPasswordForm() {
 
   return (
     <AuthCard
-      title="Reset Password"
-      footerText="Remember your password?"
+      title={t('title')}
+      footerText={t('footer.text')}
       footerLink={{
-        text: "Sign in",
+        text: t('footer.link'),
         href: "/login",
       }}
     >
       <form onSubmit={onSubmit} className="space-y-4">
         <AuthInput
-          label="New Password"
+          label={t('form.newPassword')}
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter your new password"
+          placeholder={t('form.newPasswordPlaceholder')}
           required
           disabled={isLoading}
         />
@@ -70,10 +72,10 @@ export default function ResetPasswordForm() {
           {isLoading ? (
             <>
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              Resetting password...
+              {t('form.resettingPassword')}
             </>
           ) : (
-            "Reset password"
+            t('form.resetPassword')
           )}
         </AuthButton>
       </form>

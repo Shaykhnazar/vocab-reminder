@@ -40,6 +40,7 @@ import {
 import { Input } from "@/components/shadcn-ui/input";
 import { Textarea } from "@/components/shadcn-ui/textarea";
 import { MoreVertical, Edit, Trash } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -47,6 +48,7 @@ interface WordCardProps {
   word: Word;
   onEdit: (word: Word) => void;
   onDelete: (wordId: string) => void;
+  t: any; // Translations
 }
 
 const formatDate = (dateString: string | null | undefined) => {
@@ -77,7 +79,7 @@ const Skeleton = () => {
 };
 
 
-const WordCard = ({ word, onEdit, onDelete }: WordCardProps) => {
+const WordCard = ({ word, onEdit, onDelete, t }: WordCardProps) => {
   const statusClasses = word.mastered
     ? 'bg-green-100 text-green-800'
     : 'bg-blue-100 text-blue-800';
@@ -90,13 +92,13 @@ const WordCard = ({ word, onEdit, onDelete }: WordCardProps) => {
           <p className="text-gray-600">{word.definition}</p>
           {word.context && (
             <p className="text-gray-500 text-sm mt-2">
-              Context: {word.context}
+              {t('context')}: {word.context}
             </p>
           )}
         </div>
         <div className="flex items-start space-x-2">
           <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusClasses}`}>
-            {word.mastered ? 'Mastered' : `Stage ${word.review_stage + 1}/6`}
+            {word.mastered ? t('mastered') : t('stage', { stage: word.review_stage + 1, total: 6 })}
           </span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -107,24 +109,24 @@ const WordCard = ({ word, onEdit, onDelete }: WordCardProps) => {
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onEdit(word)}>
                 <Edit className="mr-2 h-4 w-4" />
-                Edit
+                {t('edit')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-red-600"
                 onClick={() => onDelete(word.id)}
               >
                 <Trash className="mr-2 h-4 w-4" />
-                Delete
+                {t('delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
       <div className="mt-2 text-sm text-gray-500">
-        <span>Added {formatDate(word.created_at)}</span>
+        <span>{t('added')} {formatDate(word.created_at)}</span>
         {word.next_review_at && !word.mastered && (
           <span className="ml-2">
-            • Next review: {formatDate(word.next_review_at)}
+            • {t('nextReview')}: {formatDate(word.next_review_at)}
           </span>
         )}
       </div>
@@ -136,9 +138,10 @@ interface EditWordFormProps {
   word: Word;
   onSave: (updatedWord: Partial<Word>) => Promise<void>;
   onCancel: () => void;
+  t: any; // Translations
 }
 
-const EditWordForm = ({ word, onSave, onCancel }: EditWordFormProps) => {
+const EditWordForm = ({ word, onSave, onCancel, t }: EditWordFormProps) => {
   const [formData, setFormData] = useState({
     word: word.word,
     definition: word.definition,
@@ -156,7 +159,7 @@ const EditWordForm = ({ word, onSave, onCancel }: EditWordFormProps) => {
         <Input
           value={formData.word}
           onChange={(e) => setFormData(prev => ({ ...prev, word: e.target.value }))}
-          placeholder="Word"
+          placeholder={t('wordPlaceholder')}
           className="w-full"
         />
       </div>
@@ -164,7 +167,7 @@ const EditWordForm = ({ word, onSave, onCancel }: EditWordFormProps) => {
         <Input
           value={formData.definition}
           onChange={(e) => setFormData(prev => ({ ...prev, definition: e.target.value }))}
-          placeholder="Definition"
+          placeholder={t('definitionPlaceholder')}
           className="w-full"
         />
       </div>
@@ -172,16 +175,16 @@ const EditWordForm = ({ word, onSave, onCancel }: EditWordFormProps) => {
         <Textarea
           value={formData.context}
           onChange={(e) => setFormData(prev => ({ ...prev, context: e.target.value }))}
-          placeholder="Context (optional)"
+          placeholder={t('contextPlaceholder')}
           className="w-full"
         />
       </div>
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          {t('cancel')}
         </Button>
         <Button type="submit">
-          Save Changes
+          {t('saveChanges')}
         </Button>
       </div>
     </form>
@@ -190,6 +193,7 @@ const EditWordForm = ({ word, onSave, onCancel }: EditWordFormProps) => {
 
 
 export default function WordsList() {
+  const t = useTranslations('WordsList');
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -212,7 +216,7 @@ export default function WordsList() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch words');
+        throw new Error(data.error || t('errors.fetchFailed'));
       }
 
       setWords(replace ? data.data : [...words, ...data.data]);
@@ -220,8 +224,8 @@ export default function WordsList() {
     } catch (error) {
       console.error('Error fetching words:', error);
       toast({
-        title: "Error",
-        description: "Failed to fetch words"
+        title: t('toast.error'),
+        description: t('toast.fetchError')
       });
     } finally {
       setLoading(false);
@@ -239,21 +243,21 @@ export default function WordsList() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update word');
+        throw new Error(t('errors.updateFailed'));
       }
 
       const updated = await response.json();
       setWords(words.map(w => w.id === editingWord.id ? updated.data : w));
       setEditingWord(null);
       toast({
-        title: "Success",
-        description: "Word updated successfully"
+        title: t('toast.success'),
+        description: t('toast.updateSuccess')
       });
     } catch (error) {
       console.error('Error updating word:', error);
       toast({
-        title: "Error",
-        description: "Failed to update word"
+        title: t('toast.error'),
+        description: t('toast.updateError')
       });
     }
   };
@@ -267,19 +271,19 @@ export default function WordsList() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete word');
+        throw new Error(t('errors.deleteFailed'));
       }
 
       setWords(words.filter(w => w.id !== deletingWordId));
       toast({
-        title: "Success",
-        description: "Word deleted successfully"
+        title: t('toast.success'),
+        description: t('toast.deleteSuccess')
       });
     } catch (error) {
       console.error('Error deleting word:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete word"
+        title: t('toast.error'),
+        description: t('toast.deleteError')
       });
     } finally {
       setDeletingWordId(null);
@@ -311,19 +315,19 @@ export default function WordsList() {
           onValueChange={(value) => setStatusFilter(value)}
         >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder={t('filterPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Words</SelectItem>
-            <SelectItem value="mastered">Mastered</SelectItem>
-            <SelectItem value="learning">Learning</SelectItem>
+            <SelectItem value="all">{t('filters.all')}</SelectItem>
+            <SelectItem value="mastered">{t('filters.mastered')}</SelectItem>
+            <SelectItem value="learning">{t('filters.learning')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {words.length === 0 ? (
         <p className="text-gray-500 text-center py-8">
-          No words found. Start by adding a new word!
+          {t('noWordsFound')}
         </p>
       ) : (
         <div className="space-y-4">
@@ -333,6 +337,7 @@ export default function WordsList() {
               word={word}
               onEdit={setEditingWord}
               onDelete={setDeletingWordId}
+              t={t}
             />
           ))}
 
@@ -343,7 +348,7 @@ export default function WordsList() {
                 disabled={loading}
                 variant="outline"
               >
-                {loading ? 'Loading...' : 'Load More'}
+                {loading ? t('loading') : t('loadMore')}
               </Button>
             </div>
           )}
@@ -354,13 +359,14 @@ export default function WordsList() {
       <Dialog open={!!editingWord} onOpenChange={() => setEditingWord(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Word</DialogTitle>
+            <DialogTitle>{t('editWord')}</DialogTitle>
           </DialogHeader>
           {editingWord && (
             <EditWordForm
               word={editingWord}
               onSave={handleEdit}
               onCancel={() => setEditingWord(null)}
+              t={t}
             />
           )}
         </DialogContent>
@@ -373,19 +379,18 @@ export default function WordsList() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteConfirmation.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the word
-              and all associated data.
+              {t('deleteConfirmation.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700"
             >
-              Delete
+              {t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

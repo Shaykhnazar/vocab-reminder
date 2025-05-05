@@ -1,8 +1,11 @@
 // components/LandingPage.tsx
 "use client";
 
-import React from 'react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/shadcn-ui/button";
+import { Brain, Clock, Bell, Mail } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -10,12 +13,10 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/shadcn-ui/card";
-import { Brain, Clock, Bell, Mail } from 'lucide-react';
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import GumroadPurchaseLink from "@/components/payment/GumroadPurchaseLink";
 
-const LandingPage = () => {
+export default function LandingPage() {
+  const t = useTranslations('Home');
   const router = useRouter();
 
   const handleGetStarted = () => {
@@ -28,10 +29,10 @@ const LandingPage = () => {
       <div className="container mx-auto px-4 pt-20 pb-16">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
-            Master New Words with Science-Backed Reminders
+            {t('hero.title')}
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Smart spaced repetition system that helps you remember vocabulary forever through perfectly timed notifications
+            {t('hero.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button
@@ -39,69 +40,69 @@ const LandingPage = () => {
               className="bg-purple-600 hover:bg-purple-700"
               onClick={handleGetStarted}
             >
-              Start Free Trial
+              {t('hero.startFreeTrial')}
             </Button>
             <GumroadPurchaseLink
               planType="monthly"
               className="bg-blue-600 hover:bg-blue-700"
               size="lg"
             >
-              Buy Premium Now
+              {t('hero.buyPremium')}
             </GumroadPurchaseLink>
           </div>
         </div>
 
-        {/* Features Grid */}
+      {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <Card className="border-2 border-purple-100 hover:border-purple-200 transition-all">
             <CardHeader>
               <Brain className="h-12 w-12 text-purple-600 mb-2" />
-              <CardTitle>Smart Reminders</CardTitle>
+              <CardTitle>{t('features.spaced.title')}</CardTitle>
               <CardDescription>
-                Scientifically optimized intervals to maximize retention
+                {t('features.spaced.subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              Perfect timing at 1h, 3h, 8h, 1d, 3d, and 7d intervals
+              {t('features.spaced.description')}
             </CardContent>
           </Card>
 
           <Card className="border-2 border-purple-100 hover:border-purple-200 transition-all">
             <CardHeader>
               <Bell className="h-12 w-12 text-purple-600 mb-2" />
-              <CardTitle>Multi-Channel Notifications</CardTitle>
+              <CardTitle>{t('features.notifications.title')}</CardTitle>
               <CardDescription>
-                Never miss a review session
+                {t('features.notifications.subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              Get reminded via Telegram and email, wherever you are
+              {t('features.notifications.description')}
             </CardContent>
           </Card>
 
           <Card className="border-2 border-purple-100 hover:border-purple-200 transition-all">
             <CardHeader>
               <Clock className="h-12 w-12 text-purple-600 mb-2" />
-              <CardTitle>Effortless Learning</CardTitle>
+              <CardTitle>{t('features.effortless.title')}</CardTitle>
               <CardDescription>
-                Learn naturally throughout your day
+                {t('features.effortless.subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              Just add new words and let the system handle the rest
+              {t('features.effortless.description')}
             </CardContent>
           </Card>
         </div>
 
-        {/* CTA Section */}
+      {/* CTA Section */}
         <div className="text-center mt-20">
           <h2 className="text-3xl font-bold mb-6">
-            Ready to Expand Your Vocabulary?
+            {t('cta.title')}
           </h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/about" passHref>
               <Button size="lg" variant="outline">
-                Learn More
+                {t('cta.learnMore')}
               </Button>
             </Link>
             <Button
@@ -109,20 +110,18 @@ const LandingPage = () => {
               className="bg-purple-600 hover:bg-purple-700"
               onClick={handleGetStarted}
             >
-              Get Started
+              {t('cta.getStarted')}
             </Button>
             <GumroadPurchaseLink
               planType="yearly"
               className="bg-blue-600 hover:bg-blue-700"
               size="lg"
             >
-              Get Premium (30% Off)
+              {t('cta.getPremium')}
             </GumroadPurchaseLink>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default LandingPage;
+}

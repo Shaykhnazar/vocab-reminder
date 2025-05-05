@@ -8,9 +8,11 @@ import { LoginButton } from "@telegram-auth/react";
 import { AuthCard, AuthInput, AuthButton, AuthSocialButton } from "./auth-form"
 import { Icons } from "@/components/icons"
 import Link from "next/link";
-import {useToast} from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from 'next-intl';
 
 export default function SignInForm() {
+  const t = useTranslations('Auth.SignIn');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false)
@@ -32,7 +34,7 @@ export default function SignInForm() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password")
+        setError(t('errors.invalidCredentials'))
         return
       }
 
@@ -40,13 +42,12 @@ export default function SignInForm() {
       router.refresh()
     } catch (error) {
       console.error(error);
-      setError('An error occurred during sign in');
+      setError(t('errors.generic'));
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Add to SignUpForm.tsx
   const handleTelegramAuth = async (data: any) => {
     setIsLoading(true);
     try {
@@ -57,7 +58,7 @@ export default function SignInForm() {
 
       if (result?.error) {
         toast({
-          title: "Error",
+          title: t('toast.error'),
           description: result.error,
         });
       } else {
@@ -67,8 +68,8 @@ export default function SignInForm() {
     } catch (error) {
       console.error('Telegram auth error:', error);
       toast({
-        title: "Error",
-        description: 'An error occurred during Telegram sign in',
+        title: t('toast.error'),
+        description: t('errors.telegramAuth'),
       });
     } finally {
       setIsLoading(false);
@@ -99,17 +100,17 @@ export default function SignInForm() {
 
   return (
     <AuthCard
-      title="Sign In"
+      title={t('title')}
       socialButtons={socialButtons}
-      footerText="Don't have an account?"
+      footerText={t('footer.text')}
       footerLink={{
-        text: "Sign Up",
+        text: t('footer.link'),
         href: "/signup"
       }}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <AuthInput
-          label="Email"
+          label={t('form.email')}
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -118,7 +119,7 @@ export default function SignInForm() {
         />
         <div className="space-y-2">
           <AuthInput
-            label="Password"
+            label={t('form.password')}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -130,7 +131,7 @@ export default function SignInForm() {
               href="/forgot-password"
               className="text-sm text-muted-foreground hover:text-primary"
             >
-              Forgot password?
+              {t('form.forgotPassword')}
             </Link>
           </div>
         </div>
@@ -138,7 +139,7 @@ export default function SignInForm() {
           <p className="text-sm text-red-500">{error}</p>
         )}
         <AuthButton type="submit" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign In"}
+          {isLoading ? t('form.signingIn') : t('form.signIn')}
         </AuthButton>
       </form>
     </AuthCard>

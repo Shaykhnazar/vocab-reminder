@@ -43,6 +43,7 @@ import { Badge } from '@/components/shadcn-ui/badge';
 import { Switch } from '@/components/shadcn-ui/switch';
 import { Label } from '@/components/shadcn-ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/shadcn-ui/tabs";
+import { useTranslations } from 'next-intl';
 
 interface ParsedWord {
   word: string;
@@ -56,6 +57,7 @@ interface WordFile {
 }
 
 export default function BulkWordAdder() {
+  const t = useTranslations('BulkWordAdder');
   const [inputMethod, setInputMethod] = useState<'text' | 'file' | 'paste'>('text');
   const [wordText, setWordText] = useState('');
   const [wordFile, setWordFile] = useState<WordFile | null>(null);
@@ -87,17 +89,16 @@ export default function BulkWordAdder() {
           });
 
           toast({
-            title: "File loaded",
-            description: `Successfully loaded ${file.name}`,
+            title: t('toast.fileLoaded'),
+            description: t('toast.fileLoadedDesc', { filename: file.name }),
           });
         }
       };
 
       reader.onerror = () => {
         toast({
-          title: "Error",
-          description: "Failed to read file",
-
+          title: t('toast.error'),
+          description: t('toast.fileReadError'),
         });
       };
 
@@ -123,9 +124,8 @@ export default function BulkWordAdder() {
 
     if (!content.trim()) {
       toast({
-        title: "Error",
-        description: "No content to parse",
-
+        title: t('toast.error'),
+        description: t('toast.noContent'),
       });
       setIsProcessing(false);
       return;
@@ -147,7 +147,7 @@ export default function BulkWordAdder() {
           };
         }).filter(item => item.word && item.definition);
       } else if (formatType === 'csv') {
-        // Simple CSV parsing (could be enhanced with a CSV library)
+        // Simple CSV parsing
         const lines = content.split('\n').filter(line => line.trim());
         if (lines.length > 0) {
           // Assuming first row is header, skip it
@@ -173,7 +173,7 @@ export default function BulkWordAdder() {
             })).filter(item => item.word && item.definition);
           }
         } catch (err) {
-          throw new Error('Invalid JSON format');
+          throw new Error(t('errors.invalidJson'));
         }
       }
 
@@ -191,22 +191,21 @@ export default function BulkWordAdder() {
       }
 
       if (parsed.length === 0) {
-        throw new Error('No valid words found in the provided content');
+        throw new Error(t('errors.noValidWords'));
       }
 
       setParsedWords(parsed);
       setShowParsedDialog(true);
 
       toast({
-        title: "Success",
-        description: `Parsed ${parsed.length} words successfully.`,
+        title: t('toast.success'),
+        description: t('toast.parseSuccess', { count: parsed.length }),
       });
     } catch (error) {
       console.error("Error parsing words:", error);
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to parse words",
-
+        title: t('toast.error'),
+        description: error instanceof Error ? error.message : t('errors.parseError'),
       });
     } finally {
       setIsProcessing(false);
@@ -233,9 +232,8 @@ export default function BulkWordAdder() {
     const selectedWords = parsedWords.filter(w => w.selected);
     if (selectedWords.length === 0) {
       toast({
-        title: "No words selected",
-        description: "Please select at least one word to add.",
-
+        title: t('toast.noWordsSelected'),
+        description: t('toast.selectWords'),
       });
       return;
     }
@@ -243,7 +241,7 @@ export default function BulkWordAdder() {
     setIsAddingWords(true);
 
     try {
-      // In a real implementation, you would batch add the words via your API
+      // Prepare words for adding
       const wordsToAdd = selectedWords.map(w => ({
         word: w.word,
         definition: w.definition,
@@ -251,15 +249,12 @@ export default function BulkWordAdder() {
         userId: session.user.id,
       }));
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // Call your hooks' addWords method
+      // Add words to store
       addWords(wordsToAdd);
 
       toast({
-        title: "Success",
-        description: `Added ${selectedWords.length} words to your vocabulary.`,
+        title: t('toast.success'),
+        description: t('toast.addSuccess', { count: selectedWords.length }),
       });
 
       // Close dialog and reset state
@@ -270,9 +265,8 @@ export default function BulkWordAdder() {
     } catch (error) {
       console.error("Error adding words:", error);
       toast({
-        title: "Error",
-        description: "Failed to add words. Please try again.",
-
+        title: t('toast.error'),
+        description: t('toast.addError'),
       });
     } finally {
       setIsAddingWords(false);
@@ -305,31 +299,31 @@ export default function BulkWordAdder() {
     <>
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Add Multiple Words</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
           <CardDescription>
-            Add words in bulk by typing, pasting, or uploading a file
+            {t('description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={inputMethod} onValueChange={(value) => setInputMethod(value as 'text' | 'file' | 'paste')}>
             <TabsList className="grid grid-cols-3 mb-4">
-              <TabsTrigger value="text">Type or Paste</TabsTrigger>
-              <TabsTrigger value="file">Upload File</TabsTrigger>
-              <TabsTrigger value="paste">Advanced Format</TabsTrigger>
+              <TabsTrigger value="text">{t('tabs.typeOrPaste')}</TabsTrigger>
+              <TabsTrigger value="file">{t('tabs.uploadFile')}</TabsTrigger>
+              <TabsTrigger value="paste">{t('tabs.advancedFormat')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="text" className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="word-text">Enter one word per line using the format: word{separator}definition</Label>
+                <Label htmlFor="word-text">{t('text.instructions', { separator })}</Label>
                 <Textarea
                   id="word-text"
-                  placeholder={`apple${separator}a red fruit that grows on trees\ndiligent${separator}working hard and being careful`}
+                  placeholder={t('text.placeholder', { separator })}
                   value={wordText}
                   onChange={(e) => setWordText(e.target.value)}
                   className="min-h-[200px]"
                 />
                 <div className="text-sm text-muted-foreground">
-                  Each line should contain a word and its definition separated by "{separator}"
+                  {t('text.helpText', { separator })}
                 </div>
               </div>
             </TabsContent>
@@ -356,7 +350,7 @@ export default function BulkWordAdder() {
 
                 {wordFile && (
                   <div className="p-4 border rounded-md bg-muted/50">
-                    <p className="font-medium">File: {wordFile.name}</p>
+                    <p className="font-medium">{t('file.label')}: {wordFile.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {wordFile.content.length > 200
                         ? wordFile.content.substring(0, 200) + '...'
@@ -366,18 +360,18 @@ export default function BulkWordAdder() {
                 )}
 
                 <div className="space-y-2">
-                  <Label>File Format</Label>
+                  <Label>{t('file.formatLabel')}</Label>
                   <Select
                     value={formatType}
                     onValueChange={(value) => setFormatType(value as any)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select format" />
+                      <SelectValue placeholder={t('file.selectFormatPlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="word-definition">Text (word{separator}definition)</SelectItem>
-                      <SelectItem value="csv">CSV (word,definition)</SelectItem>
-                      <SelectItem value="json">JSON Array</SelectItem>
+                      <SelectItem value="word-definition">{t('file.formats.text', { separator })}</SelectItem>
+                      <SelectItem value="csv">{t('file.formats.csv')}</SelectItem>
+                      <SelectItem value="json">{t('file.formats.json')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -387,44 +381,44 @@ export default function BulkWordAdder() {
             <TabsContent value="paste" className="space-y-4">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="format-type">Format Type</Label>
+                  <Label htmlFor="format-type">{t('advanced.formatTypeLabel')}</Label>
                   <Select
                     value={formatType}
                     onValueChange={(value) => setFormatType(value as any)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select format" />
+                      <SelectValue placeholder={t('advanced.selectFormatPlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="word-definition">Text (word{separator}definition)</SelectItem>
-                      <SelectItem value="csv">CSV (word,definition)</SelectItem>
-                      <SelectItem value="json">JSON Array</SelectItem>
+                      <SelectItem value="word-definition">{t('advanced.formats.text', { separator })}</SelectItem>
+                      <SelectItem value="csv">{t('advanced.formats.csv')}</SelectItem>
+                      <SelectItem value="json">{t('advanced.formats.json')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {formatType === 'word-definition' && (
                   <div className="space-y-2">
-                    <Label htmlFor="separator">Separator</Label>
+                    <Label htmlFor="separator">{t('advanced.separatorLabel')}</Label>
                     <Input
                       id="separator"
                       value={separator}
                       onChange={(e) => setSeparator(e.target.value)}
-                      placeholder="e.g. - or : or |"
+                      placeholder={t('advanced.separatorPlaceholder')}
                       className="max-w-[200px]"
                     />
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="paste-area">Paste Your Content</Label>
+                  <Label htmlFor="paste-area">{t('advanced.pasteLabel')}</Label>
                   <Textarea
                     id="paste-area"
                     placeholder={formatType === 'json'
-                      ? '[{"word":"apple","definition":"a red fruit"},{"word":"banana","definition":"a yellow fruit"}]'
+                      ? t('advanced.placeholders.json')
                       : formatType === 'csv'
-                        ? 'word,definition\napple,a red fruit\nbanana,a yellow fruit'
-                        : `apple${separator}a red fruit\nbanana${separator}a yellow fruit`
+                        ? t('advanced.placeholders.csv')
+                        : t('advanced.placeholders.text', { separator })
                     }
                     value={wordText}
                     onChange={(e) => setWordText(e.target.value)}
@@ -442,7 +436,7 @@ export default function BulkWordAdder() {
               checked={removeDuplicates}
               onCheckedChange={setRemoveDuplicates}
             />
-            <Label htmlFor="remove-duplicates-input">Remove duplicates</Label>
+            <Label htmlFor="remove-duplicates-input">{t('removeDuplicates')}</Label>
           </div>
           <Button
             onClick={parseWords}
@@ -451,10 +445,10 @@ export default function BulkWordAdder() {
             {isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
+                {t('processing')}
               </>
             ) : (
-              "Process Words"
+              t('processWords')
             )}
           </Button>
         </CardFooter>
@@ -463,27 +457,27 @@ export default function BulkWordAdder() {
       <Dialog open={showParsedDialog} onOpenChange={setShowParsedDialog}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
           <DialogHeader>
-            <DialogTitle>Processed Words</DialogTitle>
+            <DialogTitle>{t('processedWords.title')}</DialogTitle>
           </DialogHeader>
 
           <div className="flex items-center justify-between mb-4 gap-4">
             <div className="flex-1">
               <Input
-                placeholder="Search words..."
+                placeholder={t('processedWords.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Label htmlFor="sort-by" className="text-sm">Sort by:</Label>
+                <Label htmlFor="sort-by" className="text-sm">{t('processedWords.sortBy')}:</Label>
                 <Select value={sortField} onValueChange={(value) => sortWords(value as 'word' | 'definition', sortOrder)}>
                   <SelectTrigger className="w-36">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="word">Word</SelectItem>
-                    <SelectItem value="definition">Definition</SelectItem>
+                    <SelectItem value="word">{t('processedWords.sortOptions.word')}</SelectItem>
+                    <SelectItem value="definition">{t('processedWords.sortOptions.definition')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button
@@ -500,14 +494,14 @@ export default function BulkWordAdder() {
                   size="sm"
                   onClick={() => toggleAllWords(true)}
                 >
-                  Select All
+                  {t('processedWords.selectAll')}
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => toggleAllWords(false)}
                 >
-                  Deselect All
+                  {t('processedWords.deselectAll')}
                 </Button>
               </div>
             </div>
@@ -517,9 +511,9 @@ export default function BulkWordAdder() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-12">Select</TableHead>
-                  <TableHead>Word</TableHead>
-                  <TableHead>Definition</TableHead>
+                  <TableHead className="w-12">{t('processedWords.table.select')}</TableHead>
+                  <TableHead>{t('processedWords.table.word')}</TableHead>
+                  <TableHead>{t('processedWords.table.definition')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -545,7 +539,7 @@ export default function BulkWordAdder() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center h-24">
-                      No words found matching your search criteria
+                      {t('processedWords.noWordsFound')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -556,11 +550,14 @@ export default function BulkWordAdder() {
           <DialogFooter className="mt-4">
             <div className="flex items-center justify-between w-full">
               <Badge variant="outline">
-                {parsedWords.filter(w => w.selected).length} of {parsedWords.length} selected
+                {t('processedWords.selectionCount', {
+                  selected: parsedWords.filter(w => w.selected).length,
+                  total: parsedWords.length
+                })}
               </Badge>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setShowParsedDialog(false)}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button
                   onClick={addSelectedWords}
@@ -569,10 +566,10 @@ export default function BulkWordAdder() {
                   {isAddingWords ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Adding Words...
+                      {t('processedWords.addingWords')}
                     </>
                   ) : (
-                    "Add Selected Words"
+                    t('processedWords.addSelectedWords')
                   )}
                 </Button>
               </div>
