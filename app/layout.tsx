@@ -16,11 +16,16 @@ export const metadata: Metadata = {
 // Root layout that only provides global styles and fonts
 export default function RootLayout({
   children,
+  params
 }: Readonly<{
   children: React.ReactNode;
+  params: { locale: string };
 }>) {
+  // Ensure that the incoming `locale` is valid
+  const {locale} = params;
+
   return (
-    <html>
+    <html lang={locale}>
       <body className={`${inter.className} antialiased`}>
         {children}
         <Toaster />
