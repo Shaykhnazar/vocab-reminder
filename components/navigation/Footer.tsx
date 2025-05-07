@@ -2,12 +2,11 @@
 "use client";
 
 import React from 'react';
-import {Link} from '@/i18n/navigation';
-import { usePathname } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import LogoSvg from "../../public/logo.svg";
-import { locales, localeNames, type Locale } from '@/config/i18n';
+import { LanguageSelector } from '@/components/common/LanguageSelector';
 
 const Logo = () => (
   <Link href="/" className="flex items-center">
@@ -20,46 +19,6 @@ const Logo = () => (
     </div>
   </Link>
 );
-
-// Language flags mapping
-const localeFlags: Record<Locale, string> = {
-  en: "🇺🇸",
-  ru: "🇷🇺",
-  uz: "🇺🇿"
-};
-
-// LanguageSelector component for Footer
-const FooterLanguageSelector = () => {
-  const pathname = usePathname();
-  const currentLocale = useLocale() as Locale;
-  const t = useTranslations('Common');
-
-  // Function to get the new path with the selected locale
-  const getLocalizedPath = (newLocale: string) => {
-    const segments = pathname.split('/');
-    segments[1] = newLocale; // Replace the locale segment
-    return segments.join('/');
-  };
-
-  return (
-    <div className="flex flex-wrap gap-2">
-      {locales.map((locale) => (
-        <Link
-          key={locale}
-          href={getLocalizedPath(locale)}
-          className={`flex items-center gap-1 px-2 py-1 rounded text-sm ${
-            currentLocale === locale 
-              ? 'bg-purple-100 text-purple-700' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          <span>{localeFlags[locale]}</span>
-          <span>{localeNames[locale]}</span>
-        </Link>
-      ))}
-    </div>
-  );
-};
 
 export const Footer = () => {
   const t = useTranslations('Footer');
@@ -107,7 +66,7 @@ export const Footer = () => {
 
           <div>
             <h3 className="font-semibold mb-4">{t('language')}</h3>
-            <FooterLanguageSelector />
+            <LanguageSelector variant="buttons" />
 
             <h3 className="font-semibold mt-6 mb-4">{t('contact')}</h3>
             <div className="flex flex-col space-y-2">

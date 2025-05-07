@@ -2,9 +2,9 @@
 "use client";
 
 import React from 'react';
-import {Link} from '@/i18n/navigation';
-import { usePathname } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import { Button } from "@/components/shadcn-ui/button";
 import {
@@ -12,17 +12,10 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/shadcn-ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/shadcn-ui/dropdown-menu";
-import { Menu, Globe } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
-import { useRouter } from "next/navigation";
 import LogoSvg from "../../public/logo.svg";
-import { locales, localeNames, type Locale } from '@/config/i18n';
+import { LanguageSelector } from '@/components/common/LanguageSelector';
 
 // Logo component
 export const Logo = () => (
@@ -36,54 +29,6 @@ export const Logo = () => (
     </div>
   </Link>
 );
-
-// Language flags mapping
-const localeFlags: Record<Locale, string> = {
-  en: "🇺🇸",
-  ru: "🇷🇺",
-  uz: "🇺🇿"
-};
-
-// LanguageSelector component
-const LanguageSelector = () => {
-  const pathname = usePathname();
-  const locale = useLocale() as Locale;
-  const t = useTranslations('Common');
-
-  // Function to get the new path with the selected locale
-  const getLocalizedPath = (newLocale: string) => {
-    // The pathname already contains the current locale as the first segment
-    // We need to replace it with the new locale
-    const segments = pathname.split('/');
-    segments[1] = newLocale; // Replace the locale segment
-    return segments.join('/');
-  };
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="w-auto px-2 flex items-center gap-1">
-          <Globe className="h-4 w-4" />
-          <span className="ml-1">{localeFlags[locale]}</span>
-          <span className="sr-only md:not-sr-only md:ml-1 text-xs font-normal">{localeNames[locale]}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {locales.map((l) => (
-          <DropdownMenuItem key={l} asChild>
-            <Link
-              href={getLocalizedPath(l)}
-              className="flex items-center gap-2"
-            >
-              <span>{localeFlags[l]}</span>
-              <span>{localeNames[l]}</span>
-            </Link>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -162,7 +107,7 @@ export const Navbar = () => {
                 </Button>
                 <div className="mt-4 pt-4 border-t">
                   <div className="text-sm font-medium mb-2">{t('selectLanguage')}</div>
-                  <LanguageSelector />
+                  <LanguageSelector variant="buttons" />
                 </div>
               </nav>
             </SheetContent>
@@ -179,7 +124,7 @@ export const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            <LanguageSelector />
+            <LanguageSelector variant="dropdown" />
             <Button
               onClick={handleAuth}
               variant={session ? "destructive" : "default"}
