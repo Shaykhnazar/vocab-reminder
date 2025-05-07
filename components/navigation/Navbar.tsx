@@ -11,8 +11,17 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+  SheetClose,
 } from "@/components/shadcn-ui/sheet";
-import { Menu } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/shadcn-ui/dropdown-menu";
+import { Menu, Book, User, LogOut, ChevronDown, Plus, Home, Languages } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import LogoSvg from "../../public/logo.svg";
 import { LanguageSelector } from '@/components/common/LanguageSelector';
@@ -20,7 +29,7 @@ import { LanguageSelector } from '@/components/common/LanguageSelector';
 // Logo component
 export const Logo = () => (
   <Link href="/" className="flex items-center">
-    <div className="h-14 w-auto">
+    <div className="h-10 w-auto">
       <Image
         src={LogoSvg}
         alt="VocabRY"
@@ -31,28 +40,27 @@ export const Logo = () => (
 );
 
 export const Navbar = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
   const isLoading = status === "loading";
   const t = useTranslations('Navigation');
 
-  const handleAuth = () => {
-    if (session) {
-      signOut();
-    } else {
-      router.push('/login');
-    }
+  const handleSignOut = () => {
+    signOut();
   };
 
+  const handleSignIn = () => {
+    router.push('/login');
+  };
+
+  // Simplified navigation with icons for all items to maintain consistency
   const guestLinks = [
-    { href: '/', label: t('home') },
-    { href: '/about', label: t('about') },
+    { href: '/', label: t('home') || 'Home', icon: Home },
   ];
 
   const authLinks = [
-    { href: '/words', label: t('myWords') },
-    { href: '/profile', label: t('profile') },
+    { href: '/dashboard', label: t('dashboard') || 'Dashboard', icon: Home },
+    { href: '/words', label: t('myWords') || 'My Words', icon: Book },
   ];
 
   const navLinks = session ? authLinks : guestLinks;
@@ -80,57 +88,131 @@ export const Navbar = () => {
           <Logo />
 
           {/* Mobile menu */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <Sheet>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
-              <nav className="flex flex-col gap-4">
+              <nav className="flex flex-col gap-4 mt-8">
                 {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className="text-lg font-medium"
-                  >
-                    {link.label}
-                  </Link>
+                  <SheetClose asChild key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="flex items-center text-lg font-medium py-2 hover:text-purple-600 transition-colors"
+                    >
+                      {link.icon && <link.icon className="mr-2 h-5 w-5" />}
+                      {link.label}
+                    </Link>
+                  </SheetClose>
                 ))}
-                <Button
-                  onClick={handleAuth}
-                  variant={session ? "destructive" : "default"}
-                  className="w-full"
-                >
-                  {session ? t('signOut') : t('signIn')}
-                </Button>
-                <div className="mt-4 pt-4 border-t">
-                  <div className="text-sm font-medium mb-2">{t('selectLanguage')}</div>
-                  <LanguageSelector variant="buttons" />
+
+                {session ? (
+                  <>
+
+                    <SheetClose asChild>
+                      <Link
+                        href="/profile"
+                        className="flex items-center text-lg font-medium py-2 hover:text-purple-600 transition-colors mt-4"
+                      >
+                        <User className="mr-2 h-5 w-5" />
+                        {t('profile') || 'Profile'}
+                      </Link>
+                    </SheetClose>
+
+                    <Button
+                      onClick={handleSignOut}
+                      variant="destructive"
+                      className="mt-2 w-full"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" /> {t('signOut') || 'Sign Out'}
+                    </Button>
+                  </>
+                ) : (
+                  <SheetClose asChild>
+                    <Button
+                      onClick={handleSignIn}
+                      className="mt-2 w-full bg-purple-600 hover:bg-purple-700"
+                    >
+                      {t('signIn') || 'Sign In'}
+                    </Button>
+                  </SheetClose>
+                )}
+
+                <div className="mt-6 pt-4 border-t">
+                  <div className="text-sm font-medium mb-2 flex items-center">
+                    <Languages className="h-4 w-4 mr-2" />
+                    {t('selectLanguage') || 'Select Language'}
+                  </div>
+                  <LanguageSelector/>
                 </div>
               </nav>
             </SheetContent>
           </Sheet>
 
           {/* Desktop menu */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium hover:text-purple-600 transition-colors"
+                className="text-sm font-medium hover:text-purple-600 transition-colors flex items-center"
               >
+                {link.icon && <link.icon className="mr-1 h-4 w-4" />}
                 {link.label}
               </Link>
             ))}
-            <LanguageSelector variant="dropdown" />
-            <Button
-              onClick={handleAuth}
-              variant={session ? "destructive" : "default"}
-            >
-              {session ? t('signOut') : t('signIn')}
-            </Button>
+
+            {session ? (
+              <>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="ml-1">
+                      <User className="mr-1 h-4 w-4" />
+                      <span className="hidden sm:inline">{t('account') || 'Account'}</span>
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="flex items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        {t('profile') || 'Profile'}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="flex items-center text-red-600">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      {t('signOut') || 'Sign Out'}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <Button
+                onClick={handleSignIn}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                {t('signIn') || 'Sign In'}
+              </Button>
+            )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Languages className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{t('selectLanguage') || 'Select Language'}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="px-2 py-1.5">
+                  <LanguageSelector />
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
         </div>
       </div>

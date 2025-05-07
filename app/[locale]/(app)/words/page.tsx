@@ -9,8 +9,8 @@ import ImageWordExtractor from "@/components/ImageWordExtractor";
 import BulkWordAdder from "@/components/BulkWordAdder";
 import DictionarySubscription from "@/components/DictionarySubscription";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/shadcn-ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn-ui/card";
-import { Book, Plus, Upload, Camera, BookOpen, CheckCircle, List } from "lucide-react";
+import { Card, CardContent } from "@/components/shadcn-ui/card";
+import { Book, Plus, Upload, Camera, BookOpen, Brain } from "lucide-react";
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
   const t = await getTranslations({ locale, namespace: 'Words' });
@@ -32,40 +32,45 @@ export default async function Words() {
 
   return (
     <main className="container mx-auto px-4 py-6 max-w-6xl">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-purple-700">{t('title')}</h1>
-        <div className="bg-purple-50 text-purple-700 rounded-full px-4 py-1 text-sm font-medium flex items-center">
-          <CheckCircle className="h-4 w-4 mr-1" />
-          <span>Words to review: 5</span>
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-purple-700">{t('title')}</h1>
+          <p className="text-gray-500 text-sm mt-1">{t('description') || 'Manage your vocabulary collection'}</p>
+        </div>
+
+        <div className="flex items-center gap-2 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg px-4 py-2 border border-purple-100">
+          <Brain className="h-5 w-5 text-purple-600" />
+          <div>
+            <div className="text-sm font-medium">Learning Progress</div>
+            <div className="text-xs text-gray-500">5 words due for review today</div>
+          </div>
         </div>
       </div>
 
       <Tabs defaultValue="my-words" className="w-full">
-        <TabsList className="mb-6 grid grid-cols-3 gap-2">
-          <TabsTrigger value="my-words" className="flex items-center justify-center">
-            <List className="h-4 w-4 mr-2" />
-            {t('tabs.myWords')}
+        <TabsList className="grid grid-cols-4 gap-2 mb-6">
+          <TabsTrigger value="my-words" className="flex items-center justify-center gap-1.5">
+            <Book className="h-4 w-4" />
+            <span>{t('tabs.myWords')}</span>
           </TabsTrigger>
-          <TabsTrigger value="add-word" className="flex items-center justify-center">
-            <Plus className="h-4 w-4 mr-2" />
-            {t('tabs.addWords')}
+          <TabsTrigger value="add-word" className="flex items-center justify-center gap-1.5">
+            <Plus className="h-4 w-4" />
+            <span>{t('tabs.addSingle')}</span>
           </TabsTrigger>
-          <TabsTrigger value="dictionaries" className="flex items-center justify-center">
-            <BookOpen className="h-4 w-4 mr-2" />
-            {t('tabs.dictionaries')}
+          <TabsTrigger value="import" className="flex items-center justify-center gap-1.5">
+            <Upload className="h-4 w-4" />
+            <span>{t('tabs.addMultiple')}</span>
+          </TabsTrigger>
+          <TabsTrigger value="dictionaries" className="flex items-center justify-center gap-1.5">
+            <BookOpen className="h-4 w-4" />
+            <span>{t('tabs.dictionaries')}</span>
           </TabsTrigger>
         </TabsList>
 
         {/* My Words Tab */}
         <TabsContent value="my-words">
           <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-xl">{t('yourWords.title')}</CardTitle>
-              <CardDescription>
-                Track your learning progress and review your vocabulary
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <WordsList />
             </CardContent>
           </Card>
@@ -75,68 +80,70 @@ export default async function Words() {
         <TabsContent value="add-word">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Single Word Card */}
-            <Card>
-              <CardHeader className="pb-4">
-                <div className="flex items-center">
-                  <Plus className="h-5 w-5 mr-2 text-purple-600" />
-                  <CardTitle className="text-lg">{t('addSingle.title')}</CardTitle>
-                </div>
-                <CardDescription>
-                  Add individual words to your vocabulary list
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+            <Card className="overflow-hidden">
+              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4">
+                <h2 className="text-white text-lg font-medium flex items-center">
+                  <Plus className="h-5 w-5 mr-2" />
+                  {t('addSingle.title')}
+                </h2>
+                <p className="text-white/80 text-sm">
+                  Add a new word to your vocabulary list
+                </p>
+              </div>
+              <CardContent className="p-6">
                 <WordForm />
               </CardContent>
             </Card>
 
             {/* Image Extraction Card */}
-            <Card>
-              <CardHeader className="pb-4">
-                <div className="flex items-center">
-                  <Camera className="h-5 w-5 mr-2 text-blue-600" />
-                  <CardTitle className="text-lg">{t('extractImage.title')}</CardTitle>
-                </div>
-                <CardDescription>
+            <Card className="overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-4">
+                <h2 className="text-white text-lg font-medium flex items-center">
+                  <Camera className="h-5 w-5 mr-2" />
+                  {t('extractImage.title')}
+                </h2>
+                <p className="text-white/80 text-sm">
                   Extract words from images or screenshots
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <CardContent className="p-6">
                 <ImageWordExtractor />
-              </CardContent>
-            </Card>
-
-            {/* Bulk Add Card */}
-            <Card className="md:col-span-2">
-              <CardHeader className="pb-4">
-                <div className="flex items-center">
-                  <Upload className="h-5 w-5 mr-2 text-green-600" />
-                  <CardTitle className="text-lg">{t('addMultiple.title')}</CardTitle>
-                </div>
-                <CardDescription>
-                  Import multiple words at once from text or CSV
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <BulkWordAdder />
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
+        {/* Import Tab */}
+        <TabsContent value="import">
+          <Card className="overflow-hidden">
+            <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-4">
+              <h2 className="text-white text-lg font-medium flex items-center">
+                <Upload className="h-5 w-5 mr-2" />
+                {t('addMultiple.title')}
+              </h2>
+              <p className="text-white/80 text-sm">
+                Import multiple words at once from text, CSV, or JSON
+              </p>
+            </div>
+            <CardContent className="p-6">
+              <BulkWordAdder />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Dictionaries Tab */}
         <TabsContent value="dictionaries">
-          <Card>
-            <CardHeader className="pb-4">
-              <div className="flex items-center">
-                <BookOpen className="h-5 w-5 mr-2 text-indigo-600" />
-                <CardTitle className="text-xl">{t('dictionaries.title')}</CardTitle>
-              </div>
-              <CardDescription>
+          <Card className="overflow-hidden">
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4">
+              <h2 className="text-white text-lg font-medium flex items-center">
+                <BookOpen className="h-5 w-5 mr-2" />
+                {t('dictionaries.title')}
+              </h2>
+              <p className="text-white/80 text-sm">
                 Browse and subscribe to pre-made vocabulary sets
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
+            </div>
+            <CardContent className="p-6">
               <DictionarySubscription />
             </CardContent>
           </Card>

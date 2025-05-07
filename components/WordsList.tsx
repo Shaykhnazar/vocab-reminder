@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import { useToast } from "@/hooks/use-toast";
 import { useWordsStore } from '@/lib/stores/use-words-store';
 import { Word } from "@/lib/supabase";
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -39,8 +40,34 @@ import {
 } from "@/components/shadcn-ui/alert-dialog";
 import { Input } from "@/components/shadcn-ui/input";
 import { Textarea } from "@/components/shadcn-ui/textarea";
-import { MoreVertical, Edit, Trash } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import {
+  MoreVertical,
+  Edit,
+  Trash,
+  Search,
+  SlidersHorizontal,
+  Calendar,
+  Check,
+  Clock,
+  AlertCircle,
+  Loader2,
+  Bell,
+  BookOpen,
+  Star
+} from 'lucide-react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/shadcn-ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardFooter
+} from "@/components/shadcn-ui/card";
+import { Badge } from "@/components/shadcn-ui/badge";
+import { Progress } from "@/components/shadcn-ui/progress";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -62,47 +89,75 @@ const formatDate = (dateString: string | null | undefined) => {
 };
 
 const SkeletonItem = () => (
-  <div
-    className="bg-gray-100 p-4 rounded-lg mb-4 h-24 animate-pulse"
-  />
+  <div className="animate-pulse">
+    <div className="h-24 bg-gray-100 rounded-lg mb-4"></div>
+  </div>
 );
 
-const Skeleton = () => {
-  const skeletonItems = [1, 2, 3];
-  return (
-    <div className="space-y-4">
-      {skeletonItems.map((item) => (
-        <SkeletonItem key={`skeleton-item-${item}`}/>
-      ))}
-    </div>
-  );
-};
-
+const Skeleton = () => (
+  <div className="space-y-4">
+    {[1, 2, 3].map((item) => (
+      <SkeletonItem key={`skeleton-item-${item}`}/>
+    ))}
+  </div>
+);
 
 const WordCard = ({ word, onEdit, onDelete, t }: WordCardProps) => {
-  const statusClasses = word.mastered
-    ? 'bg-green-100 text-green-800'
-    : 'bg-blue-100 text-blue-800';
+  // Calculate progress percentage based on review stage (0-5 = 6 stages total)
+  const progressPercent = word.mastered ? 100 : ((word.review_stage) / 5) * 100;
+
+  const getStageLabel = () => {
+    if (word.mastered) return t('mastered');
+
+    // Map review stages to more user-friendly labels
+    const stages = [
+      t('stages.new'),
+      t('stages.learning'),
+      t('stages.reviewing'),
+      t('stages.familiar'),
+      t('stages.known'),
+      t('stages.almostMastered')
+    ];
+
+    return stages[word.review_stage] || t('stage', { stage: word.review_stage + 1, total: 6 });
+  };
+
+  const getProgressColor = () => {
+    if (word.mastered) return "bg-green-500";
+
+    // Different colors for different stages
+    const colors = [
+      "bg-gray-400",     // New
+      "bg-blue-500",     // Learning
+      "bg-cyan-500",     // Reviewing
+      "bg-indigo-500",   // Familiar
+      "bg-purple-500",   // Known
+      "bg-yellow-500"    // Almost mastered
+    ];
+
+    return colors[word.review_stage] || "bg-gray-400";
+  };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow border border-gray-200 transition-shadow hover:shadow-md">
-      <div className="flex justify-between items-start">
-        <div className="flex-grow">
-          <h3 className="font-semibold text-lg">{word.word}</h3>
-          <p className="text-gray-600">{word.definition}</p>
-          {word.context && (
-            <p className="text-gray-500 text-sm mt-2">
-              {t('context')}: {word.context}
-            </p>
-          )}
-        </div>
-        <div className="flex items-start space-x-2">
-          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusClasses}`}>
-            {word.mastered ? t('mastered') : t('stage', { stage: word.review_stage + 1, total: 6 })}
-          </span>
+    <Card className="mb-4 overflow-hidden hover:shadow-md transition-shadow border-l-4 border-l-purple-500">
+      <CardContent className="p-4">
+        <div className="flex justify-between items-start gap-4">
+          <div className="flex-grow">
+            <div className="flex items-center gap-1.5 mb-1">
+              <h3 className="font-semibold text-lg">{word.word}</h3>
+              {word.mastered && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
+            </div>
+            <p className="text-gray-700">{word.definition}</p>
+            {word.context && (
+              <div className="mt-2 text-gray-600 text-sm bg-gray-50 rounded p-2 border-l-2 border-gray-200">
+                <span className="italic">{word.context}</span>
+              </div>
+            )}
+          </div>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -121,16 +176,37 @@ const WordCard = ({ word, onEdit, onDelete, t }: WordCardProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
-      <div className="mt-2 text-sm text-gray-500">
-        <span>{t('added')} {formatDate(word.created_at)}</span>
-        {word.next_review_at && !word.mastered && (
-          <span className="ml-2">
-            • {t('nextReview')}: {formatDate(word.next_review_at)}
-          </span>
-        )}
-      </div>
-    </div>
+
+        <div className="mt-3">
+          <div className="flex justify-between items-center mb-1 text-xs text-gray-500">
+            <div className="flex items-center gap-1">
+              <Badge
+                variant="outline"
+                className={`px-2 py-0.5 ${word.mastered ? 'border-green-200 text-green-700 bg-green-50' : 'border-blue-200 text-blue-700 bg-blue-50'}`}
+              >
+                {getStageLabel()}
+              </Badge>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span className="flex items-center">
+                <Calendar className="h-3 w-3 mr-1 inline" />
+                {t('added')} {formatDate(word.created_at)}
+              </span>
+
+              {word.next_review_at && !word.mastered && (
+                <span className="flex items-center">
+                  <Bell className="h-3 w-3 mr-1 inline" />
+                  {t('nextReview')}: {formatDate(word.next_review_at)}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <Progress value={progressPercent} className="h-1.5" indicatorClassName={getProgressColor()} />
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -147,15 +223,24 @@ const EditWordForm = ({ word, onSave, onCancel, t }: EditWordFormProps) => {
     definition: word.definition,
     context: word.context || '',
   });
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSave(formData);
+    setIsSaving(true);
+    try {
+      await onSave(formData);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
+        <label className="text-sm font-medium block mb-1.5">
+          {t('wordLabel')}
+        </label>
         <Input
           value={formData.word}
           onChange={(e) => setFormData(prev => ({ ...prev, word: e.target.value }))}
@@ -164,6 +249,9 @@ const EditWordForm = ({ word, onSave, onCancel, t }: EditWordFormProps) => {
         />
       </div>
       <div>
+        <label className="text-sm font-medium block mb-1.5">
+          {t('definitionLabel')}
+        </label>
         <Input
           value={formData.definition}
           onChange={(e) => setFormData(prev => ({ ...prev, definition: e.target.value }))}
@@ -172,25 +260,35 @@ const EditWordForm = ({ word, onSave, onCancel, t }: EditWordFormProps) => {
         />
       </div>
       <div>
+        <label className="text-sm font-medium block mb-1.5">
+          {t('contextLabel')}
+        </label>
         <Textarea
           value={formData.context}
           onChange={(e) => setFormData(prev => ({ ...prev, context: e.target.value }))}
           placeholder={t('contextPlaceholder')}
           className="w-full"
+          rows={3}
         />
       </div>
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>
           {t('cancel')}
         </Button>
-        <Button type="submit">
-          {t('saveChanges')}
+        <Button type="submit" disabled={isSaving}>
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {t('saving')}
+            </>
+          ) : (
+            t('saveChanges')
+          )}
         </Button>
       </div>
     </form>
   );
 };
-
 
 export default function WordsList() {
   const t = useTranslations('WordsList');
@@ -198,6 +296,8 @@ export default function WordsList() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState<'all' | 'due' | 'mastered'>('all');
   const [editingWord, setEditingWord] = useState<Word | null>(null);
   const [deletingWordId, setDeletingWordId] = useState<string | null>(null);
 
@@ -303,35 +403,117 @@ export default function WordsList() {
     fetchWords(1);
   }, [session?.user?.id, statusFilter]);
 
+  // Filter words based on search term and view mode
+  const filteredWords = words.filter(word => {
+    const matchesSearch =
+      word.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      word.definition.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (word.context && word.context.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const matchesViewMode =
+      viewMode === 'all' ||
+      (viewMode === 'mastered' && word.mastered) ||
+      (viewMode === 'due' && !word.mastered);
+
+    return matchesSearch && matchesViewMode;
+  });
+
+  // Count statistics
+  const wordStats = {
+    total: words.length,
+    mastered: words.filter(w => w.mastered).length,
+    learning: words.filter(w => !w.mastered).length,
+    dueToday: words.filter(w =>
+      !w.mastered &&
+      w.next_review_at &&
+      new Date(w.next_review_at) <= new Date()
+    ).length
+  };
+
   if (loading && words.length === 0) {
     return <Skeleton />;
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end mb-4">
-        <Select
-          value={statusFilter}
-          onValueChange={(value) => setStatusFilter(value)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={t('filterPlaceholder')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('filters.all')}</SelectItem>
-            <SelectItem value="mastered">{t('filters.mastered')}</SelectItem>
-            <SelectItem value="learning">{t('filters.learning')}</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="bg-white rounded-lg p-4 mb-6 shadow-sm border border-gray-100">
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="bg-purple-50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-semibold text-purple-700">{wordStats.total}</div>
+            <div className="text-xs text-gray-500">{t('stats.totalWords')}</div>
+          </div>
+          <div className="bg-green-50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-semibold text-green-700">{wordStats.mastered}</div>
+            <div className="text-xs text-gray-500">{t('stats.mastered')}</div>
+          </div>
+          <div className="bg-blue-50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-semibold text-blue-700">{wordStats.dueToday}</div>
+            <div className="text-xs text-gray-500">{t('stats.dueToday')}</div>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center gap-3 justify-between">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder={t('search')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Tabs
+              value={viewMode}
+              onValueChange={(value) => setViewMode(value as 'all' | 'due' | 'mastered')}
+              className="w-full sm:w-auto"
+            >
+              <TabsList className="grid grid-cols-3 w-full">
+                <TabsTrigger value="all" className="text-xs px-2">
+                  {t('filters.all')}
+                </TabsTrigger>
+                <TabsTrigger value="due" className="text-xs px-2">
+                  {t('filters.due')}
+                </TabsTrigger>
+                <TabsTrigger value="mastered" className="text-xs px-2">
+                  {t('filters.mastered')}
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            <Select
+              value={statusFilter}
+              onValueChange={(value) => setStatusFilter(value)}
+            >
+              <SelectTrigger className="w-[130px]">
+                <SlidersHorizontal className="h-3.5 w-3.5 mr-2" />
+                <SelectValue placeholder={t('filterPlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('filters.allStages')}</SelectItem>
+                <SelectItem value="new">{t('filters.new')}</SelectItem>
+                <SelectItem value="learning">{t('filters.learning')}</SelectItem>
+                <SelectItem value="mastered">{t('filters.mastered')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
 
-      {words.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">
-          {t('noWordsFound')}
-        </p>
+      {filteredWords.length === 0 ? (
+        <div className="text-center py-12 rounded-lg border border-dashed border-gray-200 bg-gray-50">
+          <BookOpen className="h-12 w-12 mx-auto text-gray-300 mb-3" />
+          <h3 className="text-lg font-medium text-gray-700 mb-1">
+            {t('noWordsFound')}
+          </h3>
+          <p className="text-gray-500 max-w-md mx-auto">
+            {searchTerm ? t('noMatchingWords') : t('addFirstWord')}
+          </p>
+        </div>
       ) : (
-        <div className="space-y-4">
-          {words.map((word) => (
+        <div className="space-y-1">
+          {filteredWords.map((word) => (
             <WordCard
               key={word.id}
               word={word}
@@ -342,13 +524,21 @@ export default function WordsList() {
           ))}
 
           {hasMore && (
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-6">
               <Button
                 onClick={handleLoadMore}
                 disabled={loading}
                 variant="outline"
+                className="w-40"
               >
-                {loading ? t('loading') : t('loadMore')}
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t('loading')}
+                  </>
+                ) : (
+                  t('loadMore')
+                )}
               </Button>
             </div>
           )}
@@ -356,7 +546,7 @@ export default function WordsList() {
       )}
 
       {/* Edit Dialog */}
-      <Dialog open={!!editingWord} onOpenChange={() => setEditingWord(null)}>
+      <Dialog open={!!editingWord} onOpenChange={(open) => !open && setEditingWord(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('editWord')}</DialogTitle>
@@ -375,7 +565,7 @@ export default function WordsList() {
       {/* Delete Confirmation Dialog */}
       <AlertDialog
         open={!!deletingWordId}
-        onOpenChange={() => setDeletingWordId(null)}
+        onOpenChange={(open) => !open && setDeletingWordId(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -388,7 +578,7 @@ export default function WordsList() {
             <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 text-white"
             >
               {t('delete')}
             </AlertDialogAction>
