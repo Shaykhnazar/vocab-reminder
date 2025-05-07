@@ -9,7 +9,10 @@
     "profile": "Profil",
     "signIn": "Kirish",
     "signOut": "Chiqish",
-    "selectLanguage": "Tilni tanlang"
+    "selectLanguage": "Tilni tanlang",
+    "dashboard": "Natijalar",
+    "review": "Takrorlash",
+    "account": "Akkaunt"
   },
   "Footer": {
     "tagline": "Ilmiy asoslangan oraliq takrorlash tizimimiz bilan yangi so'zlarni samarali o'rganing.",
@@ -59,19 +62,40 @@
     },
     "howItWorks": {
       "title": "Bu qanday ishlaydi",
-      "subtitle": "Uch oddiy bosqichda oddiy va samarali o'rganish",
-      "step1": {
+      "addWords": {
         "title": "So'zlar qo'shing",
-        "description": "Yangi so'zlarni ta'riflari va misol kontekstlari bilan osonlikcha qo'shing"
+        "description": "O'rganmoqchi bo'lgan so'zlarni ta'riflari va konteksti bilan saqlang"
       },
-      "step2": {
+      "getReminders": {
         "title": "Eslatmalar oling",
-        "description": "Ilmiy optimallashtirilgan vaqt oraliqlarida bildirishnomalar oling"
+        "description": "Optimal vaqt oraliqlarida Telegram va elektron pochta orqali aqlli bildirishnomalar oling"
       },
-      "step3": {
+      "masterVocabulary": {
         "title": "So'z boyligini egallang",
-        "description": "So'zlarni ko'rib chiqing va ularni uzoq muddatli xotiraga ko'chirish uchun o'rganilgan deb belgilang"
+        "description": "So'zlar uzoq muddatli xotiraga o'tishini kuzatib boring"
       }
+    },
+    "keyFeatures": {
+      "title": "Asosiy xususiyatlar",
+      "progressTracking": {
+        "title": "Jarayonni kuzatish",
+        "description": "Intuitiv boshqaruv panellari orqali so'z boyligingiz o'sishini kuzating"
+      }
+    },
+    "reminderSchedule": {
+      "title": "Optimal eslatma jadvali",
+      "subtitle": "Maksimal eslab qolish uchun kognitiv fan tadqiqotlariga asoslangan",
+      "steps": [
+        { "time1": "1 soat", "description1": "Birinchi tezkor eslatma" },
+        { "time2": "3 soat", "description2": "Mustahkamlovchi eslatma" },
+        { "time3": "8 soat", "description3": "Kunlik eslatma" },
+        { "time4": "1 kun", "description4": "Keyingi kun takrorlash" },
+        { "time5": "3 kun", "description5": "Xotirada mustahkamlash" },
+        { "time6": "7 kun", "description6": "Uzoq muddatli xotiraga o'tkazish" }
+      ]
+    },
+    "joinUs": {
+      "text": "Bizning isbotlangan tizimimiz bilan yangi so'z boyligini o'zlashtirgan minglab til o'rganuvchilarga qo'shiling"
     },
     "testimonials": {
       "title": "Foydalanuvchilar nima deyishadi",
@@ -298,7 +322,9 @@
       "title": "Barcha so'zlar",
       "description": "Lug'at so'zlaringizni boshqaring",
       "stage": "Bosqich {stage}",
-      "review": "Takrorlash"
+      "review": "Takrorlash",
+      "new": "Yangi",
+      "mastered": "O'zlashtirilgan"
     },
     "pagination": {
       "previous": "Oldingi",
@@ -310,6 +336,25 @@
       "serendipity": "tasodifiy va omadli kashfiyot",
       "eloquent": "notiqlik, ifodali gapirish yoki yozish qobiliyatiga ega",
       "pragmatic": "amaliy, voqelikka asoslangan"
+    },
+    "welcomeUser": "Xush kelibsiz, {name}!",
+    "reviewsWaiting": "{count} ta so'z takrorlash kutilmoqda",
+    "allCaughtUp": "Hammasi joyida! Takrorlash uchun so'zlar yo'q",
+    "startReview": "Takrorlashni boshlash",
+    "learningProgress": "O'rganish jarayoni",
+    "words": "so'zlar",
+    "thisWeek": "shu hafta",
+    "currentStreak": "Joriy ketma-ketlik",
+    "days": "kun",
+    "personalBest": "Shaxsiy rekord",
+    "review": "Takrorlash",
+    "search": "Qidirish",
+    "viewAllWords": "Barcha so'zlarni ko'rish",
+    "noMatchingWords": "Mos so'zlar topilmadi",
+    "tabContent": {
+      "new": "Yangi so'zlar shu yerda ko'rsatiladi",
+      "learning": "O'rganilayotgan so'zlar shu yerda ko'rsatiladi",
+      "mastered": "O'zlashtirilgan so'zlar shu yerda ko'rsatiladi"
     }
   },
   "Words": {
@@ -319,7 +364,8 @@
     },
     "title": "So'z eslatmalari",
     "tabs": {
-      "addWords": "So'z qo'shish",
+      "addSingle": "So'z qo'shish",
+      "addMultiple": "Ko'p so'zlar qo'shish",
       "myWords": "Mening so'zlarim",
       "dictionaries": "Lug'atlar"
     },
@@ -337,7 +383,14 @@
     },
     "dictionaries": {
       "title": "Lug'at obunalari"
-    }
+    },
+    "description": "Lug'at to'plamingizni boshqaring",
+    "learningProgress": "O'rganish jarayoni",
+    "wordsForReview": "Bugun takrorlash uchun {count} ta so'z",
+    "addSingleDescription": "So'z boyligingizga yangi so'z qo'shing",
+    "extractImageDescription": "Rasmlar yoki skrinlar orqali so'zlarni ajratib oling",
+    "addMultipleDescription": "Matn, CSV yoki JSON formatidan bir vaqtning o'zida bir nechta so'zlarni import qiling",
+    "dictionaryDescription": "Tayyor lug'at to'plamlarini ko'rish va ularga obuna bo'lish"
   },
   "WordForm": {
     "fields": {
@@ -351,21 +404,31 @@
       },
       "context": {
         "label": "Kontekst (Ixtiyoriy)",
-        "placeholder": "So'zni eslab qolishga yordam beruvchi jumla yoki kontekst qo'shing"
+        "placeholder": "So'zni eslab qolishga yordam beruvchi jumla yoki kontekst qo'shing",
+        "optional": "Ixtiyoriy"
       }
     },
     "buttons": {
       "addWord": "So'z qo'shish",
-      "adding": "Qo'shilmoqda..."
+      "adding": "Qo'shilmoqda...",
+      "lookupDefinition": "Ta'rifni qidirish",
+      "openDictionary": "Lug'atni ochish"
+    },
+    "success": {
+      "wordAdded": "So'z qo'shildi!",
+      "reminderScheduled": "Eslatmalar rejalashtirildi."
     },
     "errors": {
       "requiredFields": "So'z va ta'rif kiritilishi shart",
-      "addWordFailed": "So'z qo'shib bo'lmadi"
+      "addWordFailed": "So'z qo'shib bo'lmadi",
+      "wordRequired": "So'z kiritish talab qilinadi",
+      "lookupFailed": "Ta'rifni topib bo'lmadi. Iltimos, qo'lda kiriting."
     },
     "toast": {
       "success": "Muvaffaqiyat",
       "wordAdded": "So'z muvaffaqiyatli qo'shildi!",
-      "error": "Xato"
+      "error": "Xato",
+      "definitionFound": "Ta'rif topildi va avtomatik to'ldirildi"
     }
   },
   "WordsList": {
@@ -399,7 +462,10 @@
     "filters": {
       "all": "Barcha so'zlar",
       "mastered": "O'zlashtirilgan",
-      "learning": "O'rganilayotgan"
+      "learning": "O'rganilayotgan",
+      "due": "Bugun",
+      "allStages": "Barcha bosqichlar",
+      "new": "Yangi so'zlar"
     },
     "noWordsFound": "So'zlar topilmadi. Yangi so'z qo'shishdan boshlang!",
     "loading": "Yuklanmoqda...",
@@ -408,7 +474,26 @@
     "deleteConfirmation": {
       "title": "Ishonchingiz komilmi?",
       "description": "Bu amalni ortga qaytarib bo'lmaydi. Bu so'z va unga bog'liq barcha ma'lumotlar butunlay o'chiriladi."
-    }
+    },
+    "stages": {
+      "new": "Yangi",
+      "learning": "O'rganish",
+      "reviewing": "Takrorlash",
+      "familiar": "Tanish",
+      "known": "Ma'lum",
+      "almostMastered": "Deyarli o'zlashtirilgan"
+    },
+    "wordLabel": "So'z",
+    "definitionLabel": "Ta'rif",
+    "contextLabel": "Kontekst",
+    "saving": "Saqlanmoqda...",
+    "search": "Qidirish",
+    "stats": {
+      "totalWords": "Jami so'zlar",
+      "mastered": "O'zlashtirilgan",
+      "dueToday": "Bugungi kun uchun"
+    },
+    "addFirstWord": "Yangi so'z qo'shishdan boshlang!"
   },
   "ImageExtractor": {
     "title": "Rasmdan so'zlarni ajratib olish",
@@ -687,6 +772,93 @@
         "failedReset": "Parolni tiklash amalga oshmadi. Iltimos, qayta urinib ko'ring."
       }
     }
+  },
+  "Review": {
+    "Metadata": {
+      "title": "So'zlarni takrorlash - Vocabry",
+      "description": "Lug'at so'zlarini kartochkalar yordamida takrorlash"
+    },
+    "flashcardReview": "Kartochkalarni takrorlash",
+    "back": "Orqaga",
+    "progress": "Jarayon",
+    "correct": "To'g'ri",
+    "incorrect": "Noto'g'ri",
+    "skip": "O'tkazib yuborish",
+    "pause": "To'xtatish",
+    "resume": "Davom ettirish",
+    "stage": "Bosqich",
+    "definition": "Ta'rif",
+    "exampleContext": "Misol konteksti",
+    "showContext": "Kontekstni ko'rsatish",
+    "tapToReveal": "Ta'rifni ko'rish uchun bosing",
+    "sessionComplete": "Mashg'ulot tugadi!",
+    "youCompleted": "Siz muvaffaqiyatli tugalladingiz",
+    "words": "so'zlar",
+    "returnToDashboard": "Boshqaruv paneliga qaytish",
+    "reviewAgain": "Qayta takrorlash",
+    "sessionPaused": "Mashg'ulot to'xtatildi",
+    "sessionPausedDescription": "Tanaffus qiling va tayyor bo'lganingizda davom eting",
+    "quitSession": "Mashg'ulotdan chiqish",
+    "loadingWords": "So'zlar yuklanmoqda...",
+    "noWordsToReview": "Hozircha takrorlash uchun so'zlar yo'q. Keyinroq qaytib keling!",
+    "reviewSuccess": "Muvaffaqiyatli takrorlash",
+    "addMoreWords": "Ko'proq so'zlar qo'shish",
+    "stats": {
+      "accuracy": "Aniqlik",
+      "timeSpent": "Sarflangan vaqt",
+      "wordsReviewed": "Takrorlangan so'zlar",
+      "averageTimePerWord": "So'z boshiga o'rtacha vaqt"
+    }
+  },
+  "DictionarySubscription": {
+    "title": "Lug'at obunalari",
+    "description": "Maxsus tayyorlangan lug'atlarga obuna bo'ling va so'zlarni to'g'ridan-to'g'ri lug'atingizga import qiling",
+    "tabs": {
+      "featured": "Tavsiya etilgan",
+      "all": "Barcha lug'atlar",
+      "categories": "Kategoriyalar",
+      "mySubscriptions": "Mening obunalarim"
+    },
+    "search": {
+      "placeholder": "Lug'atlarni qidirish..."
+    },
+    "emptySubscriptions": {
+      "title": "Hali obunalar yo'q",
+      "description": "So'zlarni to'g'ridan-to'g'ri lug'atingizga import qilish uchun lug'atlarga obuna bo'ling",
+      "browseButton": "Lug'atlarni ko'rish"
+    },
+    "subscriptionDetails": {
+      "words": "so'z",
+      "subscribedOn": "Obuna bo'lingan sana",
+      "notImportedYet": "Hali import qilinmagan",
+      "lastImported": "Oxirgi {count} ta so'z {date} sanasida import qilingan",
+      "importWords": "So'zlarni import qilish",
+      "refreshAndImport": "Yangilash va yangi so'zlarni import qilish"
+    },
+    "preview": {
+      "dictionaryCreator": "Lug'at yaratuvchisi",
+      "description": "Tavsif",
+      "wordCount": "So'zlar soni",
+      "words": "so'z",
+      "category": "Kategoriya",
+      "sampleWords": "Namuna so'zlar",
+      "viewDetails": "Batafsil ko'rish",
+      "cancel": "Bekor qilish",
+      "subscribe": "Obuna bo'lish",
+      "subscribing": "Obuna bo'linmoqda...",
+      "alreadySubscribed": "Allaqachon obuna bo'lingan"
+    },
+    "noResults": "Qidiruv mezonlaringizga mos keladigan lug'atlar topilmadi",
+    "loading": "Lug'atlar yuklanmoqda...",
+    "toast": {
+      "error": "Xato",
+      "loadDictionariesFailed": "Lug'atlarni yuklashda xatolik yuz berdi. Iltimos, qayta urinib ko'ring.",
+      "loadSubscriptionsFailed": "Obunalaringizni yuklashda xatolik yuz berdi.",
+      "success": "Muvaffaqiyat",
+      "subscribed": "Siz \"{title}\" lug'atiga obuna bo'ldingiz",
+      "subscribeFailed": "Lug'atga obuna bo'lishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring.",
+      "imported": "\"{title}\" lug'atidan {count} ta so'z import qilindi",
+      "importFailed": "So'zlarni import qilishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring."
+    }
   }
-
 }

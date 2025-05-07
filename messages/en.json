@@ -9,7 +9,10 @@
     "profile": "Profile",
     "signIn": "Sign In",
     "signOut": "Sign Out",
-    "selectLanguage": "Select Language"
+    "selectLanguage": "Select Language",
+    "dashboard": "Dashboard",
+    "review": "Review",
+    "account": "Account"
   },
   "Footer": {
     "tagline": "Master new words efficiently with our science-backed spaced repetition system.",
@@ -59,19 +62,40 @@
     },
     "howItWorks": {
       "title": "How It Works",
-      "subtitle": "Simple and effective learning in three easy steps",
-      "step1": {
-        "title": "Add Words",
-        "description": "Easily add new words with definitions and example contexts"
+      "addWords": {
+        "title": "Add New Words",
+        "description": "Save words you want to learn with definitions and context"
       },
-      "step2": {
-        "title": "Get Reminders",
-        "description": "Receive notifications at scientifically optimized intervals"
+      "getReminders": {
+        "title": "Receive Reminders",
+        "description": "Get smart notifications via Telegram and email at optimal intervals"
       },
-      "step3": {
+      "masterVocabulary": {
         "title": "Master Vocabulary",
-        "description": "Review and mark words as learned to move them to long-term memory"
+        "description": "Track progress as words move to your long-term memory"
       }
+    },
+    "keyFeatures": {
+      "title": "Key Features",
+      "progressTracking": {
+        "title": "Progress Tracking",
+        "description": "Monitor your vocabulary growth with intuitive progress dashboards"
+      }
+    },
+    "reminderSchedule": {
+      "title": "Optimal Reminder Schedule",
+      "subtitle": "Based on cognitive science research for maximum retention",
+      "steps": [
+        { "time1": "1 hour", "description1": "First quick reminder" },
+        { "time2": "3 hours", "description2": "Reinforcement reminder" },
+        { "time3": "8 hours", "description3": "Same-day reminder" },
+        { "time4": "1 day", "description4": "Next-day recall" },
+        { "time5": "3 days", "description5": "Memory consolidation" },
+        { "time6": "7 days", "description6": "Long-term memory transfer" }
+      ]
+    },
+    "joinUs": {
+      "text": "Join thousands of language learners who have mastered new vocabulary with our proven system"
     },
     "testimonials": {
       "title": "What Users Say",
@@ -298,7 +322,9 @@
       "title": "All Words",
       "description": "Manage all your vocabulary words",
       "stage": "Stage {stage}",
-      "review": "Review"
+      "review": "Review",
+      "new": "New",
+      "mastered": "Mastered"
     },
     "pagination": {
       "previous": "Previous",
@@ -310,6 +336,25 @@
       "serendipity": "the occurrence and development of events by chance",
       "eloquent": "fluent or persuasive in speaking or writing",
       "pragmatic": "dealing with things sensibly and realistically"
+    },
+    "welcomeUser": "Welcome, {name}!",
+    "reviewsWaiting": "{count} words waiting for review",
+    "allCaughtUp": "You're all caught up! No words to review",
+    "startReview": "Start Review",
+    "learningProgress": "Learning Progress",
+    "words": "words",
+    "thisWeek": "this week",
+    "currentStreak": "Current Streak",
+    "days": "days",
+    "personalBest": "Personal Best",
+    "review": "Review",
+    "search": "Search",
+    "viewAllWords": "View All Words",
+    "noMatchingWords": "No matching words found",
+    "tabContent": {
+      "new": "New words will appear here",
+      "learning": "Words you're learning will appear here",
+      "mastered": "Mastered words will appear here"
     }
   },
   "Words": {
@@ -319,9 +364,10 @@
     },
     "title": "Vocabulary Reminder",
     "tabs": {
-      "addWords": "Add Words",
+      "addMultiple": "Add Words",
       "myWords": "My Words",
-      "dictionaries": "Dictionaries"
+      "dictionaries": "Dictionaries",
+      "addSingle": "Add Word"
     },
     "addSingle": {
       "title": "Add Single Word"
@@ -337,7 +383,14 @@
     },
     "dictionaries": {
       "title": "Dictionary Subscriptions"
-    }
+    },
+    "description": "Manage your vocabulary collection",
+    "learningProgress": "Learning Progress",
+    "wordsForReview": "{count} words due for review today",
+    "addSingleDescription": "Add a new word to your vocabulary list",
+    "extractImageDescription": "Extract words from images or screenshots",
+    "addMultipleDescription": "Import multiple words at once from text, CSV, or JSON",
+    "dictionaryDescription": "Browse and subscribe to pre-made vocabulary sets"
   },
   "WordForm": {
     "fields": {
@@ -351,21 +404,31 @@
       },
       "context": {
         "label": "Context (Optional)",
-        "placeholder": "Add a sentence or context to help remember the word"
+        "placeholder": "Add a sentence or context to help remember the word",
+        "optional": "Optional"
       }
     },
     "buttons": {
       "addWord": "Add Word",
-      "adding": "Adding..."
+      "adding": "Adding...",
+      "lookupDefinition": "Look up definition",
+      "openDictionary": "Open dictionary"
     },
     "errors": {
       "requiredFields": "Word and definition are required",
-      "addWordFailed": "Failed to add word"
+      "addWordFailed": "Failed to add word",
+      "wordRequired": "Word is required",
+      "lookupFailed": "Couldn't find definition. Please enter manually."
     },
     "toast": {
       "success": "Success",
       "wordAdded": "Word added successfully!",
-      "error": "Error"
+      "error": "Error",
+      "definitionFound": "Definition found and filled automatically"
+    },
+    "success": {
+      "wordAdded": "Word added!",
+      "reminderScheduled": "Reminders have been scheduled."
     }
   },
   "WordsList": {
@@ -399,7 +462,10 @@
     "filters": {
       "all": "All Words",
       "mastered": "Mastered",
-      "learning": "Learning"
+      "learning": "Learning",
+      "due": "Due Today",
+      "allStages": "All Stages",
+      "new": "New Words"
     },
     "noWordsFound": "No words found. Start by adding a new word!",
     "loading": "Loading...",
@@ -408,7 +474,26 @@
     "deleteConfirmation": {
       "title": "Are you sure?",
       "description": "This action cannot be undone. This will permanently delete the word and all associated data."
-    }
+    },
+    "stages": {
+      "new": "New",
+      "learning": "Learning",
+      "reviewing": "Reviewing",
+      "familiar": "Familiar",
+      "known": "Known",
+      "almostMastered": "Almost Mastered"
+    },
+    "wordLabel": "Word",
+    "definitionLabel": "Definition",
+    "contextLabel": "Context",
+    "saving": "Saving...",
+    "search": "Search",
+    "stats": {
+      "totalWords": "Total Words",
+      "mastered": "Mastered",
+      "dueToday": "Due Today"
+    },
+    "addFirstWord": "Start by adding a new word!"
   },
   "ImageExtractor": {
     "title": "Extract Words from Image",
@@ -686,6 +771,94 @@
         "invalidToken": "Invalid reset token",
         "failedReset": "Failed to reset password. Please try again."
       }
+    }
+  },
+  "Review": {
+    "Metadata": {
+      "title": "Review Words - Vocabry",
+      "description": "Review your vocabulary words with flashcards"
+    },
+    "flashcardReview": "Flashcard Review",
+    "back": "Back",
+    "progress": "Progress",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "skip": "Skip",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stage": "Stage",
+    "definition": "Definition",
+    "exampleContext": "Example Context",
+    "showContext": "Show Context",
+    "tapToReveal": "Tap to reveal definition",
+    "sessionComplete": "Session Complete!",
+    "youCompleted": "You've successfully completed",
+    "words": "words",
+    "returnToDashboard": "Return to Dashboard",
+    "reviewAgain": "Review Again",
+    "sessionPaused": "Session Paused",
+    "sessionPausedDescription": "Take a break and resume when you're ready",
+    "quitSession": "Quit Session",
+    "loadingWords": "Loading words...",
+    "noWordsToReview": "No words to review at the moment. Check back later!",
+    "reviewSuccess": "Review Success",
+    "addMoreWords": "Add More Words",
+    "stats": {
+      "accuracy": "Accuracy",
+      "timeSpent": "Time Spent",
+      "wordsReviewed": "Words Reviewed",
+      "averageTimePerWord": "Average Time per Word"
+    }
+  },
+  "DictionarySubscription": {
+    "title": "Dictionary Subscriptions",
+    "description": "Subscribe to curated dictionaries and import words directly to your vocabulary",
+    "tabs": {
+      "featured": "Featured",
+      "all": "All Dictionaries",
+      "categories": "Categories",
+      "mySubscriptions": "My Subscriptions"
+    },
+    "search": {
+      "placeholder": "Search dictionaries..."
+    },
+    "emptySubscriptions": {
+      "title": "No subscriptions yet",
+      "description": "Subscribe to dictionaries to import words directly to your vocabulary",
+      "browseButton": "Browse Dictionaries"
+    },
+    "subscriptionDetails": {
+      "words": "words",
+      "subscribedOn": "Subscribed on",
+      "notImportedYet": "Not imported yet",
+      "lastImported": "Last imported {count} words on {date}",
+      "importWords": "Import Words",
+      "refreshAndImport": "Refresh & Import New Words"
+    },
+    "preview": {
+      "dictionaryCreator": "Dictionary Creator",
+      "description": "Description",
+      "wordCount": "Word Count",
+      "words": "words",
+      "category": "Category",
+      "sampleWords": "Sample Words",
+      "viewDetails": "View Details",
+      "cancel": "Cancel",
+      "subscribe": "Subscribe",
+      "subscribing": "Subscribing...",
+      "alreadySubscribed": "Already Subscribed"
+    },
+    "noResults": "No dictionaries found matching your search criteria",
+    "loading": "Loading dictionaries...",
+    "toast": {
+      "error": "Error",
+      "loadDictionariesFailed": "Failed to load dictionaries. Please try again.",
+      "loadSubscriptionsFailed": "Failed to load your subscriptions.",
+      "success": "Success",
+      "subscribed": "You've subscribed to \"{title}\"",
+      "subscribeFailed": "Failed to subscribe to dictionary. Please try again.",
+      "imported": "Imported {count} words from \"{title}\"",
+      "importFailed": "Failed to import words. Please try again."
     }
   }
 }
