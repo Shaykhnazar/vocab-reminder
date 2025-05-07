@@ -203,7 +203,7 @@ const WordCard = ({ word, onEdit, onDelete, t }: WordCardProps) => {
             </div>
           </div>
 
-          <Progress value={progressPercent} className="h-1.5" indicatorClassName={getProgressColor()} />
+          <Progress value={progressPercent} className="h-1.5" indicator-class-name={getProgressColor()} />
         </div>
       </CardContent>
     </Card>

@@ -72,7 +72,7 @@ const VocabularyDashboard = () => {
     item.definition.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getStageColor = (stage, mastered, isNew) => {
+  const getStageColor = (stage: number, mastered: boolean | undefined, isNew: boolean | undefined) => {
     if (mastered) return "bg-green-500";
     if (isNew) return "bg-gray-500";
 
@@ -193,7 +193,7 @@ const VocabularyDashboard = () => {
                   <Progress
                     value={newPercentage}
                     className="h-2"
-                    indicatorClassName="bg-gray-400"
+                    indicator-class-name="bg-gray-400"
                   />
                 </div>
                 <div>
@@ -209,7 +209,7 @@ const VocabularyDashboard = () => {
                   <Progress
                     value={learningPercentage}
                     className="h-2"
-                    indicatorClassName="bg-blue-500"
+                    indicator-class-name="bg-blue-500"
                   />
                 </div>
                 <div>
@@ -225,7 +225,7 @@ const VocabularyDashboard = () => {
                   <Progress
                     value={masteredPercentage}
                     className="h-2"
-                    indicatorClassName="bg-green-500"
+                    indicator-class-name="bg-green-500"
                   />
                 </div>
               </div>

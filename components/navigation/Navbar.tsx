@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
-import { Menu, Book, User, LogOut, ChevronDown, Plus, Home, Languages } from 'lucide-react';
+import { Menu, Book, User, LogOut, ChevronDown, Home } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import LogoSvg from "../../public/logo.svg";
 import { LanguageSelector } from '@/components/common/LanguageSelector';
@@ -53,14 +53,14 @@ export const Navbar = () => {
     router.push('/login');
   };
 
-  // Simplified navigation with icons for all items to maintain consistency
+  // Navigation links with icons
   const guestLinks = [
-    { href: '/', label: t('home') || 'Home', icon: Home },
+    { href: '/', label: t('home'), icon: Home },
   ];
 
   const authLinks = [
     { href: '/dashboard', label: t('dashboard') || 'Dashboard', icon: Home },
-    { href: '/words', label: t('myWords') || 'My Words', icon: Book },
+    { href: '/words', label: t('myWords'), icon: Book },
   ];
 
   const navLinks = session ? authLinks : guestLinks;
@@ -88,68 +88,66 @@ export const Navbar = () => {
           <Logo />
 
           {/* Mobile menu */}
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <nav className="flex flex-col gap-4 mt-8">
-                {navLinks.map((link) => (
-                  <SheetClose asChild key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="flex items-center text-lg font-medium py-2 hover:text-purple-600 transition-colors"
-                    >
-                      {link.icon && <link.icon className="mr-2 h-5 w-5" />}
-                      {link.label}
-                    </Link>
-                  </SheetClose>
-                ))}
+          <div className="flex items-center gap-2 md:hidden">
+            {/* Language selector moved outside for easier access on mobile */}
+            <LanguageSelector />
 
-                {session ? (
-                  <>
-
-                    <SheetClose asChild>
+            <Sheet>
+              <SheetTrigger asChild className="md:hidden">
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right">
+                <nav className="flex flex-col gap-4 mt-8">
+                  {navLinks.map((link) => (
+                    <SheetClose asChild key={link.href}>
                       <Link
-                        href="/profile"
-                        className="flex items-center text-lg font-medium py-2 hover:text-purple-600 transition-colors mt-4"
+                        href={link.href}
+                        className="flex items-center text-lg font-medium py-2 hover:text-purple-600 transition-colors"
                       >
-                        <User className="mr-2 h-5 w-5" />
-                        {t('profile') || 'Profile'}
+                        {link.icon && <link.icon className="mr-2 h-5 w-5" />}
+                        {link.label}
                       </Link>
                     </SheetClose>
+                  ))}
 
-                    <Button
-                      onClick={handleSignOut}
-                      variant="destructive"
-                      className="mt-2 w-full"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" /> {t('signOut') || 'Sign Out'}
-                    </Button>
-                  </>
-                ) : (
-                  <SheetClose asChild>
-                    <Button
-                      onClick={handleSignIn}
-                      className="mt-2 w-full bg-purple-600 hover:bg-purple-700"
-                    >
-                      {t('signIn') || 'Sign In'}
-                    </Button>
-                  </SheetClose>
-                )}
+                  {session ? (
+                    <>
+                      <SheetClose asChild>
+                        <Link
+                          href="/profile"
+                          className="flex items-center text-lg font-medium py-2 hover:text-purple-600 transition-colors mt-4"
+                        >
+                          <User className="mr-2 h-5 w-5" />
+                          {t('profile')}
+                        </Link>
+                      </SheetClose>
 
-                <div className="mt-6 pt-4 border-t">
-                  <div className="text-sm font-medium mb-2 flex items-center">
-                    <Languages className="h-4 w-4 mr-2" />
-                    {t('selectLanguage') || 'Select Language'}
-                  </div>
-                  <LanguageSelector/>
-                </div>
-              </nav>
-            </SheetContent>
-          </Sheet>
+                      <Button
+                        onClick={handleSignOut}
+                        variant="destructive"
+                        className="mt-2 w-full"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" /> {t('signOut')}
+                      </Button>
+                    </>
+                  ) : (
+                    <SheetClose asChild>
+                      <Button
+                        onClick={handleSignIn}
+                        className="mt-2 w-full bg-purple-600 hover:bg-purple-700"
+                      >
+                        {t('signIn')}
+                      </Button>
+                    </SheetClose>
+                  )}
+
+                  {/* We don't need the language selector in the menu anymore */}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
 
           {/* Desktop menu */}
           <nav className="hidden md:flex items-center gap-5">
@@ -166,12 +164,11 @@ export const Navbar = () => {
 
             {session ? (
               <>
-
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="ml-1">
                       <User className="mr-1 h-4 w-4" />
-                      <span className="hidden sm:inline">{t('account') || 'Account'}</span>
+                      <span className="hidden sm:inline">{t('profile')}</span>
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -179,13 +176,13 @@ export const Navbar = () => {
                     <DropdownMenuItem asChild>
                       <Link href="/profile" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
-                        {t('profile') || 'Profile'}
+                        {t('profile')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="flex items-center text-red-600">
                       <LogOut className="mr-2 h-4 w-4" />
-                      {t('signOut') || 'Sign Out'}
+                      {t('signOut')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -195,24 +192,12 @@ export const Navbar = () => {
                 onClick={handleSignIn}
                 className="bg-purple-600 hover:bg-purple-700"
               >
-                {t('signIn') || 'Sign In'}
+                {t('signIn')}
               </Button>
             )}
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Languages className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{t('selectLanguage') || 'Select Language'}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <div className="px-2 py-1.5">
-                  <LanguageSelector />
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Language selector */}
+            <LanguageSelector />
           </nav>
         </div>
       </div>

@@ -87,7 +87,7 @@ export default async function Words() {
                   {t('addSingle.title')}
                 </h2>
                 <p className="text-white/80 text-sm">
-                  Add a new word to your vocabulary list
+                  {t('addSingleDescription')}
                 </p>
               </div>
               <CardContent className="p-6">
@@ -103,7 +103,7 @@ export default async function Words() {
                   {t('extractImage.title')}
                 </h2>
                 <p className="text-white/80 text-sm">
-                  Extract words from images or screenshots
+                  {t('extractImageDescription')}
                 </p>
               </div>
               <CardContent className="p-6">
@@ -122,7 +122,7 @@ export default async function Words() {
                 {t('addMultiple.title')}
               </h2>
               <p className="text-white/80 text-sm">
-                Import multiple words at once from text, CSV, or JSON
+                {t('addMultipleDescription')}
               </p>
             </div>
             <CardContent className="p-6">
@@ -140,7 +140,7 @@ export default async function Words() {
                 {t('dictionaries.title')}
               </h2>
               <p className="text-white/80 text-sm">
-                Browse and subscribe to pre-made vocabulary sets
+                {t('dictionaryDescription')}
               </p>
             </div>
             <CardContent className="p-6">

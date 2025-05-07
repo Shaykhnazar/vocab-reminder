@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
-import { Globe } from 'lucide-react';
+import { CheckIcon } from 'lucide-react';
 import { locales, localeNames, type Locale } from '@/config/i18n';
 
 // Language flags mapping
@@ -28,7 +28,24 @@ type LanguageSelectorProps = {
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ variant = 'dropdown' }) => {
   const { currentLocale, handleLocaleChange } = useLocaleSwitch();
   const t = useTranslations('Common');
+  const [isOpen, setIsOpen] = React.useState(false);
 
+  // For mobile detection
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.innerWidth < 768);
+      const handleResize = () => {
+        setIsMobile(window.innerWidth < 768);
+      };
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
+
+  // Buttons variant - used in mobile menu
   if (variant === 'buttons') {
     return (
       <div className="flex flex-wrap gap-2">
@@ -50,26 +67,44 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ variant = 'd
     );
   }
 
+  // Dropdown variant - default for navbar
   return (
-    <DropdownMenu>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="w-auto px-2 flex items-center gap-1">
-          <Globe className="h-4 w-4" />
-          <span className="ml-1">{localeFlags[currentLocale]}</span>
-          <span className="sr-only md:not-sr-only md:ml-1 text-xs font-normal">{localeNames[currentLocale]}</span>
+        <Button
+          variant="ghost"
+          size={isMobile ? "default" : "sm"}
+          className="flex items-center gap-1"
+        >
+          <span className="text-lg mr-1">{localeFlags[currentLocale]}</span>
+          <span className={isMobile ? "" : "text-sm"}>{localeNames[currentLocale]}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {locales.map((l) => (
-          <DropdownMenuItem
-            key={l}
-            onClick={() => handleLocaleChange(l)}
-            className="flex items-center gap-2 cursor-pointer"
-          >
-            <span>{localeFlags[l]}</span>
-            <span>{localeNames[l]}</span>
-          </DropdownMenuItem>
-        ))}
+      <DropdownMenuContent align="end" className="w-48">
+        {locales.map((locale) => {
+          const isActive = currentLocale === locale;
+
+          return (
+            <DropdownMenuItem
+              key={locale}
+              className={`${isActive ? 'bg-purple-50' : ''}`}
+              onClick={() => {
+                if (!isActive) {
+                  handleLocaleChange(locale);
+                }
+                setIsOpen(false);
+              }}
+            >
+              <div className="flex items-center justify-between w-full py-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{localeFlags[locale]}</span>
+                  <span>{localeNames[locale]}</span>
+                </div>
+                {isActive && <CheckIcon className="h-4 w-4 text-purple-600" />}
+              </div>
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

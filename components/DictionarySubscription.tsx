@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useToast } from "@/hooks/use-toast";
 import { useWordsStore } from '@/lib/stores/use-words-store';
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/shadcn-ui/button";
 import { Input } from "@/components/shadcn-ui/input";
 import { Loader2, Search, BookOpen, User, Star, Plus, ArrowRight } from 'lucide-react';
@@ -59,6 +60,10 @@ interface SubscriptionDetails {
 }
 
 export default function DictionarySubscription() {
+  // Get translations
+  const t = useTranslations('DictionarySubscription');
+  const wordsT = useTranslations('Words');
+
   const [activeTab, setActiveTab] = useState('featured');
   const [dictionaries, setDictionaries] = useState<Dictionary[]>([]);
   const [mySubscriptions, setMySubscriptions] = useState<SubscriptionDetails[]>([]);
@@ -156,9 +161,8 @@ export default function DictionarySubscription() {
     } catch (error) {
       console.error("Error fetching dictionaries:", error);
       toast({
-        title: "Error",
-        description: "Failed to load dictionaries. Please try again.",
-
+        title: t('toast.error'),
+        description: t('toast.loadDictionariesFailed'),
       });
     } finally {
       setIsLoading(false);
@@ -180,9 +184,8 @@ export default function DictionarySubscription() {
     } catch (error) {
       console.error("Error fetching subscriptions:", error);
       toast({
-        title: "Error",
-        description: "Failed to load your subscriptions.",
-
+        title: t('toast.error'),
+        description: t('toast.loadSubscriptionsFailed'),
       });
     }
   };
@@ -225,17 +228,16 @@ export default function DictionarySubscription() {
 
       // Show success message
       toast({
-        title: "Success",
-        description: `You've subscribed to "${dictionary.title}"`,
+        title: t('toast.success'),
+        description: t('toast.subscribed', { title: dictionary.title }),
       });
 
       setShowDictionaryPreview(false);
     } catch (error) {
       console.error("Error subscribing to dictionary:", error);
       toast({
-        title: "Error",
-        description: "Failed to subscribe to dictionary. Please try again.",
-
+        title: t('toast.error'),
+        description: t('toast.subscribeFailed'),
       });
     } finally {
       setIsSubscribing(false);
@@ -251,8 +253,11 @@ export default function DictionarySubscription() {
 
       // Mock word import
       toast({
-        title: "Success",
-        description: `Imported ${subscription.dictionary.wordCount} words from "${subscription.dictionary.title}"`,
+        title: t('toast.success'),
+        description: t('toast.imported', {
+          count: subscription.dictionary.wordCount,
+          title: subscription.dictionary.title
+        }),
       });
 
       // Update subscription details
@@ -270,9 +275,8 @@ export default function DictionarySubscription() {
     } catch (error) {
       console.error("Error importing words:", error);
       toast({
-        title: "Error",
-        description: "Failed to import words. Please try again.",
-
+        title: t('toast.error'),
+        description: t('toast.importFailed'),
       });
     }
   };
@@ -300,25 +304,25 @@ export default function DictionarySubscription() {
     <>
       <Card className="w-full mb-8">
         <CardHeader>
-          <CardTitle>Dictionary Subscriptions</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
           <CardDescription>
-            Subscribe to curated dictionaries and import words directly to your vocabulary
+            {t('description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="flex justify-between items-center mb-4">
               <TabsList>
-                <TabsTrigger value="featured">Featured</TabsTrigger>
-                <TabsTrigger value="all">All Dictionaries</TabsTrigger>
-                <TabsTrigger value="categories">Categories</TabsTrigger>
-                <TabsTrigger value="my-subscriptions">My Subscriptions</TabsTrigger>
+                <TabsTrigger value="featured">{t('tabs.featured')}</TabsTrigger>
+                <TabsTrigger value="all">{t('tabs.all')}</TabsTrigger>
+                <TabsTrigger value="categories">{t('tabs.categories')}</TabsTrigger>
+                <TabsTrigger value="my-subscriptions">{t('tabs.mySubscriptions')}</TabsTrigger>
               </TabsList>
 
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search dictionaries..."
+                  placeholder={t('search.placeholder')}
                   className="pl-8 w-[250px]"
                   value={searchTerm}
                   onChange={handleSearchChange}
@@ -331,13 +335,13 @@ export default function DictionarySubscription() {
                 <div className="text-center py-12 space-y-4">
                   <BookOpen className="h-12 w-12 mx-auto text-muted-foreground" />
                   <div>
-                    <h3 className="text-lg font-medium">No subscriptions yet</h3>
+                    <h3 className="text-lg font-medium">{t('emptySubscriptions.title')}</h3>
                     <p className="text-muted-foreground">
-                      Subscribe to dictionaries to import words directly to your vocabulary
+                      {t('emptySubscriptions.description')}
                     </p>
                   </div>
                   <Button onClick={() => setActiveTab('featured')}>
-                    Browse Dictionaries
+                    {t('emptySubscriptions.browseButton')}
                   </Button>
                 </div>
               ) : (
@@ -365,22 +369,27 @@ export default function DictionarySubscription() {
                             <span>{subscription.dictionary.author.name}</span>
                           </div>
                           <span>•</span>
-                          <span className="mx-2">{subscription.dictionary.wordCount} words</span>
+                          <span className="mx-2">{subscription.dictionary.wordCount} {t('subscriptionDetails.words')}</span>
                           <span>•</span>
-                          <span className="mx-2">Subscribed on {formatDate(subscription.subscribedAt)}</span>
+                          <span className="mx-2">{t('subscriptionDetails.subscribedOn')} {formatDate(subscription.subscribedAt)}</span>
                         </div>
                       </CardContent>
                       <CardFooter className="flex justify-between pt-2">
                         <div className="text-sm text-muted-foreground">
                           {subscription.wordsAdded > 0
-                            ? `Last imported ${subscription.wordsAdded} words on ${formatDate(subscription.lastSyncedAt)}`
-                            : 'Not imported yet'}
+                            ? t('subscriptionDetails.lastImported', {
+                                count: subscription.wordsAdded,
+                                date: formatDate(subscription.lastSyncedAt)
+                              })
+                            : t('subscriptionDetails.notImportedYet')}
                         </div>
                         <Button
                           variant="outline"
                           onClick={() => importWords(subscription)}
                         >
-                          {subscription.wordsAdded > 0 ? 'Refresh & Import New Words' : 'Import Words'}
+                          {subscription.wordsAdded > 0
+                            ? t('subscriptionDetails.refreshAndImport')
+                            : t('subscriptionDetails.importWords')}
                         </Button>
                       </CardFooter>
                     </Card>
@@ -422,7 +431,7 @@ export default function DictionarySubscription() {
                             </Avatar>
                             <span>{dictionary.author.name}</span>
                             <span className="mx-2">•</span>
-                            <span>{dictionary.wordCount} words</span>
+                            <span>{dictionary.wordCount} {t('subscriptionDetails.words')}</span>
                           </div>
                         </CardContent>
                         <CardFooter className="pt-2">
@@ -431,7 +440,7 @@ export default function DictionarySubscription() {
                             className="w-full"
                             onClick={() => viewDictionaryDetails(dictionary)}
                           >
-                            View Details
+                            {t('preview.viewDetails')}
                           </Button>
                         </CardFooter>
                       </Card>
@@ -441,14 +450,13 @@ export default function DictionarySubscription() {
             </TabsContent>
 
             <TabsContent value="all">
-              {/* Similar layout to featured tab but with all dictionaries */}
               {isLoading ? (
                 <div className="flex justify-center py-8">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                 </div>
               ) : filteredDictionaries.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-muted-foreground">No dictionaries found matching your search criteria</p>
+                  <p className="text-muted-foreground">{t('noResults')}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -476,7 +484,7 @@ export default function DictionarySubscription() {
                           </Avatar>
                           <span>{dictionary.author.name}</span>
                           <span className="mx-2">•</span>
-                          <span>{dictionary.wordCount} words</span>
+                          <span>{dictionary.wordCount} {t('subscriptionDetails.words')}</span>
                         </div>
                       </CardContent>
                       <CardFooter className="pt-2">
@@ -485,7 +493,7 @@ export default function DictionarySubscription() {
                           className="w-full"
                           onClick={() => viewDictionaryDetails(dictionary)}
                         >
-                          View Details
+                          {t('preview.viewDetails')}
                         </Button>
                       </CardFooter>
                     </Card>
@@ -534,7 +542,7 @@ export default function DictionarySubscription() {
                                   </Avatar>
                                   <span>{dictionary.author.name}</span>
                                   <span className="mx-2">•</span>
-                                  <span>{dictionary.wordCount} words</span>
+                                  <span>{dictionary.wordCount} {t('subscriptionDetails.words')}</span>
                                 </div>
                               </CardContent>
                               <CardFooter className="pt-2">
@@ -543,7 +551,7 @@ export default function DictionarySubscription() {
                                   className="w-full"
                                   onClick={() => viewDictionaryDetails(dictionary)}
                                 >
-                                  View Details
+                                  {t('preview.viewDetails')}
                                 </Button>
                               </CardFooter>
                             </Card>
@@ -580,31 +588,31 @@ export default function DictionarySubscription() {
                 </Avatar>
                 <div>
                   <h3 className="font-medium">{selectedDictionary.author.name}</h3>
-                  <p className="text-sm text-muted-foreground">Dictionary Creator</p>
+                  <p className="text-sm text-muted-foreground">{t('preview.dictionaryCreator')}</p>
                 </div>
               </div>
 
               <div>
-                <h3 className="font-medium mb-1">Description</h3>
+                <h3 className="font-medium mb-1">{t('preview.description')}</h3>
                 <p>{selectedDictionary.description}</p>
               </div>
 
               <div className="flex flex-wrap gap-4">
                 <div className="bg-muted rounded-md px-4 py-2">
-                  <p className="text-sm text-muted-foreground">Word Count</p>
-                  <p className="font-medium">{selectedDictionary.wordCount} words</p>
+                  <p className="text-sm text-muted-foreground">{t('preview.wordCount')}</p>
+                  <p className="font-medium">{selectedDictionary.wordCount} {t('preview.words')}</p>
                 </div>
 
                 {selectedDictionary.category && (
                   <div className="bg-muted rounded-md px-4 py-2">
-                    <p className="text-sm text-muted-foreground">Category</p>
+                    <p className="text-sm text-muted-foreground">{t('preview.category')}</p>
                     <p className="font-medium">{selectedDictionary.category}</p>
                   </div>
                 )}
               </div>
 
               <div>
-                <h3 className="font-medium mb-2">Sample Words</h3>
+                <h3 className="font-medium mb-2">{t('preview.sampleWords')}</h3>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="border rounded-md p-2">
                     <p className="font-medium">ephemeral</p>
@@ -632,7 +640,7 @@ export default function DictionarySubscription() {
               variant="outline"
               onClick={() => setShowDictionaryPreview(false)}
             >
-              Cancel
+              {t('preview.cancel')}
             </Button>
             <Button
               className="gap-2"
@@ -642,13 +650,13 @@ export default function DictionarySubscription() {
               {isSubscribing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Subscribing...
+                  {t('preview.subscribing')}
                 </>
               ) : selectedDictionary?.isSubscribed ? (
-                'Already Subscribed'
+                t('preview.alreadySubscribed')
               ) : (
                 <>
-                  Subscribe
+                  {t('preview.subscribe')}
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
