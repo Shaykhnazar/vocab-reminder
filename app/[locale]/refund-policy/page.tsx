@@ -4,7 +4,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shadcn-ui/card';
 import { Separator } from '@/components/shadcn-ui/separator';
 import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import {Link} from '@/i18n/navigation';
 
 const RefundPolicyPage = () => {
   return (
