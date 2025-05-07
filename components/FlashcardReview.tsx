@@ -23,6 +23,20 @@ import {
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
+// Define the possible status types
+type CardStatus = 'correct' | 'incorrect' | 'skipped' | null;
+
+// Interface for flashcard
+interface Flashcard {
+  id: number;
+  word: string;
+  definition: string;
+  context: string | undefined;
+  stage: number;
+  reviewed: boolean;
+  status: CardStatus;
+}
+
 const FlashcardReview = () => {
   const t = useTranslations('Review');
   const router = useRouter();
@@ -39,8 +53,8 @@ const FlashcardReview = () => {
     isPaused: false
   });
 
-  // Mock flashcards data
-  const [cards, setCards] = useState([
+  // Mock flashcards data with proper typing
+  const [cards, setCards] = useState<Flashcard[]>([
     {
       id: 1,
       word: "ephemeral",
@@ -48,7 +62,7 @@ const FlashcardReview = () => {
       context: "The beauty of cherry blossoms is ephemeral, lasting only a few days each year.",
       stage: 3,
       reviewed: false,
-      status: null // null, 'correct', 'incorrect', or 'skipped'
+      status: null // now properly typed as null
     },
     {
       id: 2,
