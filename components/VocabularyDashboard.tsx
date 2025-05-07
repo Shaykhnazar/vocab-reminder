@@ -7,7 +7,7 @@ import { Button } from '@/components/shadcn-ui/button';
 import { Progress } from '@/components/shadcn-ui/progress';
 import { Calendar, Clock, Award, BookOpen, Plus, TrendingUp, List } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import {Link} from '@/i18n/navigation';
 import { useRouter } from 'next/navigation';
 
 const VocabularyDashboard = () => {

@@ -1,16 +1,11 @@
 // app/[locale]/layout.tsx
 import React from "react";
-import { NextIntlClientProvider } from 'next-intl';
+import {NextIntlClientProvider, hasLocale} from 'next-intl';
 import { notFound } from 'next/navigation';
+import {routing} from '@/i18n/routing';
 import { NextAuthProvider } from "@/components/NextAuthProvider";
 import { Navbar } from "@/components/navigation/Navbar";
 import { Footer } from "@/components/navigation/Footer";
-import { locales } from '@/config/i18n';
-
-// Generate routes for all supported locales
-export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
-}
 
 // Metadata generation with translations
 export async function generateMetadata({ 
@@ -27,13 +22,14 @@ export async function generateMetadata({
 
 export default async function LocaleLayout({
   children,
-  params: { locale }
+  params
 }: {
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  // Validate that the locale is supported
-  if (!locales.includes(locale as any)) {
+  // Ensure that the incoming `locale` is valid
+  const {locale} = params;
+  if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
 

@@ -2,7 +2,7 @@
 "use client";
 
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import {Link} from '@/i18n/navigation';
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/shadcn-ui/button";
 import { Brain, Clock, Bell, Mail } from 'lucide-react';

@@ -26,8 +26,8 @@ const nextConfig = {
   }
 };
 
-const withNextIntl = require('next-intl/plugin')(
-    './i18n.ts'
-);
+const createNextIntlPlugin = require('next-intl/plugin');
+
+const withNextIntl = createNextIntlPlugin();
 
 module.exports = withNextIntl(nextConfig);

@@ -1,7 +1,7 @@
 // app/verify-email/page.tsx
 import { verifyEmail } from '@/lib/auth';
 import { Button } from '@/components/shadcn-ui/button';
-import Link from 'next/link';
+import {Link} from '@/i18n/navigation';
 
 interface VerifyEmailPageProps {
   searchParams: { token?: string };
