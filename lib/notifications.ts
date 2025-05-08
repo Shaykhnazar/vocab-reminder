@@ -42,13 +42,13 @@ export async function addToNotificationQueue(notification: NotificationQueueItem
     if (!notificationType) {
       const { data: user, error } = await supabase
         .from('users')
-        .select('notification_preferences, telegram_id')
+        .select('notification_preferences, telegram_id, email')
         .eq('id', notification.userId)
         .single();
 
       if (error) throw error;
 
-      const hasEmail = user?.notification_preferences?.email;
+      const hasEmail = user?.notification_preferences?.email && user?.email;
       const hasTelegram = user?.notification_preferences?.telegram && user?.telegram_id;
 
       if (hasEmail && hasTelegram) {

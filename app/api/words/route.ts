@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     // Get user notification preferences
     const { data: userData, error: userError } = await supabase
       .from('users')
-      .select('notification_preferences, telegram_id')
+      .select('notification_preferences, telegram_id, email')
       .eq('id', userId)
       .single();
 
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     // Determine notification type based on user preferences
     let notificationType = 'email';
     if (userData) {
-      const hasEmail = userData.notification_preferences?.email;
+      const hasEmail = userData.notification_preferences?.email && userData.email;
       const hasTelegram = userData.notification_preferences?.telegram && userData.telegram_id;
 
       if (hasEmail && hasTelegram) {
