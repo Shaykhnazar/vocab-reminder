@@ -163,7 +163,7 @@ export async function processUserNotifications(userId: string) {
     console.log('Preparing to send notifications for words:', wordsToReview);
 
     // Handle email notifications
-    if (user.notification_preferences?.email) {
+    if (user.notification_preferences?.email && user.email) {
       console.log('Queueing email notification');
       // Queue email sending
       await emailQueue.enqueueJSON({
