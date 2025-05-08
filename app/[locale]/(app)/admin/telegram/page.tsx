@@ -39,7 +39,6 @@ export default function TelegramAdminPage() {
         toast({
           title: 'Access Denied',
           description: 'You do not have permission to access this page',
-          variant: 'destructive',
         });
       }
     } catch (error) {
@@ -101,7 +100,6 @@ export default function TelegramAdminPage() {
       toast({
         title: 'Error',
         description: 'Failed to set up Telegram webhook',
-        variant: 'destructive',
       });
     } finally {
       setLoading(false);
