@@ -22,7 +22,8 @@ async function validateAccess(req: Request): Promise<boolean> {
   // Check if user is admin
   // You can customize this logic based on your user roles
   const isAdmin = (session.user as any).role === 'admin' ||
-                 (session.user as any).is_super_admin;
+                 (session.user as any).is_super_admin ||
+                 (session.user as any).email === process.env.ADMIN_EMAIL;
 
   // Allow with admin API key as fallback
   const adminApiKey = process.env.ADMIN_API_KEY;
