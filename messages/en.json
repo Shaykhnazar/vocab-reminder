@@ -184,7 +184,36 @@
     "tabs": {
       "profile": "Profile",
       "notifications": "Notifications",
-      "statistics": "Statistics"
+      "statistics": "Statistics",
+      "subscription": "Subscription"
+    },
+    "subscriptionTab": {
+      "title": "Subscription & Plan",
+      "description": "Manage your subscription and view plan details"
+    },
+    "subscription": {
+      "validUntil": "Valid until {date}",
+      "expiredOn": "Expired on {date}",
+      "activeLabel": "Active",
+      "expiringLabel": "Expiring Soon",
+      "expiredLabel": "Expired",
+      "usage": "Word Usage",
+      "words": "words",
+      "almostFull": "You're almost at your word limit. Consider upgrading your plan.",
+      "featuresTitle": "Plan Features",
+      "renewNow": "Renew Now",
+      "manageBilling": "Manage Billing",
+      "noActiveTitle": "No Active Subscription",
+      "noActiveDescription": "Subscribe to a plan to unlock premium features and increase your word limit.",
+      "viewPlans": "View Plans",
+      "upgradePlan": "Upgrade Plan",
+      "upgradeDescription": "Get more words and features",
+      "billingHistory": "Billing History",
+      "billingDescription": "View your payment history",
+      "viewBilling": "View Billing",
+      "support": "Support",
+      "supportDescription": "Need help? Contact us",
+      "contactSupport": "Contact Support"
     },
     "profileTab": {
       "title": "Profile Information",
@@ -355,6 +384,24 @@
       "new": "New words will appear here",
       "learning": "Words you're learning will appear here",
       "mastered": "Mastered words will appear here"
+    },
+    "errors": {
+      "subscriptionFetchFailed": "Failed to fetch subscription data",
+      "subscription": {
+        "active": "Active Subscription",
+        "expiring": "Subscription Expiring Soon",
+        "expired": "Subscription Expired",
+        "activeDesc": "{plan} plan - {wordsRemaining} words remaining",
+        "expiringDesc": "Expires in {days} days",
+        "expiredDesc": "Please renew to continue enjoying premium features",
+        "renew": "Renew Now",
+        "manage": "Manage",
+        "usage": "Word Usage",
+        "used": "Words Used",
+        "almostFull": "Almost at your word limit. Consider upgrading your plan.",
+        "plan": "Current Plan: {plan}",
+        "upgrade": "Upgrade Plan"
+      }
     }
   },
   "Words": {
@@ -418,7 +465,9 @@
       "requiredFields": "Word and definition are required",
       "addWordFailed": "Failed to add word",
       "wordRequired": "Word is required",
-      "lookupFailed": "Couldn't find definition. Please enter manually."
+      "lookupFailed": "Couldn't find definition. Please enter manually.",
+      "subscriptionCheckFailed": "Failed to check subscription limits. Please try again.",
+      "wordLimitReached": "You have reached your word limit. Please upgrade your plan to add more words."
     },
     "toast": {
       "success": "Success",
@@ -429,6 +478,18 @@
     "success": {
       "wordAdded": "Word added!",
       "reminderScheduled": "Reminders have been scheduled."
+    },
+    "subscription": {
+      "title": "Word Usage",
+      "wordsUsed": "{used} of {total} words used",
+      "checking": "Checking...",
+      "limitWarning": "You have only {remaining} words remaining in your plan.",
+      "limitReached": "Word Limit Reached",
+      "upgradeMessage": "You have reached your word limit. Please upgrade your plan to add more words.",
+      "upgradePlan": "Upgrade Plan"
+    },
+    "info": {
+      "spacedRepetition": "This word will be reviewed using spaced repetition: 1 hour, 3 hours, 8 hours, 1 day, 3 days, and 7 days after adding."
     }
   },
   "WordsList": {

@@ -58,3 +58,74 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+@media (max-width: 640px) {
+  .text-sm, .text-xs {
+    line-height: 1.75 !important;
+  }
+
+  label {
+    line-height: 1.8 !important;
+  }
+}
+
+/* Fix for text overlapping on mobile - especially for Uzbek/Cyrillic text */
+@media (max-width: 640px) {
+  /* Fix for labels and descriptions */
+  label, .label {
+    line-height: 1.7 !important;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Fix for card descriptions and help text */
+  .card-description,
+  .text-muted-foreground,
+  .help-text {
+    line-height: 1.8 !important;
+    letter-spacing: 0.025em;
+  }
+
+  /* Fix for multiline text in form elements */
+  textarea {
+    line-height: 1.7 !important;
+  }
+
+  /* Fix for Uzbek/Cyrillic text specifically */
+  [lang="uz"],
+  .uz-text {
+    line-height: 1.9 !important;
+    letter-spacing: 0.03em;
+    word-spacing: 0.1em;
+  }
+
+  /* Fix for overlapping in instructions */
+  .instruction-text,
+  .form-text {
+    line-height: 1.8 !important;
+    padding: 0.25rem 0;
+  }
+
+  /* General text fixes */
+  p, div {
+    line-height: 1.6;
+  }
+
+  /* Fix for text in list items */
+  li {
+    line-height: 1.7;
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Specific fix for the bulk word adder instructions */
+.bulk-word-instructions {
+  line-height: 1.8 !important;
+  margin: 0.5rem 0;
+}
+
+/* Fix for any text that uses multiple lines */
+.multiline-text {
+  line-height: 1.8 !important;
+  letter-spacing: 0.025em;
+}

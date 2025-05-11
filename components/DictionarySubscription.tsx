@@ -302,28 +302,40 @@ export default function DictionarySubscription() {
 
   return (
     <>
-      <Card className="w-full mb-8">
-        <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
-          <CardDescription>
+      <Card className="w-full mb-6 md:mb-8">
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-lg md:text-xl">{t('title')}</CardTitle>
+          <CardDescription className="text-sm">
             {t('description')}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6 pt-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="flex justify-between items-center mb-4">
-              <TabsList>
-                <TabsTrigger value="featured">{t('tabs.featured')}</TabsTrigger>
-                <TabsTrigger value="all">{t('tabs.all')}</TabsTrigger>
-                <TabsTrigger value="categories">{t('tabs.categories')}</TabsTrigger>
-                <TabsTrigger value="my-subscriptions">{t('tabs.mySubscriptions')}</TabsTrigger>
-              </TabsList>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+              {/* Tabs with horizontal scroll on mobile */}
+              <div className="w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                <TabsList className="inline-flex md:grid md:grid-cols-4 h-9 gap-1">
+                  <TabsTrigger value="featured" className="text-xs md:text-sm whitespace-nowrap">
+                    {t('tabs.featured')}
+                  </TabsTrigger>
+                  <TabsTrigger value="all" className="text-xs md:text-sm whitespace-nowrap">
+                    {t('tabs.all')}
+                  </TabsTrigger>
+                  <TabsTrigger value="categories" className="text-xs md:text-sm whitespace-nowrap">
+                    {t('tabs.categories')}
+                  </TabsTrigger>
+                  <TabsTrigger value="my-subscriptions" className="text-xs md:text-sm whitespace-nowrap">
+                    {t('tabs.mySubscriptions')}
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-              <div className="relative">
+              {/* Search Input */}
+              <div className="relative w-full md:w-auto">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder={t('search.placeholder')}
-                  className="pl-8 w-[250px]"
+                  className="pl-8 w-full md:w-[250px] text-sm"
                   value={searchTerm}
                   onChange={handleSearchChange}
                 />
@@ -332,15 +344,15 @@ export default function DictionarySubscription() {
 
             <TabsContent value="my-subscriptions">
               {mySubscriptions.length === 0 ? (
-                <div className="text-center py-12 space-y-4">
-                  <BookOpen className="h-12 w-12 mx-auto text-muted-foreground" />
+                <div className="text-center py-8 md:py-12 space-y-4">
+                  <BookOpen className="h-10 w-10 md:h-12 md:w-12 mx-auto text-muted-foreground" />
                   <div>
-                    <h3 className="text-lg font-medium">{t('emptySubscriptions.title')}</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="text-base md:text-lg font-medium">{t('emptySubscriptions.title')}</h3>
+                    <p className="text-sm text-muted-foreground px-4">
                       {t('emptySubscriptions.description')}
                     </p>
                   </div>
-                  <Button onClick={() => setActiveTab('featured')}>
+                  <Button onClick={() => setActiveTab('featured')} className="text-sm">
                     {t('emptySubscriptions.browseButton')}
                   </Button>
                 </div>
@@ -348,34 +360,36 @@ export default function DictionarySubscription() {
                 <div className="space-y-4">
                   {mySubscriptions.map((subscription) => (
                     <Card key={subscription.dictionary.id}>
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-start">
+                      <CardHeader className="p-3 md:p-4 pb-2">
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-2">
                           <div>
-                            <CardTitle>{subscription.dictionary.title}</CardTitle>
-                            <CardDescription>{subscription.dictionary.description}</CardDescription>
+                            <CardTitle className="text-base md:text-lg">{subscription.dictionary.title}</CardTitle>
+                            <CardDescription className="text-sm mt-1">{subscription.dictionary.description}</CardDescription>
                           </div>
                           {subscription.dictionary.category && (
-                            <Badge variant="outline">{subscription.dictionary.category}</Badge>
+                            <Badge variant="outline" className="text-xs self-start">
+                              {subscription.dictionary.category}
+                            </Badge>
                           )}
                         </div>
                       </CardHeader>
-                      <CardContent className="pb-2">
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <div className="flex items-center mr-4">
-                            <Avatar className="h-6 w-6 mr-2">
+                      <CardContent className="p-3 md:p-4 pb-2">
+                        <div className="flex flex-wrap items-center text-xs md:text-sm text-muted-foreground gap-2">
+                          <div className="flex items-center">
+                            <Avatar className="h-5 w-5 md:h-6 md:w-6 mr-2">
                               <AvatarImage src={subscription.dictionary.author.avatar} />
                               <AvatarFallback>{subscription.dictionary.author.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <span>{subscription.dictionary.author.name}</span>
                           </div>
-                          <span>•</span>
-                          <span className="mx-2">{subscription.dictionary.wordCount} {t('subscriptionDetails.words')}</span>
-                          <span>•</span>
-                          <span className="mx-2">{t('subscriptionDetails.subscribedOn')} {formatDate(subscription.subscribedAt)}</span>
+                          <span className="hidden md:inline">•</span>
+                          <span>{subscription.dictionary.wordCount} {t('subscriptionDetails.words')}</span>
+                          <span className="hidden md:inline">•</span>
+                          <span>{t('subscriptionDetails.subscribedOn')} {formatDate(subscription.subscribedAt)}</span>
                         </div>
                       </CardContent>
-                      <CardFooter className="flex justify-between pt-2">
-                        <div className="text-sm text-muted-foreground">
+                      <CardFooter className="p-3 md:p-4 pt-2 flex flex-col md:flex-row justify-between gap-3">
+                        <div className="text-xs md:text-sm text-muted-foreground">
                           {subscription.wordsAdded > 0
                             ? t('subscriptionDetails.lastImported', {
                                 count: subscription.wordsAdded,
@@ -386,6 +400,7 @@ export default function DictionarySubscription() {
                         <Button
                           variant="outline"
                           onClick={() => importWords(subscription)}
+                          className="w-full md:w-auto text-xs md:text-sm"
                         >
                           {subscription.wordsAdded > 0
                             ? t('subscriptionDetails.refreshAndImport')
@@ -401,7 +416,7 @@ export default function DictionarySubscription() {
             <TabsContent value="featured">
               {isLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  <Loader2 className="h-6 w-6 md:h-8 md:w-8 animate-spin text-muted-foreground" />
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -409,23 +424,23 @@ export default function DictionarySubscription() {
                     .filter(dict => dict.isFeatured)
                     .map((dictionary) => (
                       <Card key={dictionary.id} className="overflow-hidden transition-all hover:shadow-md">
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between items-start">
-                            <CardTitle className="flex items-center">
+                        <CardHeader className="p-3 md:p-4 pb-2">
+                          <div className="flex justify-between items-start gap-2">
+                            <CardTitle className="flex items-center text-base md:text-lg">
                               {dictionary.title}
                               {dictionary.isFeatured && (
-                                <Star className="h-4 w-4 ml-2 text-yellow-500 fill-yellow-500" />
+                                <Star className="h-3 w-3 md:h-4 md:w-4 ml-2 text-yellow-500 fill-yellow-500" />
                               )}
                             </CardTitle>
                             {dictionary.category && (
-                              <Badge variant="outline">{dictionary.category}</Badge>
+                              <Badge variant="outline" className="text-xs">{dictionary.category}</Badge>
                             )}
                           </div>
-                          <CardDescription>{dictionary.description}</CardDescription>
+                          <CardDescription className="text-sm">{dictionary.description}</CardDescription>
                         </CardHeader>
-                        <CardContent className="pb-2">
-                          <div className="flex items-center text-sm text-muted-foreground">
-                            <Avatar className="h-6 w-6 mr-2">
+                        <CardContent className="p-3 md:p-4 pb-2">
+                          <div className="flex items-center text-xs md:text-sm text-muted-foreground">
+                            <Avatar className="h-5 w-5 md:h-6 md:w-6 mr-2">
                               <AvatarImage src={dictionary.author.avatar} />
                               <AvatarFallback>{dictionary.author.name.charAt(0)}</AvatarFallback>
                             </Avatar>
@@ -434,10 +449,10 @@ export default function DictionarySubscription() {
                             <span>{dictionary.wordCount} {t('subscriptionDetails.words')}</span>
                           </div>
                         </CardContent>
-                        <CardFooter className="pt-2">
+                        <CardFooter className="p-3 md:p-4 pt-2">
                           <Button
                             variant="outline"
-                            className="w-full"
+                            className="w-full text-sm"
                             onClick={() => viewDictionaryDetails(dictionary)}
                           >
                             {t('preview.viewDetails')}
@@ -452,45 +467,45 @@ export default function DictionarySubscription() {
             <TabsContent value="all">
               {isLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  <Loader2 className="h-6 w-6 md:h-8 md:w-8 animate-spin text-muted-foreground" />
                 </div>
               ) : filteredDictionaries.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">{t('noResults')}</p>
+                <div className="text-center py-8 md:py-12">
+                  <p className="text-sm text-muted-foreground">{t('noResults')}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredDictionaries.map((dictionary) => (
                     <Card key={dictionary.id} className="overflow-hidden transition-all hover:shadow-md">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-start">
-                          <CardTitle className="flex items-center">
+                      <CardHeader className="p-3 md:p-4 pb-2">
+                        <div className="flex justify-between items-start gap-2">
+                          <CardTitle className="flex items-center text-base md:text-lg">
                             {dictionary.title}
                             {dictionary.isFeatured && (
-                              <Star className="h-4 w-4 ml-2 text-yellow-500 fill-yellow-500" />
+                              <Star className="h-3 w-3 md:h-4 md:w-4 ml-2 text-yellow-500 fill-yellow-500" />
                             )}
                           </CardTitle>
                           {dictionary.category && (
-                            <Badge variant="outline">{dictionary.category}</Badge>
+                            <Badge variant="outline" className="text-xs">{dictionary.category}</Badge>
                           )}
                         </div>
                       </CardHeader>
-                      <CardContent className="pb-2">
-                        <p className="text-sm mb-2">{dictionary.description}</p>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Avatar className="h-6 w-6 mr-2">
+                      <CardContent className="p-3 md:p-4 pb-2">
+                        <p className="text-sm mb-2 line-clamp-2">{dictionary.description}</p>
+                        <div className="flex items-center text-xs md:text-sm text-muted-foreground">
+                          <Avatar className="h-5 w-5 md:h-6 md:w-6 mr-2">
                             <AvatarImage src={dictionary.author.avatar} />
                             <AvatarFallback>{dictionary.author.name.charAt(0)}</AvatarFallback>
                           </Avatar>
-                          <span>{dictionary.author.name}</span>
+                          <span className="truncate">{dictionary.author.name}</span>
                           <span className="mx-2">•</span>
                           <span>{dictionary.wordCount} {t('subscriptionDetails.words')}</span>
                         </div>
                       </CardContent>
-                      <CardFooter className="pt-2">
+                      <CardFooter className="p-3 md:p-4 pt-2">
                         <Button
                           variant="outline"
-                          className="w-full"
+                          className="w-full text-sm"
                           onClick={() => viewDictionaryDetails(dictionary)}
                         >
                           {t('preview.viewDetails')}
@@ -505,10 +520,10 @@ export default function DictionarySubscription() {
             <TabsContent value="categories">
               {isLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  <Loader2 className="h-6 w-6 md:h-8 md:w-8 animate-spin text-muted-foreground" />
                 </div>
               ) : (
-                <div className="space-y-8">
+                <div className="space-y-6 md:space-y-8">
                   {['Academic', 'Business', 'Test Prep', 'Specialized'].map((category) => {
                     const categoryDictionaries = filteredDictionaries.filter(
                       dict => dict.category === category
@@ -518,37 +533,37 @@ export default function DictionarySubscription() {
 
                     return (
                       <div key={category}>
-                        <div className="flex items-center mb-4">
-                          <h3 className="text-lg font-medium">{category}</h3>
+                        <div className="flex items-center mb-3 md:mb-4">
+                          <h3 className="text-base md:text-lg font-medium">{category}</h3>
                           <Separator className="flex-1 mx-4" />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                           {categoryDictionaries.map((dictionary) => (
                             <Card key={dictionary.id} className="overflow-hidden transition-all hover:shadow-md">
-                              <CardHeader className="pb-2">
-                                <CardTitle className="flex items-center">
+                              <CardHeader className="p-3 md:p-4 pb-2">
+                                <CardTitle className="flex items-center text-base md:text-lg">
                                   {dictionary.title}
                                   {dictionary.isFeatured && (
-                                    <Star className="h-4 w-4 ml-2 text-yellow-500 fill-yellow-500" />
+                                    <Star className="h-3 w-3 md:h-4 md:w-4 ml-2 text-yellow-500 fill-yellow-500" />
                                   )}
                                 </CardTitle>
                               </CardHeader>
-                              <CardContent className="pb-2">
-                                <p className="text-sm mb-2">{dictionary.description}</p>
-                                <div className="flex items-center text-sm text-muted-foreground">
-                                  <Avatar className="h-6 w-6 mr-2">
+                              <CardContent className="p-3 md:p-4 pb-2">
+                                <p className="text-sm mb-2 line-clamp-2">{dictionary.description}</p>
+                                <div className="flex items-center text-xs md:text-sm text-muted-foreground">
+                                  <Avatar className="h-5 w-5 md:h-6 md:w-6 mr-2">
                                     <AvatarImage src={dictionary.author.avatar} />
                                     <AvatarFallback>{dictionary.author.name.charAt(0)}</AvatarFallback>
                                   </Avatar>
-                                  <span>{dictionary.author.name}</span>
+                                  <span className="truncate">{dictionary.author.name}</span>
                                   <span className="mx-2">•</span>
                                   <span>{dictionary.wordCount} {t('subscriptionDetails.words')}</span>
                                 </div>
                               </CardContent>
-                              <CardFooter className="pt-2">
+                              <CardFooter className="p-3 md:p-4 pt-2">
                                 <Button
                                   variant="outline"
-                                  className="w-full"
+                                  className="w-full text-sm"
                                   onClick={() => viewDictionaryDetails(dictionary)}
                                 >
                                   {t('preview.viewDetails')}
@@ -567,83 +582,84 @@ export default function DictionarySubscription() {
         </CardContent>
       </Card>
 
-      {/* Dictionary Preview Dialog */}
+      {/* Dictionary Preview Dialog - Mobile Responsive */}
       <Dialog open={showDictionaryPreview} onOpenChange={setShowDictionaryPreview}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-auto p-4 md:p-6">
           <DialogHeader>
-            <DialogTitle className="flex items-center">
+            <DialogTitle className="flex items-center text-lg md:text-xl">
               {selectedDictionary?.title}
               {selectedDictionary?.isFeatured && (
-                <Star className="h-5 w-5 ml-2 text-yellow-500 fill-yellow-500" />
+                <Star className="h-4 w-4 md:h-5 md:w-5 ml-2 text-yellow-500 fill-yellow-500" />
               )}
             </DialogTitle>
           </DialogHeader>
 
           {selectedDictionary && (
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <Avatar className="h-10 w-10">
+            <div className="space-y-4 md:space-y-6">
+              <div className="flex items-start gap-3 md:gap-4">
+                <Avatar className="h-8 w-8 md:h-10 md:w-10">
                   <AvatarImage src={selectedDictionary.author.avatar} />
                   <AvatarFallback>{selectedDictionary.author.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-medium">{selectedDictionary.author.name}</h3>
-                  <p className="text-sm text-muted-foreground">{t('preview.dictionaryCreator')}</p>
+                  <h3 className="font-medium text-sm md:text-base">{selectedDictionary.author.name}</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground">{t('preview.dictionaryCreator')}</p>
                 </div>
               </div>
 
               <div>
-                <h3 className="font-medium mb-1">{t('preview.description')}</h3>
-                <p>{selectedDictionary.description}</p>
+                <h3 className="font-medium mb-1 text-sm md:text-base">{t('preview.description')}</h3>
+                <p className="text-sm">{selectedDictionary.description}</p>
               </div>
 
-              <div className="flex flex-wrap gap-4">
-                <div className="bg-muted rounded-md px-4 py-2">
-                  <p className="text-sm text-muted-foreground">{t('preview.wordCount')}</p>
-                  <p className="font-medium">{selectedDictionary.wordCount} {t('preview.words')}</p>
+              <div className="flex flex-wrap gap-3 md:gap-4">
+                <div className="bg-muted rounded-md px-3 py-2 md:px-4 md:py-2">
+                  <p className="text-xs md:text-sm text-muted-foreground">{t('preview.wordCount')}</p>
+                  <p className="font-medium text-sm md:text-base">{selectedDictionary.wordCount} {t('preview.words')}</p>
                 </div>
 
                 {selectedDictionary.category && (
-                  <div className="bg-muted rounded-md px-4 py-2">
-                    <p className="text-sm text-muted-foreground">{t('preview.category')}</p>
-                    <p className="font-medium">{selectedDictionary.category}</p>
+                  <div className="bg-muted rounded-md px-3 py-2 md:px-4 md:py-2">
+                    <p className="text-xs md:text-sm text-muted-foreground">{t('preview.category')}</p>
+                    <p className="font-medium text-sm md:text-base">{selectedDictionary.category}</p>
                   </div>
                 )}
               </div>
 
               <div>
-                <h3 className="font-medium mb-2">{t('preview.sampleWords')}</h3>
-                <div className="grid grid-cols-2 gap-2">
+                <h3 className="font-medium mb-2 text-sm md:text-base">{t('preview.sampleWords')}</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div className="border rounded-md p-2">
-                    <p className="font-medium">ephemeral</p>
-                    <p className="text-sm">Lasting for a very short time</p>
+                    <p className="font-medium text-sm">ephemeral</p>
+                    <p className="text-xs md:text-sm">Lasting for a very short time</p>
                   </div>
                   <div className="border rounded-md p-2">
-                    <p className="font-medium">serendipity</p>
-                    <p className="text-sm">The occurrence of events by chance in a happy way</p>
+                    <p className="font-medium text-sm">serendipity</p>
+                    <p className="text-xs md:text-sm">The occurrence of events by chance in a happy way</p>
                   </div>
                   <div className="border rounded-md p-2">
-                    <p className="font-medium">eloquent</p>
-                    <p className="text-sm">Fluent or persuasive in speaking or writing</p>
+                    <p className="font-medium text-sm">eloquent</p>
+                    <p className="text-xs md:text-sm">Fluent or persuasive in speaking or writing</p>
                   </div>
                   <div className="border rounded-md p-2">
-                    <p className="font-medium">meticulous</p>
-                    <p className="text-sm">Showing great attention to detail</p>
+                    <p className="font-medium text-sm">meticulous</p>
+                    <p className="text-xs md:text-sm">Showing great attention to detail</p>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2 pt-4">
             <Button
               variant="outline"
               onClick={() => setShowDictionaryPreview(false)}
+              className="w-full sm:w-auto text-sm"
             >
               {t('preview.cancel')}
             </Button>
             <Button
-              className="gap-2"
+              className="gap-2 w-full sm:w-auto text-sm"
               onClick={() => handleSubscribe(selectedDictionary!)}
               disabled={isSubscribing || selectedDictionary?.isSubscribed}
             >

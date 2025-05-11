@@ -8,6 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/shadcn-ui/card";
 import {
   Tabs,
@@ -39,13 +40,34 @@ import {
   RefreshCw,
   AlertTriangle,
   Check,
-  ExternalLink
+  ExternalLink,
+  CreditCard,
+  Crown,
+  ArrowRight
 } from 'lucide-react';
 import { useSession } from "next-auth/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shadcn-ui/alert";
 import { Badge } from "@/components/shadcn-ui/badge";
 import { Separator } from "@/components/shadcn-ui/separator";
 import { useTranslations } from 'next-intl';
+
+import { Link } from "@/i18n/navigation";
+import { Progress } from "@/components/shadcn-ui/progress";
+
+interface SubscriptionData {
+  currentSubscription: {
+    id: string;
+    status: string;
+    planName: string;
+    expiresAt: string;
+    startsAt: string;
+    daysRemaining: number;
+    features: string[];
+    wordLimit: number;
+    wordsUsed: number;
+    wordsRemaining: number;
+  } | null;
+}
 
 const ProfilePage = () => {
   const t = useTranslations('Profile');
@@ -79,6 +101,10 @@ const ProfilePage = () => {
     refreshing: false
   });
 
+  // Add subscription state
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
+
   const form = useForm({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -97,7 +123,7 @@ const ProfilePage = () => {
 
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Fetch user data
+  // Fetch user data and subscription
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -130,7 +156,23 @@ const ProfilePage = () => {
       }
     };
 
+    const fetchSubscriptionData = async () => {
+      try {
+        const response = await fetch('/api/subscriptions');
+        if (!response.ok) throw new Error('Failed to fetch subscription');
+        const data = await response.json();
+        setSubscription({
+          currentSubscription: data.currentSubscription
+        });
+      } catch (error) {
+        console.error('Error fetching subscription:', error);
+      } finally {
+        setSubscriptionLoading(false);
+      }
+    };
+
     fetchUserData();
+    fetchSubscriptionData();
   }, [form, toast, t]);
 
   const onSubmit = async (data: z.infer<typeof profileFormSchema>) => {
@@ -295,6 +337,16 @@ const ProfilePage = () => {
     }
   };
 
+  // Calculate subscription metrics
+  const isActiveSubscription = subscription?.currentSubscription?.status === 'active';
+  const isExpiringSubscription = subscription?.currentSubscription?.daysRemaining
+    ? subscription.currentSubscription.daysRemaining < 7 && subscription.currentSubscription.daysRemaining > 0
+    : false;
+  const isExpiredSubscription = subscription?.currentSubscription?.status === 'expired';
+  const wordUsagePercentage = subscription?.currentSubscription
+    ? (subscription.currentSubscription.wordsUsed / subscription.currentSubscription.wordLimit) * 100
+    : 0;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
@@ -308,6 +360,10 @@ const ProfilePage = () => {
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Bell className="h-4 w-4" />
             {t('tabs.notifications')}
+          </TabsTrigger>
+          <TabsTrigger value="subscription" className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4" />
+            {t('tabs.subscription')}
           </TabsTrigger>
           <TabsTrigger value="statistics" className="flex items-center gap-2">
             <BarChart className="h-4 w-4" />
@@ -529,6 +585,164 @@ const ProfilePage = () => {
               </Alert>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Subscription Tab (New) */}
+        <TabsContent value="subscription">
+          <div className="space-y-6">
+            {/* Subscription Status Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('subscriptionTab.title')}</CardTitle>
+                <CardDescription>
+                  {t('subscriptionTab.description')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {subscriptionLoading ? (
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-8 bg-gray-200 rounded w-full"></div>
+                  </div>
+                ) : subscription?.currentSubscription ? (
+                  <div className="space-y-6">
+                    {/* Plan Info */}
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Crown className="h-8 w-8 text-purple-600" />
+                        <div>
+                          <h3 className="font-semibold text-lg">
+                            {subscription.currentSubscription.planName}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {isActiveSubscription
+                              ? t('subscription.validUntil', { date: new Date(subscription.currentSubscription.expiresAt).toLocaleDateString() })
+                              : t('subscription.expiredOn', { date: new Date(subscription.currentSubscription.expiresAt).toLocaleDateString() })
+                            }
+                          </p>
+                        </div>
+                      </div>
+                      <Badge
+                        variant={isActiveSubscription ? "default" : "destructive"}
+                        className={isExpiringSubscription ? "bg-amber-500" : ""}
+                      >
+                        {isActiveSubscription
+                          ? isExpiringSubscription
+                            ? t('subscription.expiringLabel')
+                            : t('subscription.activeLabel')
+                          : t('subscription.expiredLabel')
+                        }
+                      </Badge>
+                    </div>
+
+                    {/* Usage Bar */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span>{t('subscription.usage')}</span>
+                        <span>
+                          {subscription.currentSubscription.wordsUsed} / {subscription.currentSubscription.wordLimit} {t('subscription.words')}
+                        </span>
+                      </div>
+                      <Progress
+                        value={wordUsagePercentage}
+                        className="h-2"
+                      />
+                      {wordUsagePercentage >= 90 && (
+                        <p className="text-xs text-red-600">
+                          {t('subscription.almostFull')}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Features */}
+                    <div>
+                      <h4 className="font-medium mb-2">{t('subscription.featuresTitle')}</h4>
+                      <ul className="space-y-1">
+                        {subscription.currentSubscription.features.map((feature, index) => (
+                          <li key={index} className="flex items-center text-sm text-gray-600">
+                            <Check className="h-4 w-4 text-green-500 mr-2" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-3 pt-4">
+                      {(isExpiredSubscription || isExpiringSubscription) && (
+                        <Button asChild>
+                          <Link href="/subscriptions">
+                            <CreditCard className="h-4 w-4 mr-2" />
+                            {t('subscription.renewNow')}
+                          </Link>
+                        </Button>
+                      )}
+                      <Button variant="outline" asChild>
+                        <Link href="/billing">
+                          {t('subscription.manageBilling')}
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Crown className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium mb-2">{t('subscription.noActiveTitle')}</h3>
+                    <p className="text-gray-600 mb-6">{t('subscription.noActiveDescription')}</p>
+                    <Button asChild>
+                      <Link href="/subscriptions">
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        {t('subscription.viewPlans')}
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Quick Actions */}
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card className="border-dashed">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center text-center">
+                    <ArrowRight className="h-8 w-8 text-blue-500 mb-3" />
+                    <h3 className="font-medium mb-1">{t('subscription.upgradePlan')}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{t('subscription.upgradeDescription')}</p>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link href="/subscriptions">{t('subscription.viewPlans')}</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-dashed">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center text-center">
+                    <CreditCard className="h-8 w-8 text-green-500 mb-3" />
+                    <h3 className="font-medium mb-1">{t('subscription.billingHistory')}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{t('subscription.billingDescription')}</p>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link href="/billing">{t('subscription.viewBilling')}</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-dashed">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center text-center">
+                    <MessageCircle className="h-8 w-8 text-purple-500 mb-3" />
+                    <h3 className="font-medium mb-1">{t('subscription.support')}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{t('subscription.supportDescription')}</p>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link href="/support">{t('subscription.contactSupport')}</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </TabsContent>
 
         {/* Statistics Tab */}

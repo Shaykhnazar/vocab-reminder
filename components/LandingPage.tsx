@@ -58,7 +58,7 @@ export default function LandingPage() {
           {/* Hero Image */}
           <div className="lg:w-1/2 rounded-xl overflow-hidden shadow-2xl">
             <img
-              src="/api/placeholder/600/400"
+              src="/images/main_showcase.png"
               alt="Vocabulary learning app showcase"
               className="w-full h-auto object-cover"
             />
@@ -80,7 +80,7 @@ export default function LandingPage() {
               <h3 className="text-xl font-semibold mb-2">{t('howItWorks.addWords.title')}</h3>
               <p className="text-gray-600">{t('howItWorks.addWords.description')}</p>
               <img
-                src="/api/placeholder/300/200"
+                src="/images/add_word.png"
                 alt={t('howItWorks.addWords.title')}
                 className="mt-4 rounded-lg shadow-md w-full"
               />
@@ -94,7 +94,7 @@ export default function LandingPage() {
               <h3 className="text-xl font-semibold mb-2">{t('howItWorks.getReminders.title')}</h3>
               <p className="text-gray-600">{t('howItWorks.getReminders.description')}</p>
               <img
-                src="/api/placeholder/300/200"
+                src="/images/telegram-notification.png"
                 alt={t('howItWorks.getReminders.title')}
                 className="mt-4 rounded-lg shadow-md w-full"
               />
@@ -108,7 +108,7 @@ export default function LandingPage() {
               <h3 className="text-xl font-semibold mb-2">{t('howItWorks.masterVocabulary.title')}</h3>
               <p className="text-gray-600">{t('howItWorks.masterVocabulary.description')}</p>
               <img
-                src="/api/placeholder/300/200"
+                src="/images/mastered.png"
                 alt={t('howItWorks.masterVocabulary.title')}
                 className="mt-4 rounded-lg shadow-md w-full"
               />
