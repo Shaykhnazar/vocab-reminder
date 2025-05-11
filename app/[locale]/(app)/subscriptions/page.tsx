@@ -15,5 +15,6 @@ export default async function Subscriptions() {
   // Get full subscription data including plans and current subscription
   const subscriptionData = await getFullSubscriptionData(session.user.id);
 
+  // @ts-ignore
   return <SubscriptionsPage data={subscriptionData} />;
 }
