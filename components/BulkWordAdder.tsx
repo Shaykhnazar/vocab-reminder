@@ -298,149 +298,168 @@ export default function BulkWordAdder() {
   return (
     <>
       <Card className="w-full">
-        <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
-          <CardDescription>
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-lg md:text-xl">{t('title')}</CardTitle>
+          <CardDescription className="text-sm">
             {t('description')}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Tabs value={inputMethod} onValueChange={(value) => setInputMethod(value as 'text' | 'file' | 'paste')}>
-            <TabsList className="grid grid-cols-3 mb-4">
-              <TabsTrigger value="text">{t('tabs.typeOrPaste')}</TabsTrigger>
-              <TabsTrigger value="file">{t('tabs.uploadFile')}</TabsTrigger>
-              <TabsTrigger value="paste">{t('tabs.advancedFormat')}</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="text" className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="word-text">{t('text.instructions', { separator })}</Label>
-                <Textarea
-                  id="word-text"
-                  placeholder={t('text.placeholder', { separator })}
-                  value={wordText}
-                  onChange={(e) => setWordText(e.target.value)}
-                  className="min-h-[200px]"
-                />
-                <div className="text-sm text-muted-foreground">
-                  {t('text.helpText', { separator })}
-                </div>
+        <CardContent className="p-4 md:p-6 pt-0">
+          <Tabs value={inputMethod} onValueChange={(value) => setInputMethod(value as 'text' | 'file' | 'paste')}
+                className="w-full"
+          >
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+              {/* Tabs with horizontal scroll on mobile */}
+              <div className="w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                <TabsList className="inline-flex md:grid md:grid-cols-4 h-9 gap-1">
+                  <TabsTrigger value="text" className="text-xs md:text-sm whitespace-nowrap">{t('tabs.typeOrPaste')}</TabsTrigger>
+                  <TabsTrigger value="file" className="text-xs md:text-sm whitespace-nowrap">{t('tabs.uploadFile')}</TabsTrigger>
+                  <TabsTrigger value="paste" className="text-xs md:text-sm whitespace-nowrap">{t('tabs.advancedFormat')}</TabsTrigger>
+                </TabsList>
               </div>
-            </TabsContent>
+            </div>
 
-            <TabsContent value="file" className="space-y-4">
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Input
-                    type="file"
-                    accept=".txt,.csv,.json"
-                    onChange={handleFileUpload}
-                    className="flex-1"
-                  />
-                  {wordFile && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={clearFile}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-
-                {wordFile && (
-                  <div className="p-4 border rounded-md bg-muted/50">
-                    <p className="font-medium">{t('file.label')}: {wordFile.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {wordFile.content.length > 200
-                        ? wordFile.content.substring(0, 200) + '...'
-                        : wordFile.content}
-                    </p>
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <Label>{t('file.formatLabel')}</Label>
-                  <Select
-                    value={formatType}
-                    onValueChange={(value) => setFormatType(value as any)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('file.selectFormatPlaceholder')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="word-definition">{t('file.formats.text', { separator })}</SelectItem>
-                      <SelectItem value="csv">{t('file.formats.csv')}</SelectItem>
-                      <SelectItem value="json">{t('file.formats.json')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="paste" className="space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="format-type">{t('advanced.formatTypeLabel')}</Label>
-                  <Select
-                    value={formatType}
-                    onValueChange={(value) => setFormatType(value as any)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('advanced.selectFormatPlaceholder')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="word-definition">{t('advanced.formats.text', { separator })}</SelectItem>
-                      <SelectItem value="csv">{t('advanced.formats.csv')}</SelectItem>
-                      <SelectItem value="json">{t('advanced.formats.json')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {formatType === 'word-definition' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="separator">{t('advanced.separatorLabel')}</Label>
-                    <Input
-                      id="separator"
-                      value={separator}
-                      onChange={(e) => setSeparator(e.target.value)}
-                      placeholder={t('advanced.separatorPlaceholder')}
-                      className="max-w-[200px]"
+              <TabsContent value="text" className="space-y-4 mt-4">
+                  <div className="space-y-3">
+                    <Label htmlFor="word-text" className="text-sm leading-relaxed block">
+                      {t('text.instructions', {separator})}
+                    </Label>
+                    <Textarea
+                      id="word-text"
+                      placeholder={t('text.placeholder', {separator})}
+                      value={wordText}
+                      onChange={(e) => setWordText(e.target.value)}
+                      className="min-h-[150px] md:min-h-[200px] text-sm leading-relaxed"
                     />
+                    <div className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                      {t('text.helpText', {separator})}
+                    </div>
                   </div>
-                )}
+                </TabsContent>
 
-                <div className="space-y-2">
-                  <Label htmlFor="paste-area">{t('advanced.pasteLabel')}</Label>
-                  <Textarea
-                    id="paste-area"
-                    placeholder={formatType === 'json'
-                      ? t('advanced.placeholders.json')
-                      : formatType === 'csv'
-                        ? t('advanced.placeholders.csv')
-                        : t('advanced.placeholders.text', { separator })
-                    }
-                    value={wordText}
-                    onChange={(e) => setWordText(e.target.value)}
-                    className="min-h-[200px]"
-                  />
-                </div>
-              </div>
-            </TabsContent>
+                <TabsContent value="file" className="space-y-4 mt-4">
+                  <div className="space-y-4">
+                    <div className="flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-4">
+                      <Input
+                        type="file"
+                        accept=".txt,.csv,.json"
+                        onChange={handleFileUpload}
+                        className="flex-1 text-sm"
+                      />
+                      {wordFile && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={clearFile}
+                          className="self-end md:self-auto"
+                        >
+                          <X className="h-4 w-4"/>
+                        </Button>
+                      )}
+                    </div>
+
+                    {wordFile && (
+                      <div className="p-3 md:p-4 border rounded-md bg-muted/50">
+                        <p className="font-medium text-sm">{t('file.label')}: {wordFile.name}</p>
+                        <p className="text-xs md:text-sm text-muted-foreground mt-1 leading-relaxed">
+                          {wordFile.content.length > 200
+                            ? wordFile.content.substring(0, 200) + '...'
+                            : wordFile.content}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label className="text-sm leading-relaxed">{t('file.formatLabel')}</Label>
+                      <Select
+                        value={formatType}
+                        onValueChange={(value) => setFormatType(value as any)}
+                      >
+                        <SelectTrigger className="text-sm">
+                          <SelectValue placeholder={t('file.selectFormatPlaceholder')}/>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="word-definition">{t('file.formats.text', {separator})}</SelectItem>
+                          <SelectItem value="csv">{t('file.formats.csv')}</SelectItem>
+                          <SelectItem value="json">{t('file.formats.json')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="paste" className="space-y-4 mt-4">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="format-type" className="text-sm leading-relaxed">
+                        {t('advanced.formatTypeLabel')}
+                      </Label>
+                      <Select
+                        value={formatType}
+                        onValueChange={(value) => setFormatType(value as any)}
+                      >
+                        <SelectTrigger className="text-sm">
+                          <SelectValue placeholder={t('advanced.selectFormatPlaceholder')}/>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="word-definition">{t('advanced.formats.text', {separator})}</SelectItem>
+                          <SelectItem value="csv">{t('advanced.formats.csv')}</SelectItem>
+                          <SelectItem value="json">{t('advanced.formats.json')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {formatType === 'word-definition' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="separator" className="text-sm leading-relaxed">
+                          {t('advanced.separatorLabel')}
+                        </Label>
+                        <Input
+                          id="separator"
+                          value={separator}
+                          onChange={(e) => setSeparator(e.target.value)}
+                          placeholder={t('advanced.separatorPlaceholder')}
+                          className="max-w-[150px] md:max-w-[200px] text-sm"
+                        />
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="paste-area" className="text-sm leading-relaxed">
+                        {t('advanced.pasteLabel')}
+                      </Label>
+                      <Textarea
+                        id="paste-area"
+                        placeholder={formatType === 'json'
+                          ? t('advanced.placeholders.json')
+                          : formatType === 'csv'
+                            ? t('advanced.placeholders.csv')
+                            : t('advanced.placeholders.text', {separator})
+                        }
+                        value={wordText}
+                        onChange={(e) => setWordText(e.target.value)}
+                        className="min-h-[150px] md:min-h-[200px] text-sm leading-relaxed"
+                      />
+                    </div>
+                  </div>
+                </TabsContent>
           </Tabs>
         </CardContent>
-        <CardFooter className="flex justify-between border-t p-4">
+        <CardFooter className="flex flex-col sm:flex-row justify-between gap-4 border-t p-4">
           <div className="flex items-center space-x-2">
             <Switch
               id="remove-duplicates-input"
               checked={removeDuplicates}
               onCheckedChange={setRemoveDuplicates}
             />
-            <Label htmlFor="remove-duplicates-input">{t('removeDuplicates')}</Label>
+            <Label htmlFor="remove-duplicates-input" className="text-sm leading-relaxed">
+              {t('removeDuplicates')}
+            </Label>
           </div>
           <Button
             onClick={parseWords}
             disabled={isProcessing || (inputMethod === 'text' && !wordText) || (inputMethod === 'file' && !wordFile)}
+            className="w-full sm:w-auto text-sm"
           >
             {isProcessing ? (
               <>
@@ -454,45 +473,59 @@ export default function BulkWordAdder() {
         </CardFooter>
       </Card>
 
+      {/* Parsed Words Dialog - Mobile Responsive */}
       <Dialog open={showParsedDialog} onOpenChange={setShowParsedDialog}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+        <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-hidden flex flex-col p-4 md:p-6">
           <DialogHeader>
-            <DialogTitle>{t('processedWords.title')}</DialogTitle>
+            <DialogTitle className="text-lg md:text-xl">{t('processedWords.title')}</DialogTitle>
           </DialogHeader>
 
-          <div className="flex items-center justify-between mb-4 gap-4">
-            <div className="flex-1">
+          <div className="flex flex-col gap-4 mb-4">
+            {/* Search Input - Full width on mobile */}
+            <div className="w-full">
               <Input
                 placeholder={t('processedWords.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full text-sm"
               />
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="sort-by" className="text-sm">{t('processedWords.sortBy')}:</Label>
-                <Select value={sortField} onValueChange={(value) => sortWords(value as 'word' | 'definition', sortOrder)}>
-                  <SelectTrigger className="w-36">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="word">{t('processedWords.sortOptions.word')}</SelectItem>
-                    <SelectItem value="definition">{t('processedWords.sortOptions.definition')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => sortWords(sortField, sortOrder === 'asc' ? 'desc' : 'asc')}
-                >
-                  {sortOrder === 'asc' ? '↓' : '↑'}
-                </Button>
+
+            {/* Controls - Stack on mobile */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+              {/* Sort Controls */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1">
+                <Label htmlFor="sort-by" className="text-sm whitespace-nowrap">
+                  {t('processedWords.sortBy')}:
+                </Label>
+                <div className="flex gap-2">
+                  <Select value={sortField} onValueChange={(value) => sortWords(value as 'word' | 'definition', sortOrder)}>
+                    <SelectTrigger className="flex-1 sm:w-36 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="word">{t('processedWords.sortOptions.word')}</SelectItem>
+                      <SelectItem value="definition">{t('processedWords.sortOptions.definition')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => sortWords(sortField, sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="h-9 w-9"
+                  >
+                    {sortOrder === 'asc' ? '↓' : '↑'}
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
+
+              {/* Selection Buttons */}
+              <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => toggleAllWords(true)}
+                  className="flex-1 sm:flex-initial text-xs"
                 >
                   {t('processedWords.selectAll')}
                 </Button>
@@ -500,6 +533,7 @@ export default function BulkWordAdder() {
                   variant="outline"
                   size="sm"
                   onClick={() => toggleAllWords(false)}
+                  className="flex-1 sm:flex-initial text-xs"
                 >
                   {t('processedWords.deselectAll')}
                 </Button>
@@ -507,38 +541,38 @@ export default function BulkWordAdder() {
             </div>
           </div>
 
-          <div className="overflow-y-auto flex-1 border rounded-md">
+          <div className="overflow-x-auto flex-1 border rounded-md">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-12">{t('processedWords.table.select')}</TableHead>
-                  <TableHead>{t('processedWords.table.word')}</TableHead>
-                  <TableHead>{t('processedWords.table.definition')}</TableHead>
+                  <TableHead className="w-10 md:w-12">{t('processedWords.table.select')}</TableHead>
+                  <TableHead className="min-w-[120px]">{t('processedWords.table.word')}</TableHead>
+                  <TableHead className="min-w-[200px]">{t('processedWords.table.definition')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {processedWords.length > 0 ? (
                   processedWords.map((word, index) => (
                     <TableRow key={index}>
-                      <TableCell>
+                      <TableCell className="px-2 md:px-4">
                         <div className="flex items-center justify-center">
                           <Button
                             variant={word.selected ? "default" : "outline"}
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-5 w-5 md:h-6 md:w-6"
                             onClick={() => toggleWordSelection(index)}
                           >
-                            {word.selected && <Check className="h-4 w-4" />}
+                            {word.selected && <Check className="h-3 w-3 md:h-4 md:w-4" />}
                           </Button>
                         </div>
                       </TableCell>
-                      <TableCell className="font-medium">{word.word}</TableCell>
-                      <TableCell>{word.definition}</TableCell>
+                      <TableCell className="font-medium text-sm">{word.word}</TableCell>
+                      <TableCell className="text-sm">{word.definition}</TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center h-24">
+                    <TableCell colSpan={3} className="text-center h-24 text-sm">
                       {t('processedWords.noWordsFound')}
                     </TableCell>
                   </TableRow>
@@ -547,21 +581,22 @@ export default function BulkWordAdder() {
             </Table>
           </div>
 
-          <DialogFooter className="mt-4">
+          <DialogFooter className="mt-4 flex-col sm:flex-row gap-3">
             <div className="flex items-center justify-between w-full">
-              <Badge variant="outline">
+              <Badge variant="outline" className="text-xs">
                 {t('processedWords.selectionCount', {
                   selected: parsedWords.filter(w => w.selected).length,
                   total: parsedWords.length
                 })}
               </Badge>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setShowParsedDialog(false)}>
+                <Button variant="outline" onClick={() => setShowParsedDialog(false)} className="text-sm">
                   {t('cancel')}
                 </Button>
                 <Button
                   onClick={addSelectedWords}
                   disabled={isAddingWords || parsedWords.filter(w => w.selected).length === 0}
+                  className="text-sm"
                 >
                   {isAddingWords ? (
                     <>

@@ -22,3 +22,7 @@ export function formatCustomDate(input: string | number | Date, formatStr: strin
   const date = new Date(input)
   return format(date, formatStr)
 }
+
+export function formatCurrency(amount: number): string {
+  return amount.toLocaleString("en-US", { style: "currency", currency: "USD" })
+}

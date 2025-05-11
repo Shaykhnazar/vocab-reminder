@@ -31,11 +31,11 @@
   "Home": {
     "Metadata": {
       "title": "Vocabulary Reminder - Yangi so'zlarni samarali o'zlashtirish",
-      "description": "Mukammal vaqtlangan bildirishnomalar orqali so'z boyligini doimiy eslab qolishga yordam beradigan aqlli takrorlash tizimi"
+      "description": "Mukammal ketma-ketlikdagi bildirishnomalar orqali so'z boyligini doimiy eslab qolishga yordam beradigan aqlli so'z yodlash tizimi"
     },
     "hero": {
       "title": "Ilmiy asoslangan eslatmalar bilan yangi so'zlarni o'rganing",
-      "subtitle": "Mukammal vaqtlangan bildirishnomalar orqali so'z boyligini doimiy eslab qolishga yordam beradigan aqlli oraliq takrorlash tizimi",
+      "subtitle": "Mukammal ketma-ketlikdagi bildirishnomalar orqali so'z boyligini doimiy eslab qolishga yordam beradigan aqlli so'z yodlash tizimi",
       "startFreeTrial": "Bepul sinovni boshlash",
       "buyPremium": "Premium sotib olish",
       "getStarted": "Boshlash",
@@ -184,7 +184,36 @@
     "tabs": {
       "profile": "Profil",
       "notifications": "Bildirishnomalar",
-      "statistics": "Statistika"
+      "statistics": "Statistika",
+      "subscription": "Obuna"
+    },
+    "subscriptionTab": {
+      "title": "Obuna va reja",
+      "description": "Obunangizni boshqaring va reja tafsilotlarini ko'ring"
+    },
+    "subscription": {
+      "validUntil": "{date} gacha amal qiladi",
+      "expiredOn": "{date} da muddati tugagan",
+      "activeLabel": "Faol",
+      "expiringLabel": "Tez orada tugaydi",
+      "expiredLabel": "Muddati tugagan",
+      "usage": "So'zlardan foydalanish",
+      "words": "so'z",
+      "almostFull": "Siz so'zlar limitiga deyarli yetdingiz. Rejangizni yaxshilashni tavsiya qilamiz.",
+      "featuresTitle": "Reja imkoniyatlari",
+      "renewNow": "Hozir yangilash",
+      "manageBilling": "To'lovlarni boshqarish",
+      "noActiveTitle": "Faol obuna yo'q",
+      "noActiveDescription": "Premium imkoniyatlarni ochish va so'zlar limitini oshirish uchun obuna bo'ling.",
+      "viewPlans": "Rejalarni ko'rish",
+      "upgradePlan": "Rejani yaxshilash",
+      "upgradeDescription": "Ko'proq so'z va imkoniyatlarga ega bo'ling",
+      "billingHistory": "To'lovlar tarixi",
+      "billingDescription": "To'lovlar tarixingizni ko'ring",
+      "viewBilling": "To'lovlarni ko'rish",
+      "support": "Yordam",
+      "supportDescription": "Yordam kerakmi? Biz bilan bog'laning",
+      "contactSupport": "Yordam xizmatiga murojaat"
     },
     "profileTab": {
       "title": "Profil ma'lumotlari",
@@ -355,6 +384,24 @@
       "new": "Yangi so'zlar shu yerda ko'rsatiladi",
       "learning": "O'rganilayotgan so'zlar shu yerda ko'rsatiladi",
       "mastered": "O'zlashtirilgan so'zlar shu yerda ko'rsatiladi"
+    },
+    "errors": {
+      "subscriptionFetchFailed": "Obuna ma'lumotlarini yuklab bo'lmadi",
+      "subscription": {
+        "active": "Faol obuna",
+        "expiring": "Obuna muddati tugamoqda",
+        "expired": "Obuna muddati tugagan",
+        "activeDesc": "{plan} rejasi - {wordsRemaining} ta so'z qoldi",
+        "expiringDesc": "{days} kundan keyin tugaydi",
+        "expiredDesc": "Premium imkoniyatlardan foydalanishni davom ettirish uchun obunangizni yangilang",
+        "renew": "Hozir yangilash",
+        "manage": "Boshqarish",
+        "usage": "So'zlardan foydalanish",
+        "used": "Ishlatilgan so'zlar",
+        "almostFull": "Siz so'zlar limitiga deyarli yetdingiz. Rejangizni yaxshilashni tavsiya qilamiz.",
+        "plan": "Joriy reja: {plan}",
+        "upgrade": "Rejani yaxshilash"
+      }
     }
   },
   "Words": {
@@ -365,7 +412,7 @@
     "title": "So'z eslatmalari",
     "tabs": {
       "addSingle": "So'z qo'shish",
-      "addMultiple": "Ko'p so'zlar qo'shish",
+      "addMultiple": "Ko'p so'z qo'shish",
       "myWords": "Mening so'zlarim",
       "dictionaries": "Lug'atlar"
     },
@@ -422,13 +469,27 @@
       "requiredFields": "So'z va ta'rif kiritilishi shart",
       "addWordFailed": "So'z qo'shib bo'lmadi",
       "wordRequired": "So'z kiritish talab qilinadi",
-      "lookupFailed": "Ta'rifni topib bo'lmadi. Iltimos, qo'lda kiriting."
+      "lookupFailed": "Ta'rifni topib bo'lmadi. Iltimos, qo'lda kiriting.",
+      "subscriptionCheckFailed": "Obuna cheklovlarini tekshirib bo'lmadi. Iltimos, qaytadan urinib ko'ring.",
+      "wordLimitReached": "Siz so'zlar limitiga yetdingiz. Iltimos, ko'proq so'z qo'shish uchun rejangizni yangilang."
     },
     "toast": {
       "success": "Muvaffaqiyat",
       "wordAdded": "So'z muvaffaqiyatli qo'shildi!",
       "error": "Xato",
       "definitionFound": "Ta'rif topildi va avtomatik to'ldirildi"
+    },
+    "subscription": {
+      "title": "So'zlardan foydalanish",
+      "wordsUsed": "{total} ta so'zdan {used} tasi ishlatilgan",
+      "checking": "Tekshirilmoqda...",
+      "limitWarning": "Sizning rejangizda atigi {remaining} ta so'z qoldi.",
+      "limitReached": "So'zlar limiti tugadi",
+      "upgradeMessage": "Siz so'zlar limitiga yetdingiz. Iltimos, ko'proq so'z qo'shish uchun rejangizni yangilang.",
+      "upgradePlan": "Rejani yangilash"
+    },
+    "info": {
+      "spacedRepetition": "Bu so'z intervalli takrorlash usulida o'rganiladi: qo'shilgandan keyin 1 soat, 3 soat, 8 soat, 1 kun, 3 kun va 7 kundan so'ng."
     }
   },
   "WordsList": {
@@ -463,7 +524,7 @@
       "all": "Barcha so'zlar",
       "mastered": "O'zlashtirilgan",
       "learning": "O'rganilayotgan",
-      "due": "Bugun",
+      "due": "Bugungi",
       "allStages": "Barcha bosqichlar",
       "new": "Yangi so'zlar"
     },

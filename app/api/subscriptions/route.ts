@@ -1,28 +1,29 @@
 // app/api/subscriptions/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import {getFullSubscriptionData} from '@/lib/supabase';
 
 export async function GET(req: NextRequest) {
   try {
-    const url = new URL(req.url);
-    const userId = url.searchParams.get('userId');
+    const session = await getServerSession(authOptions);
 
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
-    // In a real application, you would query your subscriptions table
-    // This is a mock implementation for the MVP
+    // Get user's current subscription
+    const subscriptionData = await getFullSubscriptionData(session.user.id);
 
-    // For the MVP, we'll return mock data
-    const mockSubscriptions: any[] = [];
-
-    return NextResponse.json({
-      success: true,
-      data: mockSubscriptions
-    });
+    return NextResponse.json(subscriptionData);
   } catch (error) {
-    console.error('Error fetching subscriptions:', error);
-    return NextResponse.json({ error: 'Failed to fetch subscriptions' }, { status: 500 });
+    console.error('Error fetching subscription data:', error);
+    return NextResponse.json(
+      { error: 'Error fetching subscription data' },
+      { status: 500 }
+    );
   }
 }

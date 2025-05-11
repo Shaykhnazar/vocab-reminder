@@ -75,7 +75,7 @@ interface WordCardProps {
   word: Word;
   onEdit: (word: Word) => void;
   onDelete: (wordId: string) => void;
-  t: any; // Translations
+  t: any;
 }
 
 const formatDate = (dateString: string | null | undefined) => {
@@ -90,12 +90,12 @@ const formatDate = (dateString: string | null | undefined) => {
 
 const SkeletonItem = () => (
   <div className="animate-pulse">
-    <div className="h-24 bg-gray-100 rounded-lg mb-4"></div>
+    <div className="h-20 md:h-24 bg-gray-100 rounded-lg mb-3 md:mb-4"></div>
   </div>
 );
 
 const Skeleton = () => (
-  <div className="space-y-4">
+  <div className="space-y-3 md:space-y-4">
     {[1, 2, 3].map((item) => (
       <SkeletonItem key={`skeleton-item-${item}`}/>
     ))}
@@ -103,13 +103,10 @@ const Skeleton = () => (
 );
 
 const WordCard = ({ word, onEdit, onDelete, t }: WordCardProps) => {
-  // Calculate progress percentage based on review stage (0-5 = 6 stages total)
   const progressPercent = word.mastered ? 100 : ((word.review_stage) / 5) * 100;
 
   const getStageLabel = () => {
     if (word.mastered) return t('mastered');
-
-    // Map review stages to more user-friendly labels
     const stages = [
       t('stages.new'),
       t('stages.learning'),
@@ -118,46 +115,42 @@ const WordCard = ({ word, onEdit, onDelete, t }: WordCardProps) => {
       t('stages.known'),
       t('stages.almostMastered')
     ];
-
     return stages[word.review_stage] || t('stage', { stage: word.review_stage + 1, total: 6 });
   };
 
   const getProgressColor = () => {
     if (word.mastered) return "bg-green-500";
-
-    // Different colors for different stages
     const colors = [
-      "bg-gray-400",     // New
-      "bg-blue-500",     // Learning
-      "bg-cyan-500",     // Reviewing
-      "bg-indigo-500",   // Familiar
-      "bg-purple-500",   // Known
-      "bg-yellow-500"    // Almost mastered
+      "bg-gray-400",
+      "bg-blue-500",
+      "bg-cyan-500",
+      "bg-indigo-500",
+      "bg-purple-500",
+      "bg-yellow-500"
     ];
-
     return colors[word.review_stage] || "bg-gray-400";
   };
 
   return (
-    <Card className="mb-4 overflow-hidden hover:shadow-md transition-shadow border-l-4 border-l-purple-500">
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start gap-4">
-          <div className="flex-grow">
+    <Card className="mb-3 md:mb-4 overflow-hidden hover:shadow-md transition-shadow border-l-4 border-l-purple-500">
+      <CardContent className="p-3 md:p-4">
+        <div className="flex justify-between items-start gap-2 md:gap-4">
+          <div className="flex-grow min-w-0">
             <div className="flex items-center gap-1.5 mb-1">
-              <h3 className="font-semibold text-lg">{word.word}</h3>
-              {word.mastered && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
+              <h3 className="font-semibold text-base md:text-lg truncate">{word.word}</h3>
+              {word.mastered && <Star className="h-3 w-3 md:h-4 md:w-4 text-yellow-500 fill-yellow-500 flex-shrink-0" />}
             </div>
-            <p className="text-gray-700">{word.definition}</p>
+            <p className="text-gray-700 text-sm md:text-base line-clamp-2">{word.definition}</p>
             {word.context && (
-              <div className="mt-2 text-gray-600 text-sm bg-gray-50 rounded p-2 border-l-2 border-gray-200">
-                <span className="italic">{word.context}</span>
+              <div className="mt-2 text-gray-600 text-xs md:text-sm bg-gray-50 rounded p-1.5 md:p-2 border-l-2 border-gray-200">
+                <span className="italic line-clamp-2">{word.context}</span>
               </div>
             )}
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 flex-shrink-0">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -177,27 +170,29 @@ const WordCard = ({ word, onEdit, onDelete, t }: WordCardProps) => {
           </DropdownMenu>
         </div>
 
-        <div className="mt-3">
-          <div className="flex justify-between items-center mb-1 text-xs text-gray-500">
+        <div className="mt-2 md:mt-3">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-1 mb-1 text-xs text-gray-500">
             <div className="flex items-center gap-1">
               <Badge
                 variant="outline"
-                className={`px-2 py-0.5 ${word.mastered ? 'border-green-200 text-green-700 bg-green-50' : 'border-blue-200 text-blue-700 bg-blue-50'}`}
+                className={`px-1.5 md:px-2 py-0.5 text-xs ${word.mastered ? 'border-green-200 text-green-700 bg-green-50' : 'border-blue-200 text-blue-700 bg-blue-50'}`}
               >
                 {getStageLabel()}
               </Badge>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2 md:gap-4">
               <span className="flex items-center">
                 <Calendar className="h-3 w-3 mr-1 inline" />
-                {t('added')} {formatDate(word.created_at)}
+                <span className="hidden sm:inline">{t('added')}</span>
+                {formatDate(word.created_at)}
               </span>
 
               {word.next_review_at && !word.mastered && (
                 <span className="flex items-center">
                   <Bell className="h-3 w-3 mr-1 inline" />
-                  {t('nextReview')}: {formatDate(word.next_review_at)}
+                  <span className="hidden sm:inline">{t('nextReview')}:</span>
+                  {formatDate(word.next_review_at)}
                 </span>
               )}
             </div>
@@ -418,7 +413,6 @@ export default function WordsList() {
     return matchesSearch && matchesViewMode;
   });
 
-  // Count statistics
   const wordStats = {
     total: words.length,
     mastered: words.filter(w => w.mastered).length,
@@ -436,49 +430,51 @@ export default function WordsList() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg p-4 mb-6 shadow-sm border border-gray-100">
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="bg-purple-50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-semibold text-purple-700">{wordStats.total}</div>
+      {/* Stats Cards - Mobile Responsive */}
+      <div className="bg-white rounded-lg p-3 md:p-4 mb-4 md:mb-6 shadow-sm border border-gray-100">
+        <div className="grid grid-cols-3 gap-2 md:gap-4 mb-3 md:mb-4">
+          <div className="bg-purple-50 rounded-lg p-2 md:p-3 text-center">
+            <div className="text-lg md:text-2xl font-semibold text-purple-700">{wordStats.total}</div>
             <div className="text-xs text-gray-500">{t('stats.totalWords')}</div>
           </div>
-          <div className="bg-green-50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-semibold text-green-700">{wordStats.mastered}</div>
+          <div className="bg-green-50 rounded-lg p-2 md:p-3 text-center">
+            <div className="text-lg md:text-2xl font-semibold text-green-700">{wordStats.mastered}</div>
             <div className="text-xs text-gray-500">{t('stats.mastered')}</div>
           </div>
-          <div className="bg-blue-50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-semibold text-blue-700">{wordStats.dueToday}</div>
+          <div className="bg-blue-50 rounded-lg p-2 md:p-3 text-center">
+            <div className="text-lg md:text-2xl font-semibold text-blue-700">{wordStats.dueToday}</div>
             <div className="text-xs text-gray-500">{t('stats.dueToday')}</div>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-3 justify-between">
-          <div className="relative w-full sm:w-64">
+        {/* Search and Filters - Stack on mobile */}
+        <div className="flex flex-col gap-3">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
             <Input
               placeholder={t('search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
+              className="pl-9 text-sm"
             />
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full">
             <Tabs
               value={viewMode}
               onValueChange={(value) => setViewMode(value as 'all' | 'due' | 'mastered')}
-              className="w-full sm:w-auto"
+              className="flex-1"
             >
-              <TabsList className="grid grid-cols-3 w-full">
+              <TabsList className="grid grid-cols-2 w-full h-9">
                 <TabsTrigger value="all" className="text-xs px-2">
                   {t('filters.all')}
                 </TabsTrigger>
                 <TabsTrigger value="due" className="text-xs px-2">
                   {t('filters.due')}
                 </TabsTrigger>
-                <TabsTrigger value="mastered" className="text-xs px-2">
-                  {t('filters.mastered')}
-                </TabsTrigger>
+                {/*<TabsTrigger value="mastered" className="text-xs px-2">*/}
+                {/*  {t('filters.mastered')}*/}
+                {/*</TabsTrigger>*/}
               </TabsList>
             </Tabs>
 
@@ -486,8 +482,8 @@ export default function WordsList() {
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value)}
             >
-              <SelectTrigger className="w-[130px]">
-                <SlidersHorizontal className="h-3.5 w-3.5 mr-2" />
+              <SelectTrigger className="w-[110px] md:w-[130px]">
+                <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5" />
                 <SelectValue placeholder={t('filterPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
@@ -501,13 +497,14 @@ export default function WordsList() {
         </div>
       </div>
 
+      {/* Words List */}
       {filteredWords.length === 0 ? (
-        <div className="text-center py-12 rounded-lg border border-dashed border-gray-200 bg-gray-50">
-          <BookOpen className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-          <h3 className="text-lg font-medium text-gray-700 mb-1">
+        <div className="text-center py-8 md:py-12 rounded-lg border border-dashed border-gray-200 bg-gray-50">
+          <BookOpen className="h-10 w-10 md:h-12 md:w-12 mx-auto text-gray-300 mb-3" />
+          <h3 className="text-base md:text-lg font-medium text-gray-700 mb-1">
             {t('noWordsFound')}
           </h3>
-          <p className="text-gray-500 max-w-md mx-auto">
+          <p className="text-sm md:text-base text-gray-500 max-w-md mx-auto px-4">
             {searchTerm ? t('noMatchingWords') : t('addFirstWord')}
           </p>
         </div>
@@ -524,12 +521,12 @@ export default function WordsList() {
           ))}
 
           {hasMore && (
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center mt-4 md:mt-6">
               <Button
                 onClick={handleLoadMore}
                 disabled={loading}
                 variant="outline"
-                className="w-40"
+                className="w-32 md:w-40"
               >
                 {loading ? (
                   <>
@@ -545,9 +542,9 @@ export default function WordsList() {
         </div>
       )}
 
-      {/* Edit Dialog */}
+      {/* Edit Dialog - Mobile Responsive */}
       <Dialog open={!!editingWord} onOpenChange={(open) => !open && setEditingWord(null)}>
-        <DialogContent>
+        <DialogContent className="w-[calc(100%-2rem)] max-w-lg">
           <DialogHeader>
             <DialogTitle>{t('editWord')}</DialogTitle>
           </DialogHeader>
