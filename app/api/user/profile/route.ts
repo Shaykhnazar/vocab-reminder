@@ -23,6 +23,8 @@ export async function GET() {
       query = query.eq('email', session.user.email);
     } else if (session.user.telegram_id) {
       query = query.eq('telegram_id', session.user.telegram_id);
+    } else if (session.user.id) {
+      query = query.eq('id', session.user.id);
     } else {
       return NextResponse.json({ error: 'No identifier found' }, { status: 400 });
     }
@@ -55,6 +57,10 @@ export async function PUT(request: Request) {
       query = query.eq('email', session.user.email);
     } else if (session.user.telegram_id) {
       query = query.eq('telegram_id', session.user.telegram_id);
+    } else if (session.user.id) {
+      query = query.eq('id', session.user.id);
+    } else {
+      return NextResponse.json({ error: 'No identifier found' }, { status: 400 });
     }
 
     const { data: currentUser, error: fetchError } = await query.single();
