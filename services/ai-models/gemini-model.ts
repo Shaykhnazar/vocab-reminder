@@ -31,7 +31,25 @@ class GeminiModel implements AiModelInterface {
           {
             parts: [
               {
-                text: "Extract vocabulary words from this image. Focus on words that would be valuable for language learners to study. For each word, provide a clear, concise definition. Format your response as a JSON array with objects containing 'word' and 'definition' properties. Don't include extremely common words. Only include words that are clearly visible in the image."
+                text: "Extract vocabulary words from this image for language learners. Follow these priority rules:\n" +
+                  "\n" +
+                  "1. FIRST PRIORITY: Extract word-definition pairs that are already present in the image. Look for formats like \"word - definition\", \"word : definition\", \"word – definition\", or other similar patterns.\n" +
+                  "\n" +
+                  "2. SECOND PRIORITY: For any isolated words without definitions in the image, provide a concise, learner-friendly definition.\n" +
+                  "\n" +
+                  "Do NOT include extremely common words or non-vocabulary items.\n" +
+                  "\n" +
+                  "Format your response as a JSON array with objects containing 'word' and 'definition' properties:\n" +
+                  "[\n" +
+                  "  {\"word\": \"example_word\", \"definition\": \"example definition\"},\n" +
+                  "  {\"word\": \"another_word\", \"definition\": \"another definition\"}\n" +
+                  "]\n" +
+                  "\n" +
+                  "Include the source of each definition using a third property 'source' with values:\n" +
+                  "- \"image\" when the definition was found in the image\n" +
+                  "- \"generated\" when you created the definition\n" +
+                  "\n" +
+                  "Only include words that are clearly visible and would be valuable for language learners."
               },
               {
                 inline_data: {
