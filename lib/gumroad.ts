@@ -6,8 +6,8 @@ export const GUMROAD_PRODUCTS = {
   FREE: {
     id: 'free',
     name: 'Free Plan',
-    wordLimit: 50,
-    features: ['Basic vocabulary management', 'Email notifications', 'Limited to 50 words'],
+    wordLimit: 300,
+    features: ['Basic vocabulary management', 'Email notifications', 'Limited to 300 words'],
     permalink: '',
     price: '$0',
     recurrence: 'none'
@@ -15,8 +15,8 @@ export const GUMROAD_PRODUCTS = {
   PREMIUM_MONTHLY: {
     id: process.env.NEXT_PUBLIC_GUMROAD_PREMIUM_MONTHLY_PRODUCT_ID || 'basic',
     name: 'Premium Plan',
-    wordLimit: 300,
-    features: ['Up to 300 words', 'Email notifications', 'Telegram notifications', 'Basic stats'],
+    wordLimit: 10000,
+    features: ['Up to 10000 words', 'Email notifications', 'Telegram notifications', 'Basic stats'],
     permalink: process.env.NEXT_PUBLIC_GUMROAD_PREMIUM_MONTHLY_PERMALINK || 'https://example.gumroad.com/basic',
     price: '$0.99',
     recurrence: 'monthly'
@@ -24,8 +24,8 @@ export const GUMROAD_PRODUCTS = {
   PREMIUM_YEARLY: {
     id: process.env.NEXT_PUBLIC_GUMROAD_PREMIUM_YEARLY_PRODUCT_ID || 'pro',
     name: 'Premium Plan',
-    wordLimit: 2000,
-    features: ['Up to 2000 words', 'All notification channels', 'Advanced statistics', 'Custom review schedules'],
+    wordLimit: 10000,
+    features: ['Up to 10000 words', 'All notification channels', 'Advanced statistics', 'Custom review schedules'],
     permalink: process.env.NEXT_PUBLIC_GUMROAD_PREMIUM_YEARLY_PERMALINK || 'https://example.gumroad.com/pro',
     price: '$8.32',
     recurrence: 'yearly'
@@ -33,7 +33,7 @@ export const GUMROAD_PRODUCTS = {
   LIFETIME: {
     id: process.env.NEXT_PUBLIC_GUMROAD_LIFETIME_PRODUCT_ID || 'unlimited',
     name: 'Lifetime Plan',
-    wordLimit: 10000,
+    wordLimit: 100000,
     features: ['Unlimited words', 'All premium features', 'Priority support', 'API access'],
     permalink: process.env.NEXT_PUBLIC_GUMROAD_LIFETIME_PERMALINK || 'https://example.gumroad.com/unlimited',
     price: '$39.99',
