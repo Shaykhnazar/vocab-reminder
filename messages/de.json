@@ -1,0 +1,925 @@
+{
+  "Common": {
+    "selectLanguage": "Sprache wählen"
+  },
+  "Navigation": {
+    "home": "Startseite",
+    "about": "Über uns",
+    "myWords": "Meine Wörter",
+    "profile": "Profil",
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "selectLanguage": "Sprache wählen",
+    "dashboard": "Dashboard",
+    "review": "Wiederholen",
+    "account": "Konto"
+  },
+  "Footer": {
+    "tagline": "Beherrschen Sie neue Wörter effizient mit unserem wissenschaftlich fundierten Wiederholungssystem.",
+    "quickLinks": "Schnellzugriff",
+    "home": "Startseite",
+    "about": "Über uns",
+    "plansAndPolicies": "Pläne & Richtlinien",
+    "pricing": "Preise",
+    "refundPolicy": "Rückerstattungsrichtlinie",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "termsOfService": "Nutzungsbedingungen",
+    "language": "Sprache",
+    "contact": "Kontakt",
+    "copyright": "© {year} Vocabry. Alle Rechte vorbehalten."
+  },
+  "Home": {
+    "Metadata": {
+      "title": "Vokabel-Erinnerung - Beherrschen Sie neue Wörter effizient",
+      "description": "Intelligentes Wiederholungssystem, das Ihnen hilft, Vokabeln für immer zu behalten durch perfekt getimte Benachrichtigungen"
+    },
+    "hero": {
+      "title": "Beherrschen Sie neue Wörter mit wissenschaftlich fundierten Erinnerungen",
+      "subtitle": "Intelligentes Wiederholungssystem, das Ihnen hilft, Vokabeln für immer zu behalten durch perfekt getimte Benachrichtigungen",
+      "startFreeTrial": "Kostenlose Testversion starten",
+      "buyPremium": "Premium jetzt kaufen",
+      "getStarted": "Loslegen",
+      "demo": "Demo ansehen"
+    },
+    "features": {
+      "title": "Funktionen",
+      "subtitle": "Alles, was Sie brauchen, um Ihren Wortschatz zu erweitern",
+      "spaced": {
+        "title": "Intelligente Erinnerungen",
+        "subtitle": "Wissenschaftlich optimierte Intervalle für maximale Merkfähigkeit",
+        "description": "Perfektes Timing bei Intervallen von 1h, 3h, 8h, 1d, 3d und 7d"
+      },
+      "notifications": {
+        "title": "Multi-Kanal-Benachrichtigungen",
+        "subtitle": "Verpassen Sie keine Wiederholungssitzung",
+        "description": "Erhalten Sie Erinnerungen per Telegram und E-Mail, wo immer Sie sind"
+      },
+      "effortless": {
+        "title": "Müheloses Lernen",
+        "subtitle": "Lernen Sie auf natürliche Weise im Laufe des Tages",
+        "description": "Fügen Sie einfach neue Wörter hinzu und lassen Sie das System den Rest erledigen"
+      }
+    },
+    "howItWorks": {
+      "title": "So funktioniert es",
+      "addWords": {
+        "title": "Neue Wörter hinzufügen",
+        "description": "Speichern Sie Wörter, die Sie lernen möchten, mit Definitionen und Kontext"
+      },
+      "getReminders": {
+        "title": "Erinnerungen erhalten",
+        "description": "Erhalten Sie intelligente Benachrichtigungen per Telegram und E-Mail in optimalen Intervallen"
+      },
+      "masterVocabulary": {
+        "title": "Vokabeln beherrschen",
+        "description": "Verfolgen Sie den Fortschritt, während Wörter in Ihr Langzeitgedächtnis übergehen"
+      }
+    },
+    "keyFeatures": {
+      "title": "Hauptfunktionen",
+      "progressTracking": {
+        "title": "Fortschrittsverfolgung",
+        "description": "Überwachen Sie Ihr Vokabelwachstum mit intuitiven Fortschritts-Dashboards"
+      }
+    },
+    "reminderSchedule": {
+      "title": "Optimaler Erinnerungsplan",
+      "subtitle": "Basierend auf kognitiver Wissenschaftsforschung für maximale Merkfähigkeit",
+      "steps": [
+        { "time1": "1 Stunde", "description1": "Erste schnelle Erinnerung" },
+        { "time2": "3 Stunden", "description2": "Verstärkende Erinnerung" },
+        { "time3": "8 Stunden", "description3": "Erinnerung am selben Tag" },
+        { "time4": "1 Tag", "description4": "Erinnerung am nächsten Tag" },
+        { "time5": "3 Tage", "description5": "Gedächtniskonsolidierung" },
+        { "time6": "7 Tage", "description6": "Übertragung ins Langzeitgedächtnis" }
+      ]
+    },
+    "joinUs": {
+      "text": "Schließen Sie sich Tausenden von Sprachlernenden an, die mit unserem bewährten System neue Vokabeln gemeistert haben"
+    },
+    "testimonials": {
+      "title": "Was Benutzer sagen",
+      "subtitle": "Schließen Sie sich Tausenden zufriedener Sprachlernender an",
+      "quote1": "Diese App hat meine Sprachlernreise verändert. Ich habe in einem Monat mehr Vokabeln behalten als in einem Jahr traditionellen Lernens.",
+      "author1": "Sarah Johnson",
+      "role1": "Englischlehrerin",
+      "quote2": "Das Wiederholungssystem ist brillant. Ich vergesse keine Wörter mehr, die ich gelernt habe, weil sie genau zum richtigen Zeitpunkt verstärkt werden.",
+      "author2": "Michael Chen",
+      "role2": "Sprachbegeisterter"
+    },
+    "cta": {
+      "title": "Bereit, Ihren Wortschatz zu erweitern?",
+      "subtitle": "Schließen Sie sich Tausenden von Lernenden an, die neue Wörter effizient gemeistert haben",
+      "getStarted": "Loslegen",
+      "learnMore": "Mehr erfahren",
+      "getPremium": "Premium erhalten (30% Rabatt)",
+      "button": "Kostenlos registrieren"
+    }
+  },
+  "About": {
+    "Metadata": {
+      "title": "Über uns - Vokabel-Erinnerung",
+      "description": "Erfahren Sie mehr über unsere Mission, Menschen beim Erlernen neuer Sprachen durch effektives Vokabellernen zu helfen"
+    },
+    "hero": {
+      "title": "Über Vokabel-Erinnerung",
+      "titlePrefix": "Die Wissenschaft hinter",
+      "titleHighlight": "effektivem Vokabellernen",
+      "subtitle": "Entdecken Sie, wie unser wissenschaftlich erwiesenes Wiederholungssystem Ihnen hilft, neue Wörter bis zu 3x effektiver zu lernen und zu behalten als mit traditionellen Methoden."
+    },
+    "science": {
+      "title": "Die Forschung hinter unserer Methode",
+      "forgettingCurve": {
+        "title": "Ebbinghaus-Vergessenskurve",
+        "description": "1885 entdeckte Hermann Ebbinghaus, dass die Gedächtnisbewahrung mit der Zeit exponentiell abnimmt. Jede Wiederholung stärkt jedoch das Gedächtnis und macht es widerstandsfähiger gegen das Vergessen. Unsere Intervalle sind genau auf diese Kurve abgestimmt."
+      },
+      "spacedRepetition": {
+        "title": "Wirksamkeit der Wiederholungstechnik",
+        "description": "Forschungen zeigen, dass wiederholtes Lernen die langfristige Merkfähigkeit im Vergleich zum Auswendiglernen um bis zu 200% steigern kann. Unser System optimiert diese Wiederholungsintervalle basierend auf kognitionswissenschaftlicher Forschung."
+      }
+    },
+    "benefits": {
+      "title": "Warum unser System funktioniert",
+      "timing": {
+        "title": "Optimiertes Timing",
+        "description": "Unsere sorgfältig berechneten Intervalle (1h, 3h, 8h, 1d, 3d, 7d) sind darauf ausgelegt, die Merkfähigkeit zu maximieren und gleichzeitig die Anzahl der erforderlichen Wiederholungen zu minimieren."
+      },
+      "multiChannel": {
+        "title": "Multi-Kanal-Lernen",
+        "description": "Durch die Kombination von E-Mail- und Telegram-Benachrichtigungen stellen wir sicher, dass Sie keine Wiederholungssitzung verpassen, was Ihre Lernkonsistenz und -effektivität erhöht."
+      },
+      "integration": {
+        "title": "Mühelose Integration",
+        "description": "Unser System lässt sich nahtlos in Ihren Tagesablauf integrieren und macht das Vokabellernen zu einem natürlichen Teil Ihres Tages, anstatt zu einer separaten Lernsitzung."
+      }
+    },
+    "stats": {
+      "title": "Die Zahlen sprechen für sich",
+      "retention": {
+        "value": "95%",
+        "description": "Höhere Behaltensrate im Vergleich zu traditionellen Methoden"
+      },
+      "time": {
+        "value": "67%",
+        "description": "Weniger Zeit für Vokabelwiederholung"
+      },
+      "acquisition": {
+        "value": "3x",
+        "description": "Schnellerer Vokabelerwerb"
+      }
+    },
+    "cta": {
+      "title": "Bereit, Ihr Vokabellernen zu revolutionieren?",
+      "subtitle": "Schließen Sie sich Tausenden von Lernenden an, die ihre Vokabellernreise bereits mit unserem wissenschaftlich erprobten System transformiert haben.",
+      "startTrial": "Kostenlose Testversion starten",
+      "getPremium": "Premium erhalten (30% Rabatt)"
+    }
+  },
+  "Profile": {
+    "Metadata": {
+      "title": "Profil - Vocabry",
+      "description": "Verwalten Sie Ihr Profil und Benachrichtigungseinstellungen"
+    },
+    "title": "Profileinstellungen",
+    "tabs": {
+      "profile": "Profil",
+      "notifications": "Benachrichtigungen",
+      "statistics": "Statistiken",
+      "subscription": "Abonnement"
+    },
+    "subscriptionTab": {
+      "title": "Abonnement & Plan",
+      "description": "Verwalten Sie Ihr Abonnement und sehen Sie Plandetails ein"
+    },
+    "subscription": {
+      "validUntil": "Gültig bis {date}",
+      "expiredOn": "Abgelaufen am {date}",
+      "activeLabel": "Aktiv",
+      "expiringLabel": "Läuft bald ab",
+      "expiredLabel": "Abgelaufen",
+      "usage": "Wortnutzung",
+      "words": "Wörter",
+      "almostFull": "Sie haben fast Ihr Wortlimit erreicht. Erwägen Sie ein Upgrade Ihres Plans.",
+      "featuresTitle": "Planfunktionen",
+      "renewNow": "Jetzt verlängern",
+      "manageBilling": "Abrechnung verwalten",
+      "noActiveTitle": "Kein aktives Abonnement",
+      "noActiveDescription": "Abonnieren Sie einen Plan, um Premium-Funktionen freizuschalten und Ihr Wortlimit zu erhöhen.",
+      "viewPlans": "Pläne anzeigen",
+      "upgradePlan": "Plan upgraden",
+      "upgradeDescription": "Mehr Wörter und Funktionen erhalten",
+      "billingHistory": "Abrechnungsverlauf",
+      "billingDescription": "Sehen Sie Ihren Zahlungsverlauf ein",
+      "viewBilling": "Abrechnung anzeigen",
+      "support": "Support",
+      "supportDescription": "Brauchen Sie Hilfe? Kontaktieren Sie uns",
+      "contactSupport": "Support kontaktieren"
+    },
+    "profileTab": {
+      "title": "Profilinformationen",
+      "description": "Aktualisieren Sie Ihre persönlichen Informationen und Kontaktdaten."
+    },
+    "form": {
+      "firstName": "Vorname",
+      "firstNamePlaceholder": "Ihr Vorname",
+      "lastName": "Nachname",
+      "lastNamePlaceholder": "Ihr Nachname",
+      "username": "Benutzername",
+      "usernamePlaceholder": "Ihr Benutzername",
+      "email": "E-Mail",
+      "emailPlaceholder": "ihre.email@beispiel.de",
+      "telegramId": "Telegram-ID",
+      "telegramIdPlaceholder": "Ihre Telegram-ID, z.B. 123456789",
+      "telegramIdLocked": "Telegram-ID kann nicht geändert werden, wenn Sie mit Telegram angemeldet sind",
+      "telegramIdDescription": "Ihr Telegram-Benutzername für den Empfang von Worterinnerungen.",
+      "saving": "Speichern...",
+      "saveChanges": "Änderungen speichern",
+      "validation": {
+        "firstNameLength": "Vorname muss mindestens 2 Zeichen lang sein.",
+        "lastNameLength": "Nachname muss mindestens 2 Zeichen lang sein.",
+        "usernameLength": "Benutzername muss mindestens 2 Zeichen lang sein.",
+        "emailValid": "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+      }
+    },
+    "notificationsTab": {
+      "title": "Benachrichtigungseinstellungen",
+      "description": "Passen Sie an, wie und wann Sie Vokabelerinnerungen erhalten.",
+      "emailNotifications": "E-Mail-Benachrichtigungen",
+      "emailDescription": "Erhalten Sie Worterinnerungen per E-Mail",
+      "telegramNotifications": "Telegram-Benachrichtigungen",
+      "telegramConnectedDesc": "Erhalten Sie Worterinnerungen über Telegram",
+      "telegramNotConnectedDesc": "Verbinden Sie Ihr Telegram-Konto für Benachrichtigungen",
+      "spacedRepetition": {
+        "title": "Über Wiederholungslernen",
+        "description": "Sie erhalten Erinnerungen nach diesem Zeitplan für optimales Lernen:",
+        "schedule": {
+          "oneHour": "1 Stunde nach dem Hinzufügen eines Wortes",
+          "threeHours": "3 Stunden später",
+          "eightHours": "8 Stunden später",
+          "oneDay": "1 Tag später",
+          "threeDays": "3 Tage später",
+          "sevenDays": "7 Tage später"
+        }
+      }
+    },
+    "statsTab": {
+      "totalWords": {
+        "title": "Gesamtwörter",
+        "description": "Zu Ihrer Sammlung hinzugefügte Wörter",
+        "weekChange": "+{count} diese Woche"
+      },
+      "reviewSuccess": {
+        "title": "Wiederholungserfolg",
+        "description": "Durchschnittliche Reaktionsrate auf Erinnerungen",
+        "period": "Letzte 30 Tage"
+      },
+      "streak": {
+        "title": "Lernsträhne",
+        "description": "Aufeinanderfolgende Tage mit Aktivität",
+        "unit": "Tage"
+      }
+    },
+    "telegram": {
+      "windowOpened": "Telegram-Fenster geöffnet. Bitte schließen Sie die Verbindung dort ab und aktualisieren Sie den Status, wenn Sie fertig sind.",
+      "successfullyConnected": "Telegram erfolgreich verbunden!",
+      "refreshAfterConnecting": "Nach dem Verbinden in Telegram den Status aktualisieren, um zu bestätigen"
+    },
+    "toast": {
+      "error": "Fehler",
+      "errorFetchUserData": "Benutzerdaten konnten nicht geladen werden",
+      "errorUpdateProfile": "Profil konnte nicht aktualisiert werden",
+      "errorUpdateNotification": "Benachrichtigungseinstellungen konnten nicht aktualisiert werden",
+      "errorRefreshTelegram": "Telegram-Verbindungsstatus konnte nicht aktualisiert werden",
+      "verificationRequired": "Verifizierung erforderlich",
+      "checkEmail": "Bitte überprüfen Sie Ihre E-Mails, um Ihre neue E-Mail-Adresse zu verifizieren.",
+      "profileUpdated": "Profil aktualisiert",
+      "profileUpdateSuccess": "Ihre Profileinstellungen wurden erfolgreich gespeichert.",
+      "preferencesUpdated": "Einstellungen aktualisiert",
+      "notificationToggle": "{type}-Benachrichtigungen {status}.",
+      "telegramNotConnected": "Telegram nicht verbunden",
+      "connectTelegramFirst": "Bitte verbinden Sie zuerst Ihr Telegram-Konto"
+    }
+  },
+  "common": {
+    "enabled": "aktiviert",
+    "disabled": "deaktiviert",
+    "connected": "Verbunden",
+    "connecting": "Verbinden...",
+    "connect": "Verbinden",
+    "refresh": "Aktualisieren",
+    "success": "Erfolg"
+  },
+  "Dashboard": {
+    "Metadata": {
+      "title": "Dashboard - Vocabry",
+      "description": "Ihr Vokabellern-Dashboard"
+    },
+    "subtitle": "Ihr persönlicher Vokabeltrainer",
+    "reviews": "Wiederholungen: {count}",
+    "addWord": "Wort hinzufügen",
+    "cards": {
+      "progress": {
+        "title": "Lernfortschritt",
+        "new": "Neu",
+        "learning": "Lernend",
+        "mastered": "Gemeistert",
+        "wordCount": "{count} Wörter"
+      },
+      "upcoming": {
+        "title": "Bevorstehende Wiederholungen",
+        "today": "Heute",
+        "tomorrow": "Morgen",
+        "inDays": "In {days} Tagen",
+        "wordCount": "{count} Wörter"
+      },
+      "stats": {
+        "title": "Statistiken",
+        "successRate": "Erfolgsrate",
+        "retention": "Merkfähigkeit",
+        "streak": "Strähne",
+        "totalWords": "Gesamtwörter",
+        "days": "{count} Tage"
+      }
+    },
+    "tabs": {
+      "all": "Alle Wörter",
+      "new": "Neu",
+      "learning": "Lernend",
+      "mastered": "Gemeistert"
+    },
+    "wordList": {
+      "title": "Alle Wörter",
+      "description": "Verwalten Sie alle Ihre Vokabeln",
+      "stage": "Stufe {stage}",
+      "review": "Wiederholen",
+      "new": "Neu",
+      "mastered": "Gemeistert"
+    },
+    "pagination": {
+      "previous": "Zurück",
+      "next": "Weiter"
+    },
+    "exampleWords": {
+      "ephemeral": "nur für sehr kurze Zeit bestehend",
+      "ubiquitous": "allgegenwärtig, überall vorhanden",
+      "serendipity": "glücklicher Zufall, unerwartete Entdeckung",
+      "eloquent": "beredt, ausdrucksstark beim Sprechen oder Schreiben",
+      "pragmatic": "sachbezogen, praxisorientiert"
+    },
+    "welcomeUser": "Willkommen, {name}!",
+    "reviewsWaiting": "{count} Wörter warten auf Wiederholung",
+    "allCaughtUp": "Sie sind auf dem neuesten Stand! Keine Wörter zum Wiederholen",
+    "startReview": "Wiederholung starten",
+    "learningProgress": "Lernfortschritt",
+    "words": "Wörter",
+    "thisWeek": "diese Woche",
+    "currentStreak": "Aktuelle Strähne",
+    "days": "Tage",
+    "personalBest": "Persönlicher Rekord",
+    "review": "Wiederholen",
+    "search": "Suchen",
+    "viewAllWords": "Alle Wörter anzeigen",
+    "noMatchingWords": "Keine passenden Wörter gefunden",
+    "tabContent": {
+      "new": "Neue Wörter werden hier angezeigt",
+      "learning": "Wörter, die Sie lernen, werden hier angezeigt",
+      "mastered": "Gemeisterte Wörter werden hier angezeigt"
+    },
+    "errors": {
+      "subscriptionFetchFailed": "Abonnementdaten konnten nicht abgerufen werden",
+      "subscription": {
+        "active": "Aktives Abonnement",
+        "expiring": "Abonnement läuft bald ab",
+        "expired": "Abonnement abgelaufen",
+        "activeDesc": "{plan}-Plan - {wordsRemaining} Wörter verbleibend",
+        "expiringDesc": "Läuft in {days} Tagen ab",
+        "expiredDesc": "Bitte verlängern Sie, um weiterhin Premium-Funktionen zu genießen",
+        "renew": "Jetzt verlängern",
+        "manage": "Verwalten",
+        "usage": "Wortnutzung",
+        "used": "Genutzte Wörter",
+        "almostFull": "Fast an Ihrem Wortlimit. Erwägen Sie ein Upgrade Ihres Plans.",
+        "plan": "Aktueller Plan: {plan}",
+        "upgrade": "Plan upgraden"
+      }
+    }
+  },
+  "Words": {
+    "Metadata": {
+      "title": "Wörter - Vocabry",
+      "description": "Verwalten Sie Ihre Vokabeln"
+    },
+    "title": "Vokabel-Erinnerung",
+    "tabs": {
+      "addMultiple": "Wörter hinzufügen",
+      "myWords": "Meine Wörter",
+      "dictionaries": "Wörterbücher",
+      "addSingle": "Wort hinzufügen"
+    },
+    "addSingle": {
+      "title": "Einzelnes Wort hinzufügen"
+    },
+    "extractImage": {
+      "title": "Wörter aus Bild extrahieren"
+    },
+    "addMultiple": {
+      "title": "Mehrere Wörter hinzufügen"
+    },
+    "yourWords": {
+      "title": "Ihre Wörter"
+    },
+    "dictionaries": {
+      "title": "Wörterbuch-Abonnements"
+    },
+    "description": "Verwalten Sie Ihre Vokabelsammlung",
+    "learningProgress": "Lernfortschritt",
+    "wordsForReview": "{count} Wörter heute zu wiederholen",
+    "addSingleDescription": "Fügen Sie ein neues Wort zu Ihrer Vokabelliste hinzu",
+    "extractImageDescription": "Extrahieren Sie Wörter aus Bildern oder Screenshots",
+    "addMultipleDescription": "Importieren Sie mehrere Wörter auf einmal aus Text, CSV oder JSON",
+    "dictionaryDescription": "Durchsuchen und abonnieren Sie vorgefertigte Vokabelsets"
+  },
+  "WordForm": {
+    "fields": {
+      "word": {
+        "label": "Wort",
+        "placeholder": "Geben Sie ein Wort ein"
+      },
+      "definition": {
+        "label": "Definition",
+        "placeholder": "Geben Sie die Definition ein"
+      },
+      "context": {
+        "label": "Kontext (Optional)",
+        "placeholder": "Fügen Sie einen Satz oder Kontext hinzu, um sich das Wort besser zu merken",
+        "optional": "Optional"
+      }
+    },
+    "buttons": {
+      "addWord": "Wort hinzufügen",
+      "adding": "Hinzufügen...",
+      "lookupDefinition": "Definition nachschlagen",
+      "openDictionary": "Wörterbuch öffnen"
+    },
+    "errors": {
+      "requiredFields": "Wort und Definition sind erforderlich",
+      "addWordFailed": "Wort konnte nicht hinzugefügt werden",
+      "wordRequired": "Wort ist erforderlich",
+      "lookupFailed": "Definition konnte nicht gefunden werden. Bitte manuell eingeben.",
+      "subscriptionCheckFailed": "Abonnementlimits konnten nicht überprüft werden. Bitte versuchen Sie es erneut.",
+      "wordLimitReached": "Sie haben Ihr Wortlimit erreicht. Bitte upgraden Sie Ihren Plan, um mehr Wörter hinzuzufügen."
+    },
+    "toast": {
+      "success": "Erfolg",
+      "wordAdded": "Wort erfolgreich hinzugefügt!",
+      "error": "Fehler",
+      "definitionFound": "Definition gefunden und automatisch ausgefüllt"
+    },
+    "success": {
+      "wordAdded": "Wort hinzugefügt!",
+      "reminderScheduled": "Erinnerungen wurden geplant."
+    },
+    "subscription": {
+      "title": "Wortnutzung",
+      "wordsUsed": "{used} von {total} Wörtern verwendet",
+      "checking": "Überprüfen...",
+      "limitWarning": "Sie haben nur noch {remaining} Wörter in Ihrem Plan übrig.",
+      "limitReached": "Wortlimit erreicht",
+      "upgradeMessage": "Sie haben Ihr Wortlimit erreicht. Bitte upgraden Sie Ihren Plan, um mehr Wörter hinzuzufügen.",
+      "upgradePlan": "Plan upgraden"
+    },
+    "info": {
+      "spacedRepetition": "Dieses Wort wird mit Wiederholungstechnik gelernt: 1 Stunde, 3 Stunden, 8 Stunden, 1 Tag, 3 Tage und 7 Tage nach dem Hinzufügen."
+    }
+  },
+  "WordsList": {
+    "context": "Kontext",
+    "mastered": "Gemeistert",
+    "stage": "Stufe {stage}/{total}",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "added": "Hinzugefügt",
+    "nextReview": "Nächste Wiederholung",
+    "wordPlaceholder": "Wort",
+    "definitionPlaceholder": "Definition",
+    "contextPlaceholder": "Kontext (optional)",
+    "cancel": "Abbrechen",
+    "saveChanges": "Änderungen speichern",
+    "errors": {
+      "fetchFailed": "Wörter konnten nicht abgerufen werden",
+      "updateFailed": "Wort konnte nicht aktualisiert werden",
+      "deleteFailed": "Wort konnte nicht gelöscht werden"
+    },
+    "toast": {
+      "error": "Fehler",
+      "fetchError": "Wörter konnten nicht abgerufen werden",
+      "updateError": "Wort konnte nicht aktualisiert werden",
+      "deleteError": "Wort konnte nicht gelöscht werden",
+      "success": "Erfolg",
+      "updateSuccess": "Wort erfolgreich aktualisiert",
+      "deleteSuccess": "Wort erfolgreich gelöscht"
+    },
+    "filterPlaceholder": "Nach Status filtern",
+    "filters": {
+      "all": "Alle Wörter",
+      "mastered": "Gemeistert",
+      "learning": "Lernend",
+      "due": "Heute fällig",
+      "allStages": "Alle Stufen",
+      "new": "Neue Wörter"
+    },
+    "noWordsFound": "Keine Wörter gefunden. Beginnen Sie damit, ein neues Wort hinzuzufügen!",
+    "loading": "Laden...",
+    "loadMore": "Mehr laden",
+    "editWord": "Wort bearbeiten",
+    "deleteConfirmation": {
+      "title": "Sind Sie sicher?",
+      "description": "Diese Aktion kann nicht rückgängig gemacht werden. Das Wort und alle zugehörigen Daten werden dauerhaft gelöscht."
+    },
+    "stages": {
+      "new": "Neu",
+      "learning": "Lernend",
+      "reviewing": "Wiederholend",
+      "familiar": "Bekannt",
+      "known": "Gewusst",
+      "almostMastered": "Fast gemeistert"
+    },
+    "wordLabel": "Wort",
+    "definitionLabel": "Definition",
+    "contextLabel": "Kontext",
+    "saving": "Speichern...",
+    "search": "Suchen",
+    "stats": {
+      "totalWords": "Gesamtwörter",
+      "mastered": "Gemeistert",
+      "dueToday": "Heute fällig"
+    },
+    "addFirstWord": "Beginnen Sie damit, ein neues Wort hinzuzufügen!"
+  },
+  "ImageExtractor": {
+    "title": "Wörter aus Bild extrahieren",
+    "description": "Laden Sie ein Bild mit Text hoch, um automatisch Vokabeln zu extrahieren",
+    "aiSettings": {
+      "title": "KI-Modell-Einstellungen"
+    },
+    "uploading": "Hochladen...",
+    "uploadImage": "Bild hochladen",
+    "uploadedImageAlt": "Hochgeladen",
+    "processingImage": "Bild wird verarbeitet...",
+    "extractWords": "Wörter extrahieren",
+    "using": "Mit",
+    "extractedWords": {
+      "title": "Extrahierte Wörter",
+      "searchPlaceholder": "Wörter suchen...",
+      "removeDuplicates": "Duplikate entfernen",
+      "selectAll": "Alle auswählen",
+      "deselectAll": "Alle abwählen",
+      "table": {
+        "select": "Auswählen",
+        "word": "Wort",
+        "definition": "Definition"
+      },
+      "noWordsFound": "Keine Wörter gefunden, die Ihren Suchkriterien entsprechen",
+      "selectionCount": "{selected} von {total} ausgewählt",
+      "addingWords": "Wörter werden hinzugefügt...",
+      "addSelectedWords": "Ausgewählte Wörter hinzufügen"
+    },
+    "models": {
+      "gemini": "Google Gemini",
+      "gpt4vision": "GPT-4 Vision",
+      "claude": "Claude",
+      "imgocr": "ImgOCR"
+    },
+    "toast": {
+      "imageLoaded": "Bild geladen",
+      "imageLoadedDesc": "Ihr Bild wurde erfolgreich geladen. Klicken Sie auf 'Wörter extrahieren', um es zu verarbeiten.",
+      "error": "Fehler",
+      "uploadError": "Bitte laden Sie ein Bild hoch und stellen Sie sicher, dass Sie angemeldet sind.",
+      "apiKeyMissing": "API-Schlüssel fehlt",
+      "apiKeyMissingDesc": "Der API-Schlüssel für {model} ist nicht konfiguriert. Bitte überprüfen Sie Ihre Umgebungsvariablen.",
+      "noWordsFound": "Keine Wörter gefunden",
+      "noWordsFoundDesc": "Wir konnten keine bedeutungsvollen Vokabeln in diesem Bild finden. Versuchen Sie es mit einem anderen Bild mit klarerem Text.",
+      "success": "Erfolg",
+      "extractSuccess": "{count} Wörter aus Ihrem Bild mit {model} extrahiert.",
+      "processError": "Bild konnte nicht verarbeitet werden. Bitte überprüfen Sie Ihren API-Schlüssel oder versuchen Sie ein anderes KI-Modell.",
+      "notLoggedIn": "Nicht angemeldet",
+      "loginRequired": "Bitte melden Sie sich an, um Wörter zu Ihrem Vokabular hinzuzufügen.",
+      "noWordsSelected": "Keine Wörter ausgewählt",
+      "selectWords": "Bitte wählen Sie mindestens ein Wort zum Hinzufügen aus.",
+      "addSuccess": "{count} Wörter zu Ihrem Vokabular hinzugefügt. Erinnerungen wurden geplant.",
+      "addError": "Wörter konnten nicht hinzugefügt werden. Bitte versuchen Sie es erneut."
+    },
+    "cancel": "Abbrechen"
+  },
+  "AiModelSelector": {
+    "title": "KI-Modell-Einstellungen",
+    "description": "Wählen Sie, welches KI-Modell zum Extrahieren von Vokabeln aus Bildern verwendet werden soll",
+    "selectModelPlaceholder": "Wählen Sie ein KI-Modell",
+    "aiModelsLabel": "KI-Modelle",
+    "models": {
+      "gemini": {
+        "name": "Google Gemini",
+        "description": "Googles multimodales KI-Modell mit starkem visuellem Verständnis"
+      },
+      "gpt4vision": {
+        "name": "GPT-4 Vision",
+        "description": "OpenAIs Sichtmodell mit ausgezeichneter Textextraktion und Definitionsfähigkeiten"
+      },
+      "claude": {
+        "name": "Claude",
+        "description": "Anthropics Claude-Modell mit visuellen Verständnisfähigkeiten"
+      },
+      "imgocr": {
+        "name": "ImgOCR",
+        "description": "Traditionelle OCR-Lösung mit Wörterbuch-API-Integration"
+      }
+    },
+    "toast": {
+      "modelUpdated": "KI-Modell aktualisiert",
+      "usingModel": "Verwendet jetzt {model} für die Wortextraktion aus Bildern"
+    }
+  },
+  "BulkWordAdder": {
+    "title": "Mehrere Wörter hinzufügen",
+    "description": "Fügen Sie Wörter in großen Mengen durch Eingabe, Einfügen oder Hochladen einer Datei hinzu",
+    "tabs": {
+      "typeOrPaste": "Eingeben oder Einfügen",
+      "uploadFile": "Datei hochladen",
+      "advancedFormat": "Erweitertes Format"
+    },
+    "text": {
+      "instructions": "Geben Sie ein Wort pro Zeile im Format ein: Wort{separator}Definition",
+      "placeholder": "Apfel{separator}eine rote Frucht, die an Bäumen wächst\nfleißig{separator}hart arbeitend und sorgfältig",
+      "helpText": "Jede Zeile sollte ein Wort und seine Definition enthalten, getrennt durch \"{separator}\""
+    },
+    "file": {
+      "label": "Datei",
+      "formatLabel": "Dateiformat",
+      "selectFormatPlaceholder": "Format auswählen",
+      "formats": {
+        "text": "Text (Wort{separator}Definition)",
+        "csv": "CSV (Wort,Definition)",
+        "json": "JSON-Array"
+      }
+    },
+    "advanced": {
+      "formatTypeLabel": "Formattyp",
+      "selectFormatPlaceholder": "Format auswählen",
+      "separatorLabel": "Trennzeichen",
+      "separatorPlaceholder": "z.B. - oder : oder |",
+      "pasteLabel": "Fügen Sie Ihren Inhalt ein",
+      "formats": {
+        "text": "Text (Wort{separator}Definition)",
+        "csv": "CSV (Wort,Definition)",
+        "json": "JSON-Array"
+      },
+      "placeholders": {
+        "json": "[{\"word\":\"Apfel\",\"definition\":\"eine rote Frucht\"},{\"word\":\"Banane\",\"definition\":\"eine gelbe Frucht\"}]",
+        "csv": "word,definition\nApfel,eine rote Frucht\nBanane,eine gelbe Frucht",
+        "text": "Apfel{separator}eine rote Frucht\nBanane{separator}eine gelbe Frucht"
+      }
+    },
+    "removeDuplicates": "Duplikate entfernen",
+    "processing": "Verarbeitung...",
+    "processWords": "Wörter verarbeiten",
+    "processedWords": {
+      "title": "Verarbeitete Wörter",
+      "searchPlaceholder": "Wörter suchen...",
+      "sortBy": "Sortieren nach",
+      "sortOptions": {
+        "word": "Wort",
+        "definition": "Definition"
+      },
+      "selectAll": "Alle auswählen",
+      "deselectAll": "Alle abwählen",
+      "table": {
+        "select": "Auswählen",
+        "word": "Wort",
+        "definition": "Definition"
+      },
+      "noWordsFound": "Keine Wörter gefunden, die Ihren Suchkriterien entsprechen",
+      "selectionCount": "{selected} von {total} ausgewählt",
+      "addingWords": "Wörter werden hinzugefügt...",
+      "addSelectedWords": "Ausgewählte Wörter hinzufügen"
+    },
+    "cancel": "Abbrechen",
+    "toast": {
+      "fileLoaded": "Datei geladen",
+      "fileLoadedDesc": "Erfolgreich geladen {filename}",
+      "error": "Fehler",
+      "fileReadError": "Datei konnte nicht gelesen werden",
+      "noContent": "Kein Inhalt zum Analysieren",
+      "noWordsSelected": "Keine Wörter ausgewählt",
+      "selectWords": "Bitte wählen Sie mindestens ein Wort zum Hinzufügen aus.",
+      "success": "Erfolg",
+      "parseSuccess": "{count} Wörter erfolgreich analysiert.",
+      "addSuccess": "{count} Wörter zu Ihrem Vokabular hinzugefügt.",
+      "addError": "Wörter konnten nicht hinzugefügt werden. Bitte versuchen Sie es erneut."
+    },
+    "errors": {
+      "invalidJson": "Ungültiges JSON-Format",
+      "noValidWords": "Keine gültigen Wörter im bereitgestellten Inhalt gefunden",
+      "parseError": "Wörter konnten nicht analysiert werden"
+    }
+  },
+  "Auth": {
+    "Metadata": {
+      "login": {
+        "title": "Anmelden - Vocabry",
+        "description": "Melden Sie sich bei Ihrem Vocabry-Konto an, um Ihr Vokabellernen zu verwalten"
+      },
+      "signup": {
+        "title": "Registrieren - Vocabry",
+        "description": "Erstellen Sie ein neues Konto bei Vocabry, um mit dem Vokabellernen zu beginnen"
+      },
+      "forgotPassword": {
+        "title": "Passwort vergessen - Vocabry",
+        "description": "Setzen Sie Ihr Passwort für Ihr Vocabry-Konto zurück"
+      },
+      "resetPassword": {
+        "title": "Passwort zurücksetzen - Vocabry",
+        "description": "Legen Sie ein neues Passwort für Ihr Vocabry-Konto fest"
+      }
+    },
+    "SignIn": {
+      "title": "Anmelden",
+      "form": {
+        "email": "E-Mail",
+        "password": "Passwort",
+        "forgotPassword": "Passwort vergessen?",
+        "signIn": "Anmelden",
+        "signingIn": "Anmelden..."
+      },
+      "footer": {
+        "text": "Haben Sie noch kein Konto?",
+        "link": "Registrieren"
+      },
+      "social": {
+        "orContinueWith": "ODER FORTFAHREN MIT"
+      },
+      "errors": {
+        "invalidCredentials": "Ungültige E-Mail oder Passwort",
+        "generic": "Bei der Anmeldung ist ein Fehler aufgetreten",
+        "telegramAuth": "Bei der Telegram-Anmeldung ist ein Fehler aufgetreten"
+      },
+      "toast": {
+        "error": "Fehler"
+      }
+    },
+    "SignUp": {
+      "title": "Registrieren",
+      "form": {
+        "email": "E-Mail",
+        "emailPlaceholder": "name@beispiel.de",
+        "password": "Passwort",
+        "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
+        "createAccount": "Konto erstellen",
+        "creatingAccount": "Konto wird erstellt..."
+      },
+      "footer": {
+        "text": "Haben Sie bereits ein Konto?",
+        "link": "Anmelden"
+      },
+      "social": {
+        "orContinueWith": "ODER FORTFAHREN MIT"
+      },
+      "errors": {
+        "generic": "Bei der Registrierung ist ein Fehler aufgetreten",
+        "telegramAuth": "Bei der Telegram-Anmeldung ist ein Fehler aufgetreten"
+      },
+      "toast": {
+        "error": "Fehler",
+        "emailRegistered": "E-Mail bereits registriert",
+        "emailRegisteredDesc": "Diese E-Mail ist bereits registriert.",
+        "signInInstead": "Stattdessen anmelden"
+      }
+    },
+    "ForgotPassword": {
+      "title": "Passwort vergessen",
+      "form": {
+        "email": "E-Mail",
+        "emailPlaceholder": "name@beispiel.de",
+        "sendResetLink": "Zurücksetzungslink senden",
+        "sendingResetLink": "Zurücksetzungslink wird gesendet..."
+      },
+      "footer": {
+        "text": "Erinnern Sie sich an Ihr Passwort?",
+        "link": "Anmelden"
+      },
+      "toast": {
+        "checkEmail": "Überprüfen Sie Ihre E-Mails",
+        "resetLinkSent": "Wir haben Ihnen einen Link zum Zurücksetzen des Passworts gesendet.",
+        "error": "Fehler",
+        "genericError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut."
+      }
+    },
+    "ResetPassword": {
+      "title": "Passwort zurücksetzen",
+      "form": {
+        "newPassword": "Neues Passwort",
+        "newPasswordPlaceholder": "Geben Sie Ihr neues Passwort ein",
+        "resetPassword": "Passwort zurücksetzen",
+        "resettingPassword": "Passwort wird zurückgesetzt..."
+      },
+      "footer": {
+        "text": "Erinnern Sie sich an Ihr Passwort?",
+        "link": "Anmelden"
+      },
+      "toast": {
+        "success": "Passwort erfolgreich zurückgesetzt",
+        "successDesc": "Sie können sich jetzt mit Ihrem neuen Passwort anmelden.",
+        "error": "Fehler",
+        "invalidToken": "Ungültiger Zurücksetzungstoken",
+        "failedReset": "Passwort konnte nicht zurückgesetzt werden. Bitte versuchen Sie es erneut."
+      }
+    }
+  },
+  "Review": {
+    "Metadata": {
+      "title": "Wörter wiederholen - Vocabry",
+      "description": "Wiederholen Sie Ihre Vokabeln mit Karteikarten"
+    },
+    "flashcardReview": "Karteikarten-Wiederholung",
+    "back": "Zurück",
+    "progress": "Fortschritt",
+    "correct": "Richtig",
+    "incorrect": "Falsch",
+    "skip": "Überspringen",
+    "pause": "Pause",
+    "resume": "Fortsetzen",
+    "stage": "Stufe",
+    "definition": "Definition",
+    "exampleContext": "Beispielkontext",
+    "showContext": "Kontext anzeigen",
+    "tapToReveal": "Tippen, um Definition anzuzeigen",
+    "sessionComplete": "Sitzung abgeschlossen!",
+    "youCompleted": "Sie haben erfolgreich abgeschlossen",
+    "words": "Wörter",
+    "returnToDashboard": "Zurück zum Dashboard",
+    "reviewAgain": "Erneut wiederholen",
+    "sessionPaused": "Sitzung pausiert",
+    "sessionPausedDescription": "Machen Sie eine Pause und setzen Sie fort, wenn Sie bereit sind",
+    "quitSession": "Sitzung beenden",
+    "loadingWords": "Wörter werden geladen...",
+    "noWordsToReview": "Im Moment keine Wörter zum Wiederholen. Schauen Sie später wieder vorbei!",
+    "reviewSuccess": "Wiederholungserfolg",
+    "addMoreWords": "Mehr Wörter hinzufügen",
+    "stats": {
+      "accuracy": "Genauigkeit",
+      "timeSpent": "Aufgewendete Zeit",
+      "wordsReviewed": "Wiederholte Wörter",
+      "averageTimePerWord": "Durchschnittliche Zeit pro Wort"
+    }
+  },
+  "DictionarySubscription": {
+    "title": "Wörterbuch-Abonnements",
+    "description": "Abonnieren Sie kuratierte Wörterbücher und importieren Sie Wörter direkt in Ihr Vokabular",
+    "tabs": {
+      "featured": "Empfohlen",
+      "all": "Alle Wörterbücher",
+      "categories": "Kategorien",
+      "mySubscriptions": "Meine Abonnements"
+    },
+    "search": {
+      "placeholder": "Wörterbücher durchsuchen..."
+    },
+    "emptySubscriptions": {
+      "title": "Noch keine Abonnements",
+      "description": "Abonnieren Sie Wörterbücher, um Wörter direkt in Ihr Vokabular zu importieren",
+      "browseButton": "Wörterbücher durchsuchen"
+    },
+    "subscriptionDetails": {
+      "words": "Wörter",
+      "subscribedOn": "Abonniert am",
+      "notImportedYet": "Noch nicht importiert",
+      "lastImported": "Zuletzt {count} Wörter am {date} importiert",
+      "importWords": "Wörter importieren",
+      "refreshAndImport": "Aktualisieren & neue Wörter importieren"
+    },
+    "preview": {
+      "dictionaryCreator": "Wörterbuch-Ersteller",
+      "description": "Beschreibung",
+      "wordCount": "Wortanzahl",
+      "words": "Wörter",
+      "category": "Kategorie",
+      "sampleWords": "Beispielwörter",
+      "viewDetails": "Details anzeigen",
+      "cancel": "Abbrechen",
+      "subscribe": "Abonnieren",
+      "subscribing": "Abonnieren...",
+      "alreadySubscribed": "Bereits abonniert"
+    },
+    "noResults": "Keine Wörterbücher gefunden, die Ihren Suchkriterien entsprechen",
+    "loading": "Wörterbücher werden geladen...",
+    "toast": {
+      "error": "Fehler",
+      "loadDictionariesFailed": "Wörterbücher konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+      "loadSubscriptionsFailed": "Ihre Abonnements konnten nicht geladen werden.",
+      "success": "Erfolg",
+      "subscribed": "Sie haben \"{title}\" abonniert",
+      "subscribeFailed": "Wörterbuch konnte nicht abonniert werden. Bitte versuchen Sie es erneut.",
+      "imported": "{count} Wörter aus \"{title}\" importiert",
+      "importFailed": "Wörter konnten nicht importiert werden. Bitte versuchen Sie es erneut."
+    }
+  }
+}
