@@ -115,6 +115,8 @@ export async function PUT(request: Request) {
       updateQuery = updateQuery.eq('email', session.user.email);
     } else if (session.user.telegram_id) {
       updateQuery = updateQuery.eq('telegram_id', session.user.telegram_id);
+    } else if (session.user.id) {
+      updateQuery = updateQuery.eq('id', session.user.id);
     }
 
     const { error } = await updateQuery;
