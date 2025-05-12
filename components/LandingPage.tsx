@@ -13,7 +13,7 @@ export default function LandingPage() {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push('signup');
+    router.push('words');
   };
 
   const reminderSteps = [
