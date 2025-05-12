@@ -102,8 +102,6 @@ export async function PUT(request: Request) {
         verification_token: data.verification_token,
         verification_token_expires: data.verification_token_expires,
       }),
-      // Only update telegram_id if user is not authenticated via Telegram
-      ...(session.user.telegram_id ? {} : { telegram_id: data.telegram_id }),
     });
 
     // Use appropriate identifier for the update
