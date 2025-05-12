@@ -18,7 +18,8 @@ import { locales, localeNames, type Locale } from '@/config/i18n';
 const localeFlags: Record<Locale, string> = {
   en: "🇺🇸",
   ru: "🇷🇺",
-  uz: "🇺🇿"
+  uz: "🇺🇿",
+  de: "🇩🇪",
 };
 
 type LanguageSelectorProps = {
