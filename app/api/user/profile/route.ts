@@ -23,6 +23,8 @@ export async function GET() {
       query = query.eq('email', session.user.email);
     } else if (session.user.telegram_id) {
       query = query.eq('telegram_id', session.user.telegram_id);
+    } else if (session.user.id) {
+      query = query.eq('id', session.user.id);
     } else {
       return NextResponse.json({ error: 'No identifier found' }, { status: 400 });
     }
@@ -55,6 +57,10 @@ export async function PUT(request: Request) {
       query = query.eq('email', session.user.email);
     } else if (session.user.telegram_id) {
       query = query.eq('telegram_id', session.user.telegram_id);
+    } else if (session.user.id) {
+      query = query.eq('id', session.user.id);
+    } else {
+      return NextResponse.json({ error: 'No identifier found' }, { status: 400 });
     }
 
     const { data: currentUser, error: fetchError } = await query.single();
@@ -102,8 +108,6 @@ export async function PUT(request: Request) {
         verification_token: data.verification_token,
         verification_token_expires: data.verification_token_expires,
       }),
-      // Only update telegram_id if user is not authenticated via Telegram
-      ...(session.user.telegram_id ? {} : { telegram_id: data.telegram_id }),
     });
 
     // Use appropriate identifier for the update
@@ -111,6 +115,8 @@ export async function PUT(request: Request) {
       updateQuery = updateQuery.eq('email', session.user.email);
     } else if (session.user.telegram_id) {
       updateQuery = updateQuery.eq('telegram_id', session.user.telegram_id);
+    } else if (session.user.id) {
+      updateQuery = updateQuery.eq('id', session.user.id);
     }
 
     const { error } = await updateQuery;

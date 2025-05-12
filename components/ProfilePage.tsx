@@ -88,6 +88,7 @@ const ProfilePage = () => {
     email: z.string().email({
       message: t('form.validation.emailValid'),
     }).optional(),
+    // Make telegram_id optional but not editable
     telegram_id: z.string().optional(),
   });
 
@@ -118,7 +119,7 @@ const ProfilePage = () => {
 
   const [notificationPreferences, setNotificationPreferences] = React.useState({
     email: true,
-    telegram: true
+    telegram: false
   });
 
   const [successMessage, setSuccessMessage] = useState('');
@@ -181,12 +182,20 @@ const ProfilePage = () => {
       // Check if email is being changed
       const emailChanged = data.email !== form.getValues('email');
 
+      // Preserve the telegram_id by getting current value
+      // instead of sending possibly modified value from the form
+      const currentTelegramId = form.getValues('telegram_id');
+
       const response = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          // Always send the current telegram_id, never the modified one
+          telegram_id: currentTelegramId
+        }),
       });
 
       if (!response.ok) throw new Error('Failed to update profile');
@@ -272,13 +281,22 @@ const ProfilePage = () => {
 
   // Connect Telegram account
   const handleConnectTelegram = () => {
-    if (!session?.user?.id) return;
+    // Make sure we have a user ID to use for the Telegram bot
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      toast({
+        title: t('toast.error'),
+        description: "Unable to connect to Telegram. User ID not found.",
+      });
+      return;
+    }
 
     setTelegramStatus(prev => ({ ...prev, connecting: true }));
     const telegramBotUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
 
     // Open Telegram in new window with deep link containing user ID
-    window.open(`https://t.me/${telegramBotUsername}?start=${session.user.id}`, '_blank');
+    window.open(`https://t.me/${telegramBotUsername}?start=${userId}`, '_blank');
 
     // Show success message
     setSuccessMessage(t('telegram.windowOpened'));
@@ -316,7 +334,7 @@ const ProfilePage = () => {
 
       setNotificationPreferences(profileData.notification_preferences || { email: true, telegram: false });
 
-      // Update form data in case telegram_id changed
+      // Update form data for telegram_id if it changed
       if (telegramData.connected && !form.getValues('telegram_id')) {
         form.setValue('telegram_id', profileData.telegram_id || '');
       }
@@ -447,14 +465,33 @@ const ProfilePage = () => {
                           <Input
                             placeholder={t('form.telegramIdPlaceholder')}
                             {...field}
-                            disabled={isTelegramUser}
+                            disabled={true}
+                            className="bg-gray-50"
                           />
                         </FormControl>
                         <FormDescription>
-                          {isTelegramUser
+                          {telegramStatus.connected
                             ? t('form.telegramIdLocked')
                             : t('form.telegramIdDescription')}
                         </FormDescription>
+                        {!telegramStatus.connected && (
+                          <div className="mt-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                // Navigate to the notifications tab
+                                document.querySelector('[value="notifications"]')?.dispatchEvent(
+                                  new MouseEvent('click', { bubbles: true })
+                                );
+                              }}
+                            >
+                              <MessageCircle className="mr-2 h-4 w-4" />
+                              {t('form.connectTelegram')}
+                            </Button>
+                          </div>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -587,7 +624,7 @@ const ProfilePage = () => {
           </Card>
         </TabsContent>
 
-        {/* Subscription Tab (New) */}
+        {/* Subscription Tab */}
         <TabsContent value="subscription">
           <div className="space-y-6">
             {/* Subscription Status Card */}
