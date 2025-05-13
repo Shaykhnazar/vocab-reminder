@@ -25,7 +25,7 @@ export const MobileNav = () => {
     // },
     {
       href: '/words',
-      label: 'Words',
+      label: t('myWords'),
       icon: Book,
     },
     // {
