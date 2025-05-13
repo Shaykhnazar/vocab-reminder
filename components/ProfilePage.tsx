@@ -73,6 +73,9 @@ const ProfilePage = () => {
   const { data: session } = useSession();
   const { toast } = useToast();
 
+  // State to control active tab
+  const [activeTab, setActiveTab] = useState('profile');
+
   // Create the form schema with translated validation messages
   const profileFormSchema = z.object({
     first_name: z.string().min(2, {
@@ -299,8 +302,9 @@ const ProfilePage = () => {
 
     // Reset connecting state after a delay
     setTimeout(() => {
+      setSuccessMessage("Telegram connection window opened. Please follow the instructions in the Telegram app.");
       setTelegramStatus(prev => ({ ...prev, connecting: false }));
-    }, 3000);
+    }, 1000);
   };
 
   // Refresh Telegram connection status
@@ -361,11 +365,16 @@ const ProfilePage = () => {
     ? (subscription.currentSubscription.wordsUsed / subscription.currentSubscription.wordLimit) * 100
     : 0;
 
+  // Function to change tabs programmatically
+  const switchToTab = (tabName: string) => {
+    setActiveTab(tabName);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
 
-        <Tabs defaultValue="profile" className="w-full">
+        <Tabs value={activeTab} onValueChange={switchToTab} className="w-full">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
             {/* Tabs with horizontal scroll on mobile */}
             <div className="w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
@@ -481,12 +490,7 @@ const ProfilePage = () => {
                                   type="button"
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => {
-                                    // Navigate to the notifications tab
-                                    document.querySelector('[value="notifications"]')?.dispatchEvent(
-                                      new MouseEvent('click', {bubbles: true})
-                                    );
-                                  }}
+                                  onClick={() => switchToTab('notifications')}
                                 >
                                   <MessageCircle className="mr-2 h-4 w-4"/>
                                   {t('form.connectTelegram')}
