@@ -232,6 +232,7 @@
       "telegramIdPlaceholder": "Your Telegram ID, e.g. 123456789",
       "telegramIdLocked": "Telegram ID cannot be changed when signed in with Telegram",
       "telegramIdDescription": "Your Telegram username for receiving word reminders.",
+      "connectTelegram": "Connect Telegram",
       "saving": "Saving...",
       "saveChanges": "Save Changes",
       "validation": {
@@ -298,16 +299,16 @@
       "notificationToggle": "{type} notifications {status}.",
       "telegramNotConnected": "Telegram not connected",
       "connectTelegramFirst": "Please connect your Telegram account first"
+    },
+    "common": {
+      "enabled": "enabled",
+      "disabled": "disabled",
+      "connected": "Connected",
+      "connecting": "Connecting...",
+      "connect": "Connect",
+      "refresh": "Refresh",
+      "success": "Success"
     }
-  },
-  "common": {
-    "enabled": "enabled",
-    "disabled": "disabled",
-    "connected": "Connected",
-    "connecting": "Connecting...",
-    "connect": "Connect",
-    "refresh": "Refresh",
-    "success": "Success"
   },
   "Dashboard": {
     "Metadata": {

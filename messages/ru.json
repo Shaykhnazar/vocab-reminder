@@ -232,6 +232,7 @@
       "telegramIdPlaceholder": "Ваш Telegram ID, например, 123456789",
       "telegramIdLocked": "Telegram ID нельзя изменить при входе через Telegram",
       "telegramIdDescription": "Ваше имя пользователя в Telegram для получения напоминаний о словах.",
+      "connectTelegram": "Подключить Telegram",
       "saving": "Сохранение...",
       "saveChanges": "Сохранить изменения",
       "validation": {
@@ -298,16 +299,16 @@
       "notificationToggle": "Уведомления {type} {status}.",
       "telegramNotConnected": "Telegram не подключен",
       "connectTelegramFirst": "Пожалуйста, сначала подключите ваш аккаунт Telegram"
+    },
+    "common": {
+      "enabled": "включены",
+      "disabled": "отключены",
+      "connected": "Подключено",
+      "connecting": "Подключение...",
+      "connect": "Подключить",
+      "refresh": "Обновить",
+      "success": "Успех"
     }
-  },
-  "common": {
-    "enabled": "включены",
-    "disabled": "отключены",
-    "connected": "Подключено",
-    "connecting": "Подключение...",
-    "connect": "Подключить",
-    "refresh": "Обновить",
-    "success": "Успех"
   },
   "Dashboard": {
     "Metadata": {

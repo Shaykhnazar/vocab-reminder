@@ -232,6 +232,7 @@
       "telegramIdPlaceholder": "Telegram ID raqamingiz, masalan, 123456789",
       "telegramIdLocked": "Telegram orqali kirganingizda Telegram ID ni o'zgartirib bo'lmaydi",
       "telegramIdDescription": "So'z eslatmalari uchun Telegram foydalanuvchi nomingiz.",
+      "connectTelegram": "Telegramga bog'lash",
       "saving": "Saqlanmoqda...",
       "saveChanges": "O'zgarishlarni saqlash",
       "validation": {
@@ -298,16 +299,16 @@
       "notificationToggle": "{type} bildirishnomalari {status}.",
       "telegramNotConnected": "Telegram ulanmagan",
       "connectTelegramFirst": "Iltimos, avval Telegram hisobingizni ulang"
+    },
+    "common": {
+      "enabled": "yoqilgan",
+      "disabled": "o'chirilgan",
+      "connected": "Ulangan",
+      "connecting": "Ulanmoqda...",
+      "connect": "Ulash",
+      "refresh": "Yangilash",
+      "success": "Muvaffaqiyat"
     }
-  },
-  "common": {
-    "enabled": "yoqilgan",
-    "disabled": "o'chirilgan",
-    "connected": "Ulangan",
-    "connecting": "Ulanmoqda...",
-    "connect": "Ulash",
-    "refresh": "Yangilash",
-    "success": "Muvaffaqiyat"
   },
   "Dashboard": {
     "Metadata": {

@@ -92,61 +92,61 @@ export const Navbar = () => {
             {/* Language selector moved outside for easier access on mobile */}
             <LanguageSelector />
 
-            <Sheet>
-              <SheetTrigger asChild className="md:hidden">
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right">
-                <nav className="flex flex-col gap-4 mt-8">
-                  {navLinks.map((link) => (
-                    <SheetClose asChild key={link.href}>
-                      <Link
-                        href={link.href}
-                        className="flex items-center text-lg font-medium py-2 hover:text-purple-600 transition-colors"
-                      >
-                        {link.icon && <link.icon className="mr-2 h-5 w-5" />}
-                        {link.label}
-                      </Link>
-                    </SheetClose>
-                  ))}
+            {/*<Sheet>*/}
+            {/*  <SheetTrigger asChild className="md:hidden">*/}
+            {/*    <Button variant="ghost" size="icon">*/}
+            {/*      <Menu className="h-6 w-6" />*/}
+            {/*    </Button>*/}
+            {/*  </SheetTrigger>*/}
+            {/*  <SheetContent side="right">*/}
+            {/*    <nav className="flex flex-col gap-4 mt-8">*/}
+            {/*      {navLinks.map((link) => (*/}
+            {/*        <SheetClose asChild key={link.href}>*/}
+            {/*          <Link*/}
+            {/*            href={link.href}*/}
+            {/*            className="flex items-center text-lg font-medium py-2 hover:text-purple-600 transition-colors"*/}
+            {/*          >*/}
+            {/*            {link.icon && <link.icon className="mr-2 h-5 w-5" />}*/}
+            {/*            {link.label}*/}
+            {/*          </Link>*/}
+            {/*        </SheetClose>*/}
+            {/*      ))}*/}
 
-                  {session ? (
-                    <>
-                      <SheetClose asChild>
-                        <Link
-                          href="/profile"
-                          className="flex items-center text-lg font-medium py-2 hover:text-purple-600 transition-colors mt-4"
-                        >
-                          <User className="mr-2 h-5 w-5" />
-                          {t('profile')}
-                        </Link>
-                      </SheetClose>
+            {/*      {session ? (*/}
+            {/*        <>*/}
+            {/*          <SheetClose asChild>*/}
+            {/*            <Link*/}
+            {/*              href="/profile"*/}
+            {/*              className="flex items-center text-lg font-medium py-2 hover:text-purple-600 transition-colors mt-4"*/}
+            {/*            >*/}
+            {/*              <User className="mr-2 h-5 w-5" />*/}
+            {/*              {t('profile')}*/}
+            {/*            </Link>*/}
+            {/*          </SheetClose>*/}
 
-                      <Button
-                        onClick={handleSignOut}
-                        variant="destructive"
-                        className="mt-2 w-full"
-                      >
-                        <LogOut className="mr-2 h-4 w-4" /> {t('signOut')}
-                      </Button>
-                    </>
-                  ) : (
-                    <SheetClose asChild>
-                      <Button
-                        onClick={handleSignIn}
-                        className="mt-2 w-full bg-purple-600 hover:bg-purple-700"
-                      >
-                        {t('signIn')}
-                      </Button>
-                    </SheetClose>
-                  )}
+            {/*          <Button*/}
+            {/*            onClick={handleSignOut}*/}
+            {/*            variant="destructive"*/}
+            {/*            className="mt-2 w-full"*/}
+            {/*          >*/}
+            {/*            <LogOut className="mr-2 h-4 w-4" /> {t('signOut')}*/}
+            {/*          </Button>*/}
+            {/*        </>*/}
+            {/*      ) : (*/}
+            {/*        <SheetClose asChild>*/}
+            {/*          <Button*/}
+            {/*            onClick={handleSignIn}*/}
+            {/*            className="mt-2 w-full bg-purple-600 hover:bg-purple-700"*/}
+            {/*          >*/}
+            {/*            {t('signIn')}*/}
+            {/*          </Button>*/}
+            {/*        </SheetClose>*/}
+            {/*      )}*/}
 
-                  {/* We don't need the language selector in the menu anymore */}
-                </nav>
-              </SheetContent>
-            </Sheet>
+            {/*       We don't need the language selector in the menu anymore */}
+            {/*    </nav>*/}
+            {/*  </SheetContent>*/}
+            {/*</Sheet>*/}
           </div>
 
           {/* Desktop menu */}

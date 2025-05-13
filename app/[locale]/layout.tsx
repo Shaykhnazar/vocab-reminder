@@ -6,6 +6,8 @@ import {routing} from '@/i18n/routing';
 import { NextAuthProvider } from "@/components/NextAuthProvider";
 import { Navbar } from "@/components/navigation/Navbar";
 import { Footer } from "@/components/navigation/Footer";
+import { MobileNav } from "@/components/navigation/MobileNav";
+import { Toaster } from "@/components/shadcn-ui/toaster";
 
 // Metadata generation with translations
 export async function generateMetadata({ 
@@ -13,9 +15,8 @@ export async function generateMetadata({
 }: { 
   params: { locale: string } 
 }) {
-  // You could load translations here to localize metadata
   return {
-    title: "Vocabulary Reminder - Master New Words Efficiently",
+    title: "VocabRY - Master New Words Efficiently",
     description: "Smart spaced repetition system that helps you remember vocabulary forever through perfectly timed notifications",
   };
 }
@@ -46,10 +47,12 @@ export default async function LocaleLayout({
       <div className="flex min-h-screen flex-col">
         <NextAuthProvider>
           <Navbar />
-          <main className="flex-1">
+          <main className="flex-1 pb-20 md:pb-0">
             {children}
           </main>
-          <Footer />
+          <MobileNav />
+          <Footer className="hidden md:block" />
+          <Toaster />
         </NextAuthProvider>
       </div>
     </NextIntlClientProvider>

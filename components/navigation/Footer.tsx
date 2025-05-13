@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import LogoSvg from "../../public/logo.svg";
 import { LanguageSelector } from '@/components/common/LanguageSelector';
+import { cn } from '@/lib/utils';
 
 const Logo = () => (
   <Link href="/" className="flex items-center">
@@ -20,11 +21,15 @@ const Logo = () => (
   </Link>
 );
 
-export const Footer = () => {
+interface FooterProps {
+  className?: string;
+}
+
+export const Footer: React.FC<FooterProps> = ({ className }) => {
   const t = useTranslations('Footer');
 
   return (
-    <footer className="border-t bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <footer className={cn('border-t bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60', className)}>
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
