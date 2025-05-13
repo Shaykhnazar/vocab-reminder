@@ -232,6 +232,7 @@
       "telegramIdPlaceholder": "Ihre Telegram-ID, z.B. 123456789",
       "telegramIdLocked": "Telegram-ID kann nicht geändert werden, wenn Sie mit Telegram angemeldet sind",
       "telegramIdDescription": "Ihr Telegram-Benutzername für den Empfang von Worterinnerungen.",
+      "connectTelegram": "Telegram verbinden",
       "saving": "Speichern...",
       "saveChanges": "Änderungen speichern",
       "validation": {
@@ -298,16 +299,16 @@
       "notificationToggle": "{type}-Benachrichtigungen {status}.",
       "telegramNotConnected": "Telegram nicht verbunden",
       "connectTelegramFirst": "Bitte verbinden Sie zuerst Ihr Telegram-Konto"
+    },
+    "common": {
+      "enabled": "aktiviert",
+      "disabled": "deaktiviert",
+      "connected": "Verbunden",
+      "connecting": "Verbinden...",
+      "connect": "Verbinden",
+      "refresh": "Aktualisieren",
+      "success": "Erfolg"
     }
-  },
-  "common": {
-    "enabled": "aktiviert",
-    "disabled": "deaktiviert",
-    "connected": "Verbunden",
-    "connecting": "Verbinden...",
-    "connect": "Verbinden",
-    "refresh": "Aktualisieren",
-    "success": "Erfolg"
   },
   "Dashboard": {
     "Metadata": {
