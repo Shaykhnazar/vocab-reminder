@@ -16,7 +16,7 @@ export default async function Subscriptions() {
     // Get full subscription data including plans and current subscription
     const subscriptionData = await getFullSubscriptionData(session.user.id);
     
-    return <SubscriptionsPage data={subscriptionData} />;
+    return <SubscriptionsPage {...subscriptionData} />;
   } catch (error) {
     console.error('Error loading subscription data:', error);
     
@@ -41,6 +41,6 @@ export default async function Subscriptions() {
       }
     };
     
-    return <SubscriptionsPage data={fallbackData} />;
+    return <SubscriptionsPage {...fallbackData} />;
   }
 }
