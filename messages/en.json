@@ -298,7 +298,10 @@
       "preferencesUpdated": "Preferences updated",
       "notificationToggle": "{type} notifications {status}.",
       "telegramNotConnected": "Telegram not connected",
-      "connectTelegramFirst": "Please connect your Telegram account first"
+      "connectTelegramFirst": "Please connect your Telegram account first",
+      "logoutSuccess": "Logged out successfully",
+      "logoutSuccessDesc": "You have been successfully logged out",
+      "logoutError": "Failed to logout. Please try again."
     },
     "common": {
       "enabled": "enabled",
@@ -307,7 +310,8 @@
       "connecting": "Connecting...",
       "connect": "Connect",
       "refresh": "Refresh",
-      "success": "Success"
+      "success": "Success",
+      "logout": "Logout"
     }
   },
   "Dashboard": {

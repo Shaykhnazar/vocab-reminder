@@ -298,7 +298,10 @@
       "preferencesUpdated": "Sozlamalar yangilandi",
       "notificationToggle": "{type} bildirishnomalari {status}.",
       "telegramNotConnected": "Telegram ulanmagan",
-      "connectTelegramFirst": "Iltimos, avval Telegram hisobingizni ulang"
+      "connectTelegramFirst": "Iltimos, avval Telegram hisobingizni ulang",
+      "logoutSuccess": "Muvaffaqiyatli chiqish",
+      "logoutSuccessDesc": "Siz tizimdan muvaffaqiyatli chiqdingiz",
+      "logoutError": "Chiqishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring."
     },
     "common": {
       "enabled": "yoqilgan",
@@ -307,7 +310,8 @@
       "connecting": "Ulanmoqda...",
       "connect": "Ulash",
       "refresh": "Yangilash",
-      "success": "Muvaffaqiyat"
+      "success": "Muvaffaqiyat",
+      "logout": "Chiqish"
     }
   },
   "Dashboard": {
