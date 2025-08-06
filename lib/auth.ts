@@ -107,18 +107,53 @@ export const authOptions: AuthOptions = {
         try {
           console.log('Telegram Web App auth attempt:', req.query);
 
+          // Check if we have the new format with initData string
+          const initDataString = req.query?.initData as string;
+          let validationData: any;
+          let telegramId: string;
+          let firstName: string;
+          let lastName: string = '';
+          let username: string = '';
+          let photoUrl: string = '';
+
+          if (initDataString) {
+            // New format: raw initData string
+            console.log('Using raw initData string for validation');
+            
+            // Parse the initData string to get individual parameters
+            const params = new URLSearchParams(initDataString);
+            validationData = Object.fromEntries(params.entries());
+            
+            // Extract user data from the parsed parameters
+            const userString = params.get('user');
+            if (userString) {
+              const user = JSON.parse(decodeURIComponent(userString));
+              telegramId = user.id.toString();
+              firstName = user.first_name;
+              lastName = user.last_name || '';
+              username = user.username || '';
+              photoUrl = user.photo_url || '';
+            } else {
+              console.error('No user data in initData string');
+              return null;
+            }
+          } else {
+            // Fallback: old format with individual query parameters
+            console.log('Using individual query parameters for validation');
+            validationData = req.query || {};
+            telegramId = req.query?.id as string;
+            firstName = req.query?.first_name as string;
+            lastName = req.query?.last_name as string || '';
+            username = req.query?.username as string || '';
+            photoUrl = req.query?.photo_url as string || '';
+          }
+
           // Validate Web App data using server-side validation
-          const isValid = await validateTelegramWebAppDataServer(req.query || {});
+          const isValid = await validateTelegramWebAppDataServer(validationData);
           if (!isValid) {
             console.error('Invalid Telegram Web App data');
             return null;
           }
-
-          const telegramId = req.query?.id;
-          const firstName = req.query?.first_name;
-          const lastName = req.query?.last_name || '';
-          const username = req.query?.username || '';
-          const photoUrl = req.query?.photo_url || '';
 
           if (!telegramId || !firstName) {
             console.error('Missing required Telegram Web App data');
@@ -126,7 +161,7 @@ export const authOptions: AuthOptions = {
           }
 
           // Check if user exists
-          let dbUser = await findUserByTelegramId(telegramId as string);
+          let dbUser = await findUserByTelegramId(telegramId);
 
           if (dbUser) {
             console.log('Existing Telegram Web App user found:', dbUser.id);
@@ -139,11 +174,11 @@ export const authOptions: AuthOptions = {
           } else {
             console.log('Creating new Telegram Web App user');
             dbUser = await createTelegramUser({
-              telegram_id: telegramId as string,
-              firstName: firstName as string,
-              lastName: lastName as string,
-              username: username as string,
-              photoUrl: photoUrl as string,
+              telegram_id: telegramId,
+              firstName: firstName,
+              lastName: lastName,
+              username: username,
+              photoUrl: photoUrl,
             });
 
             if (!dbUser) {
@@ -153,8 +188,8 @@ export const authOptions: AuthOptions = {
 
             return {
               id: dbUser.id,
-              name: [firstName as string, lastName as string].join(" "),
-              image: photoUrl as string,
+              name: [firstName, lastName].join(" "),
+              image: photoUrl,
               telegram_id: dbUser.telegram_id,
             };
           }
