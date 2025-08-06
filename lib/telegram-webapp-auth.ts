@@ -25,13 +25,16 @@ export async function attemptTelegramWebAppAuth(): Promise<TelegramWebAppAuthRes
     }
 
     // Get initialization data
-    const initData = getTelegramWebAppInitData();
-    if (!initData) {
+    const initDataResult = getTelegramWebAppInitData();
+    if (!initDataResult || !initDataResult.data) {
       return {
         success: false,
         error: 'No Telegram Web App initialization data found'
       };
     }
+
+    const initData = initDataResult.data;
+    const rawInitData = initDataResult.rawInitData;
 
     // Validate the data (client-side check)
     if (!validateTelegramWebAppData(initData)) {
@@ -50,22 +53,21 @@ export async function attemptTelegramWebAppAuth(): Promise<TelegramWebAppAuthRes
     }
 
     // Prepare auth data for server
-    const authData = prepareTelegramAuthData(initData);
+    const authData = prepareTelegramAuthData(initData, rawInitData);
 
     // Attempt to sign in using the telegram-webapp provider
     const result = await signIn('telegram-webapp', {
       redirect: false,
       callbackUrl: '/words'
     }, {
-      // Pass the auth data as query parameters
+      // Pass the auth data using the new format with initData string
+      initData: authData.initData,
       id: authData.id,
       first_name: authData.first_name,
       last_name: authData.last_name,
       username: authData.username,
       photo_url: authData.photo_url,
-      auth_date: authData.auth_date.toString(),
-      hash: authData.hash
-    });
+    } as any);
 
     if (result?.error) {
       return {
