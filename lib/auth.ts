@@ -526,6 +526,8 @@ export async function resetPassword(token: string, newPassword: string) {
  */
 export async function validateTelegramWebAppDataServer(queryParams: any): Promise<boolean> {
   try {
+    console.log('validateTelegramWebAppDataServer: Validating data:', queryParams);
+    
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     if (!botToken) {
       console.error('TELEGRAM_BOT_TOKEN not set');
@@ -536,14 +538,22 @@ export async function validateTelegramWebAppDataServer(queryParams: any): Promis
     const { hash, auth_date, ...otherParams } = queryParams;
     
     if (!hash || !auth_date) {
-      console.error('Missing hash or auth_date in Telegram Web App data');
+      console.error('Missing hash or auth_date in Telegram Web App data', { hash: !!hash, auth_date: !!auth_date });
       return false;
     }
 
     // Check if auth_date is not too old (24 hours)
     const now = Math.floor(Date.now() / 1000);
-    const authTimestamp = parseInt(auth_date);
+    const authTimestamp = typeof auth_date === 'string' ? parseInt(auth_date) : auth_date;
     const maxAge = 24 * 60 * 60; // 24 hours in seconds
+
+    console.log('validateTelegramWebAppDataServer: Time validation:', {
+      now,
+      authTimestamp,
+      age: now - authTimestamp,
+      maxAge,
+      isValid: (now - authTimestamp) <= maxAge
+    });
 
     if (now - authTimestamp > maxAge) {
       console.error('Telegram Web App data is too old');
@@ -554,9 +564,11 @@ export async function validateTelegramWebAppDataServer(queryParams: any): Promis
     const dataCheckArray = Object.keys(otherParams)
       .sort()
       .map(key => `${key}=${otherParams[key]}`)
-      .concat(`auth_date=${auth_date}`);
+      .concat(`auth_date=${authTimestamp}`);
     
     const dataCheckString = dataCheckArray.join('\n');
+
+    console.log('validateTelegramWebAppDataServer: Data check string:', dataCheckString);
 
     // Create secret key
     const crypto = require('crypto');
@@ -573,6 +585,12 @@ export async function validateTelegramWebAppDataServer(queryParams: any): Promis
 
     // Compare hashes
     const isValid = calculatedHash === hash;
+    
+    console.log('validateTelegramWebAppDataServer: Hash validation:', {
+      calculated: calculatedHash,
+      received: hash,
+      isValid
+    });
     
     if (!isValid) {
       console.error('Telegram Web App hash validation failed');
