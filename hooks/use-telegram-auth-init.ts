@@ -132,13 +132,8 @@ export function useTelegramAuthInit() {
         redirect: false,
         callbackUrl: '/words'
       }, {
-        // Pass the auth data as credentials with the new format
+        // Pass only the initData string - all user info is contained within it
         initData: authData.initData,
-        id: authData.id,
-        first_name: authData.first_name,
-        last_name: authData.last_name,
-        username: authData.username,
-        photo_url: authData.photo_url,
       } as any); // Type assertion to bypass strict TypeScript checking
 
       if (result?.error) {
