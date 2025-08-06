@@ -74,3 +74,12 @@ This is a vocabulary learning application built with Next.js 14 (App Router) wit
 The application uses multiple AI models for OCR functionality:
 - Claude, Gemini, GPT-4 Vision, and ImgOCR services
 - Configurable model selection for text extraction from images
+
+
+# DB Schema
+
+- `users` - User accounts with multiple auth providers
+- `words` - Vocabulary entries with spaced repetition metadata
+- `subscriptions` - User subscription data linked to Gumroad purchases
+- `billing_history` - Transaction records
+- DB_Schema.sql - Database schema definition file

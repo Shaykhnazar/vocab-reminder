@@ -12,9 +12,35 @@ export default async function Subscriptions() {
     redirect('/login');
   }
 
-  // Get full subscription data including plans and current subscription
-  const subscriptionData = await getFullSubscriptionData(session.user.id);
-
-  // @ts-ignore
-  return <SubscriptionsPage data={subscriptionData} />;
+  try {
+    // Get full subscription data including plans and current subscription
+    const subscriptionData = await getFullSubscriptionData(session.user.id);
+    
+    return <SubscriptionsPage data={subscriptionData} />;
+  } catch (error) {
+    console.error('Error loading subscription data:', error);
+    
+    // Return empty data structure to prevent crash
+    const fallbackData = {
+      data: {
+        currentSubscription: null,
+        plans: [
+          {
+            id: 'free',
+            name: 'Free Plan',
+            description: 'Basic vocabulary learning with limited features',
+            price: 0,
+            billingPeriod: 'monthly' as const,
+            wordLimit: 1000,
+            features: ['Basic vocabulary management', 'Email notifications', 'Limited to 1000 words'],
+            popular: false,
+            gumroadProductId: 'free',
+            gumroadPermalink: ''
+          }
+        ]
+      }
+    };
+    
+    return <SubscriptionsPage data={fallbackData} />;
+  }
 }
