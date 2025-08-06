@@ -31,9 +31,21 @@ export const isTelegramEnvironment = (): boolean => {
     // Check if @telegram-apps/sdk detects Telegram environment
     (() => {
       try {
-        const { retrieveLaunchParams } = require('@telegram-apps/sdk');
-        const launchParams = retrieveLaunchParams();
-        return !!(launchParams?.tgWebAppData || launchParams?.tgWebAppVersion);
+        // Import the SDK function directly since we already have it imported in the calling file
+        // This is a browser environment, so we need to handle it differently
+        if (typeof window !== 'undefined') {
+          // Try to use the global reference if available
+          const retrieveLaunchParams = (window as any).__retrieveLaunchParams;
+          if (retrieveLaunchParams) {
+            const launchParams = retrieveLaunchParams();
+            return !!(launchParams?.tgWebAppData || launchParams?.tgWebAppVersion);
+          }
+          
+          // Fallback: Check if we can detect SDK data another way
+          // This is a workaround since we can't easily import in this function context
+          return false;
+        }
+        return false;
       } catch {
         return false;
       }

@@ -31,10 +31,28 @@ export function isTelegramWebApp(): boolean {
     return false;
   }
   
-  // Use the improved detection from script loader
-  const detected = isTelegramEnvironment();
-  console.log('isTelegramWebApp: Detection result:', detected);
-  return detected;
+  // Enhanced detection that prioritizes SDK data
+  try {
+    // Method 1: Check SDK first since it's most reliable
+    try {
+      const launchParams = retrieveLaunchParams();
+      if (launchParams?.tgWebAppData || launchParams?.tgWebAppVersion) {
+        console.log('✅ isTelegramWebApp: Detected via @telegram-apps/sdk');
+        return true;
+      }
+    } catch (sdkError) {
+      console.log('⚠️ isTelegramWebApp: SDK check failed:', sdkError);
+    }
+
+    // Method 2: Use the script loader detection for other methods
+    const detected = isTelegramEnvironment();
+    console.log('isTelegramWebApp: Script loader detection result:', detected);
+    
+    return detected;
+  } catch (error) {
+    console.error('❌ isTelegramWebApp: Detection error:', error);
+    return false;
+  }
 }
 
 /**
