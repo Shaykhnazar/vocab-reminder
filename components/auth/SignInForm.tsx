@@ -10,6 +10,7 @@ import { Icons } from "@/components/icons"
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from 'next-intl';
+import TelegramWebAppAuth from './TelegramWebAppAuth';
 
 export default function SignInForm() {
   const t = useTranslations('Auth.SignIn');
@@ -99,16 +100,28 @@ export default function SignInForm() {
   )
 
   return (
-    <AuthCard
-      title={t('title')}
-      socialButtons={socialButtons}
-      footerText={t('footer.text')}
-      footerLink={{
-        text: t('footer.link'),
-        href: "/signup"
-      }}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <>
+      {/* Telegram Web App Auto Authentication */}
+      <TelegramWebAppAuth 
+        onAuthAttempt={() => setIsLoading(true)}
+        onAuthSuccess={() => setIsLoading(false)}
+        onAuthFailure={(error) => {
+          setIsLoading(false);
+          console.log('Telegram Web App auth failed:', error);
+          // Don't show error to user for auto-auth failures
+        }}
+      />
+      
+      <AuthCard
+        title={t('title')}
+        socialButtons={socialButtons}
+        footerText={t('footer.text')}
+        footerLink={{
+          text: t('footer.link'),
+          href: "/signup"
+        }}
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
         <AuthInput
           label={t('form.email')}
           type="email"
@@ -143,5 +156,6 @@ export default function SignInForm() {
         </AuthButton>
       </form>
     </AuthCard>
+    </>
   );
 }

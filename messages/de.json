@@ -768,8 +768,13 @@
         "telegramAuth": "Bei der Telegram-Anmeldung ist ein Fehler aufgetreten"
       },
       "toast": {
-        "error": "Fehler"
+        "error": "Fehler",
+        "success": "Erfolgreich",
+        "telegramAutoAuth": "Erfolgreich über Telegram Web App authentifiziert"
       }
+    },
+    "telegramWebApp": {
+      "authenticating": "Authentifizierung mit Telegram..."
     },
     "SignUp": {
       "title": "Registrieren",
