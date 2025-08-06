@@ -2,6 +2,7 @@
 "use client"
 
 import { retrieveLaunchParams } from '@telegram-apps/sdk';
+import { isTelegramEnvironment } from './telegram-script-loader';
 
 export interface TelegramWebAppUser {
   id: number;
@@ -30,57 +31,10 @@ export function isTelegramWebApp(): boolean {
     return false;
   }
   
-  try {
-    console.log('isTelegramWebApp: Checking detection methods');
-    
-    // Method 1: Check for Telegram WebApp object
-    if (window.Telegram?.WebApp) {
-      console.log('isTelegramWebApp: Detected via window.Telegram.WebApp');
-      return true;
-    }
-
-    // Method 2: Check for launch parameters using @telegram-apps/sdk
-    try {
-      const launchParams = retrieveLaunchParams();
-      console.log('isTelegramWebApp: SDK launchParams:', launchParams);
-      if (launchParams && 'initData' in launchParams && launchParams.initData) {
-        console.log('isTelegramWebApp: Detected via SDK launchParams');
-        return true;
-      }
-    } catch (sdkError) {
-      console.log('isTelegramWebApp: SDK check failed in detection:', sdkError);
-    }
-
-    // Method 3: Check URL parameters for Telegram Web App specific params
-    const urlParams = new URLSearchParams(window.location.search);
-    const telegramParams = ['tgWebAppData', 'tgWebAppVersion', 'tgWebAppPlatform'];
-    const hasTelegramParams = telegramParams.some(param => urlParams.has(param));
-    
-    console.log('isTelegramWebApp: URL params check:', { 
-      search: window.location.search, 
-      hasTelegramParams 
-    });
-    
-    if (hasTelegramParams) {
-      console.log('isTelegramWebApp: Detected via URL parameters');
-      return true;
-    }
-
-    // Method 4: Check for common Telegram Web App URL patterns
-    const hash = window.location.hash;
-    console.log('isTelegramWebApp: Hash check:', hash);
-    
-    if (hash.includes('tgWebAppData') || hash.includes('tgWebAppVersion')) {
-      console.log('isTelegramWebApp: Detected via URL hash');
-      return true;
-    }
-
-    console.log('isTelegramWebApp: Not detected - returning false');
-    return false;
-  } catch (error) {
-    console.error('Error detecting Telegram Web App:', error);
-    return false;
-  }
+  // Use the improved detection from script loader
+  const detected = isTelegramEnvironment();
+  console.log('isTelegramWebApp: Detection result:', detected);
+  return detected;
 }
 
 /**
@@ -220,31 +174,6 @@ export function prepareTelegramAuthData(initData: TelegramWebAppInitData) {
   };
 }
 
-/**
- * Initializes Telegram Web App if available
- */
-export function initializeTelegramWebApp(): boolean {
-  if (typeof window === 'undefined') return false;
-  
-  try {
-    if (window.Telegram?.WebApp) {
-      // Initialize the web app
-      window.Telegram.WebApp.ready();
-      
-      // Expand the web app to full height
-      window.Telegram.WebApp.expand();
-      
-      // Set main button if needed
-      window.Telegram.WebApp.MainButton.hide();
-      
-      return true;
-    }
-    return false;
-  } catch (error) {
-    console.error('Error initializing Telegram Web App:', error);
-    return false;
-  }
-}
 
 /**
  * Hook to use Telegram Web App functionality
@@ -268,14 +197,45 @@ declare global {
       WebApp: {
         ready(): void;
         expand(): void;
+        close(): void;
         initData: string;
         initDataUnsafe: any;
+        version: string;
+        platform: string;
+        colorScheme: 'light' | 'dark';
+        themeParams: any;
+        isExpanded: boolean;
+        viewportHeight: number;
+        viewportStableHeight: number;
+        headerColor: string;
+        backgroundColor: string;
+        isClosingConfirmationEnabled: boolean;
         MainButton: {
           show(): void;
           hide(): void;
           setText(text: string): void;
           onClick(callback: () => void): void;
+          isVisible: boolean;
+          isActive: boolean;
+          text: string;
         };
+        BackButton: {
+          show(): void;
+          hide(): void;
+          onClick(callback: () => void): void;
+          isVisible: boolean;
+        };
+        HapticFeedback: {
+          impactOccurred(style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft'): void;
+          notificationOccurred(type: 'error' | 'success' | 'warning'): void;
+          selectionChanged(): void;
+        };
+        onEvent(eventType: string, eventHandler: Function): void;
+        offEvent(eventType: string, eventHandler: Function): void;
+        sendData(data: string): void;
+        enableClosingConfirmation(): void;
+        disableClosingConfirmation(): void;
+        disableVerticalSwipes(): void;
         user?: TelegramWebAppUser;
       };
     };
