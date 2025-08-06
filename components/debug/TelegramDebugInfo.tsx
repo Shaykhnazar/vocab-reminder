@@ -9,6 +9,7 @@ export default function TelegramDebugInfo() {
   const { isTelegramWebApp, initData, isValid, user } = useTelegramWebApp();
 
   useEffect(() => {
+    // Only run once to prevent infinite loops
     if (typeof window !== 'undefined') {
       const info = {
         // Basic environment
@@ -47,7 +48,7 @@ export default function TelegramDebugInfo() {
       setDebugInfo(info);
       console.log('Telegram Debug Info:', info);
     }
-  }, [isTelegramWebApp, initData, isValid, user]);
+  }, []); // Empty dependency array - only run once on mount
 
   // Only show in development or when there are issues
   if (process.env.NODE_ENV === 'production' && isTelegramWebApp) {

@@ -1,6 +1,7 @@
 // lib/telegram-webapp.ts
 "use client"
 
+import React from 'react';
 import { retrieveLaunchParams } from '@telegram-apps/sdk';
 import { isTelegramEnvironment } from './telegram-script-loader';
 
@@ -365,29 +366,82 @@ export function clearStoredTelegramData(): void {
  * Hook to use Telegram Web App functionality
  */
 export function useTelegramWebApp() {
-  const isTWA = isTelegramWebApp();
-  const initData = getTelegramWebAppInitData();
-  
-  // Store data if we found it
-  if (initData && initData.user) {
-    const initDataString = new URLSearchParams({
-      user: JSON.stringify(initData.user),
-      chat_type: initData.chat_type || '',
-      chat_instance: initData.chat_instance || '',
-      auth_date: initData.auth_date.toString(),
-      hash: initData.hash,
-    }).toString();
-    
-    storeTelegramData(initDataString, initData.user);
-  }
-  
-  return {
-    isTelegramWebApp: isTWA,
-    initData,
-    isValid: initData ? validateTelegramWebAppData(initData) : false,
-    user: initData?.user || null,
+  const [telegramState, setTelegramState] = React.useState<{
+    isTelegramWebApp: boolean;
+    initData: TelegramWebAppInitData | null;
+    isValid: boolean;
+    user: TelegramWebAppUser | null;
+  } | null>(null);
+
+  React.useEffect(() => {
+    // Only run once on mount to prevent infinite loops
+    let mounted = true;
+
+    const initializeTelegramData = () => {
+      try {
+        console.log('🔄 useTelegramWebApp: Initializing telegram data (one time)');
+        
+        const isTWA = isTelegramWebApp();
+        const initData = getTelegramWebAppInitData();
+        
+        // Store data if we found it and haven't stored it before
+        if (initData && initData.user) {
+          const existingData = getStoredTelegramInitData();
+          const existingUser = getStoredTelegramUser();
+          
+          // Only store if we don't have existing data or if the data is different
+          if (!existingData || !existingUser || existingUser.id !== initData.user.id) {
+            console.log('📝 Storing new Telegram data for user:', initData.user.first_name);
+            const initDataString = new URLSearchParams({
+              user: JSON.stringify(initData.user),
+              chat_type: initData.chat_type || '',
+              chat_instance: initData.chat_instance || '',
+              auth_date: initData.auth_date.toString(),
+              hash: initData.hash,
+            }).toString();
+            
+            storeTelegramData(initDataString, initData.user);
+          } else {
+            console.log('📋 Using existing stored Telegram data');
+          }
+        }
+        
+        if (mounted) {
+          setTelegramState({
+            isTelegramWebApp: isTWA,
+            initData,
+            isValid: initData ? validateTelegramWebAppData(initData) : false,
+            user: initData?.user || null,
+          });
+        }
+      } catch (error) {
+        console.error('❌ Error in useTelegramWebApp:', error);
+        if (mounted) {
+          setTelegramState({
+            isTelegramWebApp: false,
+            initData: null,
+            isValid: false,
+            user: null,
+          });
+        }
+      }
+    };
+
+    initializeTelegramData();
+
+    return () => {
+      mounted = false;
+    };
+  }, []); // Empty dependency array - only run once
+
+  return telegramState || {
+    isTelegramWebApp: false,
+    initData: null,
+    isValid: false,
+    user: null,
   };
 }
+
 
 // Extend Window interface for TypeScript
 declare global {
