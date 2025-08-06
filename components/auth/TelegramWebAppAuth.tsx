@@ -4,7 +4,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useTelegramWebApp, initializeTelegramWebApp } from '@/lib/telegram-webapp';
+import { useTelegramWebApp } from '@/lib/telegram-webapp';
+import { initializeTelegramEnvironment } from '@/lib/telegram-script-loader';
 import { attemptTelegramWebAppAuth } from '@/lib/telegram-webapp-auth';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations } from 'next-intl';
@@ -29,11 +30,17 @@ export default function TelegramWebAppAuth({
   const { isTelegramWebApp, initData, isValid, user } = useTelegramWebApp();
 
   useEffect(() => {
-    // Initialize Telegram Web App if available
-    if (isTelegramWebApp) {
-      initializeTelegramWebApp();
-    }
-  }, [isTelegramWebApp]);
+    // Initialize Telegram environment
+    const initTelegram = async () => {
+      try {
+        await initializeTelegramEnvironment();
+      } catch (error) {
+        console.error('Failed to initialize Telegram environment:', error);
+      }
+    };
+    
+    initTelegram();
+  }, []);
 
   useEffect(() => {
     // Debug logging for all conditions
