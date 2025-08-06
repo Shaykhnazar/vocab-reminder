@@ -298,7 +298,10 @@
       "preferencesUpdated": "Настройки обновлены",
       "notificationToggle": "Уведомления {type} {status}.",
       "telegramNotConnected": "Telegram не подключен",
-      "connectTelegramFirst": "Пожалуйста, сначала подключите ваш аккаунт Telegram"
+      "connectTelegramFirst": "Пожалуйста, сначала подключите ваш аккаунт Telegram",
+      "logoutSuccess": "Успешный выход",
+      "logoutSuccessDesc": "Вы успешно вышли из системы",
+      "logoutError": "Не удалось выйти. Пожалуйста, попробуйте еще раз."
     },
     "common": {
       "enabled": "включены",
@@ -307,7 +310,8 @@
       "connecting": "Подключение...",
       "connect": "Подключить",
       "refresh": "Обновить",
-      "success": "Успех"
+      "success": "Успех",
+      "logout": "Выйти"
     }
   },
   "Dashboard": {

@@ -298,7 +298,10 @@
       "preferencesUpdated": "Einstellungen aktualisiert",
       "notificationToggle": "{type}-Benachrichtigungen {status}.",
       "telegramNotConnected": "Telegram nicht verbunden",
-      "connectTelegramFirst": "Bitte verbinden Sie zuerst Ihr Telegram-Konto"
+      "connectTelegramFirst": "Bitte verbinden Sie zuerst Ihr Telegram-Konto",
+      "logoutSuccess": "Erfolgreich abgemeldet",
+      "logoutSuccessDesc": "Sie wurden erfolgreich abgemeldet",
+      "logoutError": "Abmeldung fehlgeschlagen. Bitte versuchen Sie es erneut."
     },
     "common": {
       "enabled": "aktiviert",
@@ -307,7 +310,8 @@
       "connecting": "Verbinden...",
       "connect": "Verbinden",
       "refresh": "Aktualisieren",
-      "success": "Erfolg"
+      "success": "Erfolg",
+      "logout": "Abmelden"
     }
   },
   "Dashboard": {

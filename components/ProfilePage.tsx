@@ -43,9 +43,10 @@ import {
   ExternalLink,
   CreditCard,
   Crown,
-  ArrowRight
+  ArrowRight,
+  LogOut
 } from 'lucide-react';
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shadcn-ui/alert";
 import { Badge } from "@/components/shadcn-ui/badge";
 import { Separator } from "@/components/shadcn-ui/separator";
@@ -370,30 +371,75 @@ const ProfilePage = () => {
     setActiveTab(tabName);
   };
 
+  // Handle logout functionality
+  const handleLogout = async () => {
+    try {
+      await signOut({ 
+        callbackUrl: '/',
+        redirect: true 
+      });
+      toast({
+        title: t('toast.logoutSuccess'),
+        description: t('toast.logoutSuccessDesc'),
+      });
+    } catch (error) {
+      toast({
+        title: t('toast.error'),
+        description: t('toast.logoutError'),
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
+      {/* Header with logout button - Mobile responsive */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold">{t('title')}</h1>
+        {/* Logout button - Hidden on desktop, shown on mobile */}
+        <Button 
+          onClick={handleLogout}
+          variant="outline"
+          size="sm"
+          className="flex md:hidden w-full sm:w-auto justify-center sm:justify-start"
+        >
+          <LogOut className="h-4 w-4 mr-2"/>
+          {t('common.logout')}
+        </Button>
+      </div>
 
         <Tabs value={activeTab} onValueChange={switchToTab} className="w-full">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-            {/* Tabs with horizontal scroll on mobile */}
-            <div className="w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-              <TabsList className="w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                <TabsTrigger value="profile" className="text-xs md:text-sm whitespace-nowrap">
-                  <User className="h-4 w-4"/>
-                  {t('tabs.profile')}
+          {/* Replace the existing TabsList section with this fixed version */}
+          <div className="w-full md:w-auto">
+            <div className="overflow-x-auto scrollbar-hide">
+              <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground min-w-max w-full md:w-auto">
+                <TabsTrigger
+                  value="profile"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-shrink-0"
+                >
+                  <User className="h-6 w-6"/>
+                  <span className="hidden xs:inline">{t('tabs.profile')}</span>
                 </TabsTrigger>
-                <TabsTrigger value="notifications" className="text-xs md:text-sm whitespace-nowrap">
-                  <Bell className="h-4 w-4"/>
-                  {t('tabs.notifications')}
+                <TabsTrigger
+                  value="notifications"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-shrink-0"
+                >
+                  <Bell className="h-6 w-6"/>
+                  <span className="hidden xs:inline">{t('tabs.notifications')}</span>
                 </TabsTrigger>
-                <TabsTrigger value="subscription" className="text-xs md:text-sm whitespace-nowrap">
-                  <CreditCard className="h-4 w-4"/>
-                  {t('tabs.subscription')}
+                <TabsTrigger
+                  value="subscription"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-shrink-0"
+                >
+                  <CreditCard className="h-6 w-6"/>
+                  <span className="hidden xs:inline">{t('tabs.subscription')}</span>
                 </TabsTrigger>
-                <TabsTrigger value="statistics" className="text-xs md:text-sm whitespace-nowrap">
-                  <BarChart className="h-4 w-4"/>
-                  {t('tabs.statistics')}
+                <TabsTrigger
+                  value="statistics"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-shrink-0"
+                >
+                  <BarChart className="h-6 w-6"/>
+                  <span className="hidden xs:inline">{t('tabs.statistics')}</span>
                 </TabsTrigger>
               </TabsList>
             </div>
