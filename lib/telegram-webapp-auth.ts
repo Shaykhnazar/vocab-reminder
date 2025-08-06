@@ -60,13 +60,8 @@ export async function attemptTelegramWebAppAuth(): Promise<TelegramWebAppAuthRes
       redirect: false,
       callbackUrl: '/words'
     }, {
-      // Pass the auth data using the new format with initData string
+      // Pass only the initData string - all user info is contained within it
       initData: authData.initData,
-      id: authData.id,
-      first_name: authData.first_name,
-      last_name: authData.last_name,
-      username: authData.username,
-      photo_url: authData.photo_url,
     } as any);
 
     if (result?.error) {
