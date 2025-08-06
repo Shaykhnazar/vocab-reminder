@@ -768,8 +768,13 @@
         "telegramAuth": "Telegram orqali kirishda xatolik yuz berdi"
       },
       "toast": {
-        "error": "Xato"
+        "error": "Xato",
+        "success": "Muvaffaqiyat",
+        "telegramAutoAuth": "Telegram Web App orqali muvaffaqiyatli autentifikatsiya"
       }
+    },
+    "telegramWebApp": {
+      "authenticating": "Telegram bilan autentifikatsiya..."
     },
     "SignUp": {
       "title": "Ro'yxatdan o'tish",

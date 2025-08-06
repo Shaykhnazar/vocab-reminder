@@ -768,8 +768,13 @@
         "telegramAuth": "Произошла ошибка во время входа через Telegram"
       },
       "toast": {
-        "error": "Ошибка"
+        "error": "Ошибка",
+        "success": "Успех",
+        "telegramAutoAuth": "Успешная аутентификация через Telegram Web App"
       }
+    },
+    "telegramWebApp": {
+      "authenticating": "Аутентификация с Telegram..."
     },
     "SignUp": {
       "title": "Регистрация",

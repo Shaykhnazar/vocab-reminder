@@ -137,47 +137,61 @@ export async function getSubscriptionData(userId: string) {
 }
 
 export async function getFullSubscriptionData(userId: string): Promise<SubscriptionsPageProps> {
-  // Get current subscription data
-  const subscriptionData = await getSubscriptionData(userId);
+  try {
+    // Get current subscription data
+    const subscriptionData = await getSubscriptionData(userId);
 
-  // Get all available plans
-  const plans = await getSubscriptionPlans();
+    // Get all available plans
+    const plans = await getSubscriptionPlans();
 
-  // Format the plans for frontend display
-  const formattedPlans: Plan[] = plans.map(plan => (<Plan>{
-    id: plan.id,
-    name: plan.name,
-    description: plan.name === 'Free Plan'
-      ? 'Basic vocabulary learning with limited features'
-      : `${plan.name} with enhanced learning features`,
-    price: parseFloat(plan.price.replace(/[^0-9.-]+/g, '')),
-    billingPeriod: plan.recurrence === 'yearly' ? 'yearly' : 'monthly',
-    wordLimit: plan.wordLimit,
-    features: plan.features,
-    popular: plan.name === 'Pro Plan', // Mark the Pro plan as the most popular
-    gumroadProductId: plan.id,
-    gumroadPermalink: plan.permalink
-  }));
+    // Format the plans for frontend display
+    const formattedPlans: Plan[] = plans.map(plan => {
+      let price = 0;
+      try {
+        price = parseFloat(plan.price.replace(/[^0-9.-]+/g, '')) || 0;
+      } catch (e) {
+        console.warn(`Failed to parse price for plan ${plan.id}:`, plan.price);
+      }
 
-  return {
-    data: {
-      currentSubscription: subscriptionData.currentSubscription ? {
-        id: subscriptionData.currentSubscription.id,
-        planId: subscriptionData.currentSubscription.productId,
-        status: subscriptionData.currentSubscription.isActive ? 'active' : 'expired',
-        startsAt: subscriptionData.currentSubscription.purchaseDate,
-        endsAt: subscriptionData.currentSubscription.expiresAt,
-        gumroadSubscriptionId: subscriptionData.currentSubscription.purchaseId,
-        features: subscriptionData.currentSubscription.features,
-        daysRemaining: subscriptionData.currentSubscription.daysRemaining,
-        planName: subscriptionData.currentSubscription.planName || subscriptionData.currentSubscription.subscriptionType,
-        wordLimit: subscriptionData.wordLimit,
-        wordsUsed: subscriptionData.wordsUsed,
-        wordsRemaining: subscriptionData.wordsRemaining
-      } : null,
-      plans: formattedPlans
-    },
-  };
+      return {
+        id: plan.id,
+        name: plan.name,
+        description: plan.name === 'Free Plan'
+          ? 'Basic vocabulary learning with limited features'
+          : `${plan.name} with enhanced learning features`,
+        price,
+        billingPeriod: plan.recurrence === 'yearly' ? 'yearly' : 'monthly',
+        wordLimit: plan.wordLimit,
+        features: plan.features,
+        popular: plan.name === 'Premium Plan', // Mark the Premium plan as the most popular
+        gumroadProductId: plan.id,
+        gumroadPermalink: plan.permalink || ''
+      } as Plan;
+    });
+
+    return {
+      data: {
+        currentSubscription: subscriptionData.currentSubscription ? {
+          id: subscriptionData.currentSubscription.id,
+          planId: subscriptionData.currentSubscription.productId,
+          status: subscriptionData.currentSubscription.isActive ? 'active' : 'expired',
+          startsAt: subscriptionData.currentSubscription.purchaseDate,
+          endsAt: subscriptionData.currentSubscription.expiresAt,
+          gumroadSubscriptionId: subscriptionData.currentSubscription.purchaseId,
+          features: subscriptionData.currentSubscription.features || [],
+          daysRemaining: subscriptionData.currentSubscription.daysRemaining || 0,
+          planName: subscriptionData.currentSubscription.planName || subscriptionData.currentSubscription.subscriptionType,
+          wordLimit: subscriptionData.wordLimit,
+          wordsUsed: subscriptionData.wordsUsed,
+          wordsRemaining: subscriptionData.wordsRemaining
+        } : null,
+        plans: formattedPlans
+      },
+    };
+  } catch (error) {
+    console.error('Error in getFullSubscriptionData:', error);
+    throw error;
+  }
 }
 
 export async function getBillingHistory(userId: string) {

@@ -768,8 +768,13 @@
         "telegramAuth": "An error occurred during Telegram sign in"
       },
       "toast": {
-        "error": "Error"
+        "error": "Error",
+        "success": "Success",
+        "telegramAutoAuth": "Successfully authenticated via Telegram Web App"
       }
+    },
+    "telegramWebApp": {
+      "authenticating": "Authenticating with Telegram..."
     },
     "SignUp": {
       "title": "Sign Up",
