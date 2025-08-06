@@ -34,9 +34,13 @@ export function isTelegramWebApp(): boolean {
     }
 
     // Method 2: Check for launch parameters using @telegram-apps/sdk
-    const launchParams = retrieveLaunchParams();
-    if (launchParams && launchParams.initData) {
-      return true;
+    try {
+      const launchParams = retrieveLaunchParams();
+      if (launchParams && 'initData' in launchParams && launchParams.initData) {
+        return true;
+      }
+    } catch (sdkError) {
+      console.log('SDK check failed in detection:', sdkError);
     }
 
     // Method 3: Check URL parameters for Telegram Web App specific params
@@ -69,9 +73,16 @@ export function getTelegramWebAppInitData(): TelegramWebAppInitData | null {
   
   try {
     // Try to get data from @telegram-apps/sdk
-    const launchParams = retrieveLaunchParams();
-    if (launchParams?.initData) {
-      return parseTelegramInitData(launchParams.initData);
+    try {
+      const launchParams = retrieveLaunchParams();
+      if (launchParams && 'initData' in launchParams) {
+        const initData = launchParams.initData;
+        if (typeof initData === 'string' && initData.length > 0) {
+          return parseTelegramInitData(initData);
+        }
+      }
+    } catch (sdkError) {
+      console.log('SDK retrieveLaunchParams failed:', sdkError);
     }
 
     // Fallback: Try to get data from Telegram WebApp object
