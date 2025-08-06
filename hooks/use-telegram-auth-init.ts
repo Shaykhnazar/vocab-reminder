@@ -12,7 +12,8 @@ import {
   storeTelegramData,
   getStoredTelegramInitData,
   getStoredTelegramUser,
-  clearStoredTelegramData
+  clearStoredTelegramData,
+  useTelegramWebApp
 } from '@/lib/telegram-webapp';
 import { initializeTelegramEnvironment } from '@/lib/telegram-script-loader';
 
@@ -46,6 +47,7 @@ interface TelegramAuthDiagnostics {
 export function useTelegramAuthInit() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const telegramWebAppData = useTelegramWebApp();
   
   const [authState, setAuthState] = useState<TelegramAuthState>({
     isInitialized: false,
@@ -89,7 +91,7 @@ export function useTelegramAuthInit() {
       console.log('🚀 Attempting Telegram authentication...');
 
       // Check if we're in Telegram environment
-      const isTelegramEnv = isTelegramWebApp();
+      const isTelegramEnv = telegramWebAppData.isTelegramWebApp;
       console.log('🔍 Telegram environment detected:', isTelegramEnv);
 
       if (!isTelegramEnv) {
@@ -97,8 +99,8 @@ export function useTelegramAuthInit() {
         return false;
       }
 
-      // Get initialization data
-      const initData = getTelegramWebAppInitData();
+      // Get initialization data from the hook
+      const initData = telegramWebAppData.initData;
       console.log('🔍 InitData retrieval result:', {
         hasInitData: !!initData,
         hasUser: !!initData?.user,
@@ -112,14 +114,17 @@ export function useTelegramAuthInit() {
       }
 
       // Validate the data
-      const isValid = validateTelegramWebAppData(initData);
+      const isValid = telegramWebAppData.isValid;
       if (!isValid) {
         console.error('❌ Telegram data validation failed');
         return false;
       }
 
+      // Get the raw initData for proper validation
+      const rawInitData = telegramWebAppData.rawInitData;
+      
       // Prepare auth data for server
-      const authData = prepareTelegramAuthData(initData);
+      const authData = prepareTelegramAuthData(initData, rawInitData || undefined);
       console.log('🔐 Prepared auth data for:', authData.first_name, authData.id);
 
       // Attempt NextAuth sign in using the same pattern as existing telegram-webapp-auth.ts
@@ -127,16 +132,13 @@ export function useTelegramAuthInit() {
         redirect: false,
         callbackUrl: '/words'
       }, {
-        // Pass the auth data as credentials
+        // Pass the auth data as credentials with the new format
+        initData: authData.initData,
         id: authData.id,
         first_name: authData.first_name,
         last_name: authData.last_name,
         username: authData.username,
         photo_url: authData.photo_url,
-        auth_date: authData.auth_date.toString(),
-        hash: authData.hash,
-        chat_type: authData.chat_type,
-        chat_instance: authData.chat_instance,
       } as any); // Type assertion to bypass strict TypeScript checking
 
       if (result?.error) {
@@ -150,8 +152,8 @@ export function useTelegramAuthInit() {
         return false;
       }
 
-      // Store the successful auth data
-      const initDataString = new URLSearchParams({
+      // Store the successful auth data using the raw initData if available
+      const initDataString = rawInitData || new URLSearchParams({
         user: JSON.stringify(initData.user),
         chat_type: initData.chat_type || '',
         chat_instance: initData.chat_instance || '',

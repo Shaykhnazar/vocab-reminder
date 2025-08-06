@@ -59,7 +59,7 @@ export function isTelegramWebApp(): boolean {
 /**
  * Gets Telegram Web App initialization data
  */
-export function getTelegramWebAppInitData(): TelegramWebAppInitData | null {
+export function getTelegramWebAppInitData(): { data: TelegramWebAppInitData; rawInitData: string } | null {
   if (typeof window === 'undefined') {
     console.log('getTelegramWebAppInitData: window is undefined (server-side)');
     return null;
@@ -72,7 +72,10 @@ export function getTelegramWebAppInitData(): TelegramWebAppInitData | null {
     const tg = window.Telegram?.WebApp;
     if (tg?.initData && tg.initData.length > 0) {
       console.log('✅ Found initData via Telegram WebApp object (length:', tg.initData.length, ')');
-      return parseTelegramInitData(tg.initData);
+      const parsed = parseTelegramInitData(tg.initData);
+      if (parsed) {
+        return { data: parsed, rawInitData: tg.initData };
+      }
     }
 
     // Method 2: Try to get data from @telegram-apps/sdk
@@ -99,12 +102,25 @@ export function getTelegramWebAppInitData(): TelegramWebAppInitData | null {
           chat_instance: launchParams.tgWebAppData.chat_instance,
           auth_date: typeof launchParams.tgWebAppData.auth_date === 'string' 
             ? parseInt(launchParams.tgWebAppData.auth_date) 
-            : Math.floor(launchParams.tgWebAppData.auth_date.getTime() / 1000),
+            : (typeof launchParams.tgWebAppData.auth_date === 'object' && launchParams.tgWebAppData.auth_date.getTime
+              ? Math.floor(launchParams.tgWebAppData.auth_date.getTime() / 1000)
+              : launchParams.tgWebAppData.auth_date as unknown as number),
           hash: launchParams.tgWebAppData.hash,
         };
         
         console.log('✅ Converted SDK data successfully:', telegramData);
-        return telegramData;
+        // For SDK data, we don't have a raw initData string, so we need to reconstruct it
+        const rawInitData = new URLSearchParams({
+          user: JSON.stringify(launchParams.tgWebAppData.user),
+          chat_type: launchParams.tgWebAppData.chat_type || '',
+          chat_instance: launchParams.tgWebAppData.chat_instance || '',
+          auth_date: (typeof launchParams.tgWebAppData.auth_date === 'object' && launchParams.tgWebAppData.auth_date.getTime 
+            ? Math.floor(launchParams.tgWebAppData.auth_date.getTime() / 1000) 
+            : launchParams.tgWebAppData.auth_date).toString(),
+          hash: launchParams.tgWebAppData.hash,
+        }).toString();
+        
+        return { data: telegramData, rawInitData };
       }
       
       // Fallback: try to get initData string from SDK
@@ -114,7 +130,10 @@ export function getTelegramWebAppInitData(): TelegramWebAppInitData | null {
         
         if (typeof initData === 'string' && initData.length > 0) {
           console.log('✅ Valid initData found via SDK');
-          return parseTelegramInitData(initData);
+          const parsed = parseTelegramInitData(initData);
+          if (parsed) {
+            return { data: parsed, rawInitData: initData };
+          }
         }
       }
     } catch (sdkError) {
@@ -143,7 +162,10 @@ export function getTelegramWebAppInitData(): TelegramWebAppInitData | null {
             const userObj = JSON.parse(user);
             if (userObj.id) {
               console.log('✅ Successfully extracted initData from URL hash');
-              return parseTelegramInitData(decodedData);
+              const parsed = parseTelegramInitData(decodedData);
+              if (parsed) {
+                return { data: parsed, rawInitData: decodedData };
+              }
             }
           }
         } catch (e) {
@@ -157,14 +179,21 @@ export function getTelegramWebAppInitData(): TelegramWebAppInitData | null {
     const tgWebAppData = urlParams.get('tgWebAppData');
     if (tgWebAppData) {
       console.log('✅ Found tgWebAppData in URL search parameters');
-      return parseTelegramInitData(decodeURIComponent(tgWebAppData));
+      const decodedData = decodeURIComponent(tgWebAppData);
+      const parsed = parseTelegramInitData(decodedData);
+      if (parsed) {
+        return { data: parsed, rawInitData: decodedData };
+      }
     }
 
     // Method 5: Try to get from stored data (localStorage)
     const storedInitData = getStoredTelegramInitData();
     if (storedInitData) {
       console.log('✅ Found stored initData in localStorage');
-      return parseTelegramInitData(storedInitData);
+      const parsed = parseTelegramInitData(storedInitData);
+      if (parsed) {
+        return { data: parsed, rawInitData: storedInitData };
+      }
     }
 
     console.warn('❌ No Telegram Web App initialization data found in any source');
@@ -234,24 +263,45 @@ export function validateTelegramWebAppData(initData: TelegramWebAppInitData): bo
 
 /**
  * Prepares Telegram Web App data for server-side authentication
+ * We need to send the raw initData string, not individual parsed fields
  */
-export function prepareTelegramAuthData(initData: TelegramWebAppInitData) {
+export function prepareTelegramAuthData(initData: TelegramWebAppInitData, rawInitDataString?: string) {
   if (!initData.user) {
     throw new Error('No user data available');
   }
 
   console.log('prepareTelegramAuthData: Preparing auth data for:', initData.user);
 
+  // If we have the raw initData string, use it for validation
+  if (rawInitDataString) {
+    return {
+      initData: rawInitDataString,
+      // Include user info for easy access
+      id: initData.user.id.toString(),
+      first_name: initData.user.first_name,
+      last_name: initData.user.last_name || '',
+      username: initData.user.username || '',
+      photo_url: initData.user.photo_url || '',
+    };
+  }
+
+  // Fallback: reconstruct the initData string from parsed data
+  const reconstructedInitData = new URLSearchParams({
+    user: JSON.stringify(initData.user),
+    chat_type: initData.chat_type || '',
+    chat_instance: initData.chat_instance || '',
+    auth_date: initData.auth_date.toString(),
+    hash: initData.hash,
+  }).toString();
+
   return {
+    initData: reconstructedInitData,
+    // Include user info for easy access
     id: initData.user.id.toString(),
     first_name: initData.user.first_name,
     last_name: initData.user.last_name || '',
     username: initData.user.username || '',
     photo_url: initData.user.photo_url || '',
-    auth_date: initData.auth_date,
-    hash: initData.hash,
-    chat_type: initData.chat_type,
-    chat_instance: initData.chat_instance,
   };
 }
 
@@ -371,6 +421,7 @@ export function useTelegramWebApp() {
     initData: TelegramWebAppInitData | null;
     isValid: boolean;
     user: TelegramWebAppUser | null;
+    rawInitData: string | null;
   } | null>(null);
 
   React.useEffect(() => {
@@ -382,25 +433,19 @@ export function useTelegramWebApp() {
         console.log('🔄 useTelegramWebApp: Initializing telegram data (one time)');
         
         const isTWA = isTelegramWebApp();
-        const initData = getTelegramWebAppInitData();
+        const initDataResult = getTelegramWebAppInitData();
+        const initData = initDataResult?.data || null;
+        const rawInitData = initDataResult?.rawInitData || null;
         
         // Store data if we found it and haven't stored it before
-        if (initData && initData.user) {
+        if (initData && initData.user && rawInitData) {
           const existingData = getStoredTelegramInitData();
           const existingUser = getStoredTelegramUser();
           
           // Only store if we don't have existing data or if the data is different
           if (!existingData || !existingUser || existingUser.id !== initData.user.id) {
             console.log('📝 Storing new Telegram data for user:', initData.user.first_name);
-            const initDataString = new URLSearchParams({
-              user: JSON.stringify(initData.user),
-              chat_type: initData.chat_type || '',
-              chat_instance: initData.chat_instance || '',
-              auth_date: initData.auth_date.toString(),
-              hash: initData.hash,
-            }).toString();
-            
-            storeTelegramData(initDataString, initData.user);
+            storeTelegramData(rawInitData, initData.user);
           } else {
             console.log('📋 Using existing stored Telegram data');
           }
@@ -412,6 +457,7 @@ export function useTelegramWebApp() {
             initData,
             isValid: initData ? validateTelegramWebAppData(initData) : false,
             user: initData?.user || null,
+            rawInitData,
           });
         }
       } catch (error) {
@@ -422,6 +468,7 @@ export function useTelegramWebApp() {
             initData: null,
             isValid: false,
             user: null,
+            rawInitData: null,
           });
         }
       }
@@ -439,6 +486,7 @@ export function useTelegramWebApp() {
     initData: null,
     isValid: false,
     user: null,
+    rawInitData: null,
   };
 }
 
