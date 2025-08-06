@@ -10,7 +10,6 @@ import { Icons } from "@/components/icons"
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from 'next-intl';
-import TelegramWebAppAuth from './TelegramWebAppAuth';
 import TelegramDebugInfo from '../debug/TelegramDebugInfo';
 
 export default function SignInForm() {
@@ -104,17 +103,6 @@ export default function SignInForm() {
     <>
       {/* Debug Info for Telegram Web App */}
       <TelegramDebugInfo />
-      
-      {/* Telegram Web App Auto Authentication */}
-      <TelegramWebAppAuth 
-        onAuthAttempt={() => setIsLoading(true)}
-        onAuthSuccess={() => setIsLoading(false)}
-        onAuthFailure={(error) => {
-          setIsLoading(false);
-          console.log('Telegram Web App auth failed:', error);
-          // Don't show error to user for auto-auth failures
-        }}
-      />
       
       <AuthCard
         title={t('title')}
