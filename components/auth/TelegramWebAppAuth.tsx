@@ -36,6 +36,18 @@ export default function TelegramWebAppAuth({
   }, [isTelegramWebApp]);
 
   useEffect(() => {
+    // Debug logging for all conditions
+    console.log('TelegramWebAppAuth - Checking conditions:', {
+      isTelegramWebApp,
+      isValid,
+      hasInitData: !!initData,
+      hasUser: !!user,
+      sessionStatus: status,
+      hasSession: !!session,
+      hasAttempted,
+      userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A'
+    });
+
     // Only attempt auto-authentication if:
     // 1. We're in Telegram Web App
     // 2. We have valid init data
@@ -51,7 +63,10 @@ export default function TelegramWebAppAuth({
       !session && 
       !hasAttempted
     ) {
+      console.log('All conditions met - attempting auto-authentication');
       handleAutoAuth();
+    } else {
+      console.log('Auto-authentication skipped - conditions not met');
     }
   }, [isTelegramWebApp, isValid, initData, user, session, status, hasAttempted]);
 

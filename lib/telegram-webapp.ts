@@ -25,22 +25,30 @@ export interface TelegramWebAppInitData {
  * Detects if the app is running inside Telegram Web Apps environment
  */
 export function isTelegramWebApp(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined') {
+    console.log('isTelegramWebApp: window is undefined (server-side)');
+    return false;
+  }
   
   try {
+    console.log('isTelegramWebApp: Checking detection methods');
+    
     // Method 1: Check for Telegram WebApp object
     if (window.Telegram?.WebApp) {
+      console.log('isTelegramWebApp: Detected via window.Telegram.WebApp');
       return true;
     }
 
     // Method 2: Check for launch parameters using @telegram-apps/sdk
     try {
       const launchParams = retrieveLaunchParams();
+      console.log('isTelegramWebApp: SDK launchParams:', launchParams);
       if (launchParams && 'initData' in launchParams && launchParams.initData) {
+        console.log('isTelegramWebApp: Detected via SDK launchParams');
         return true;
       }
     } catch (sdkError) {
-      console.log('SDK check failed in detection:', sdkError);
+      console.log('isTelegramWebApp: SDK check failed in detection:', sdkError);
     }
 
     // Method 3: Check URL parameters for Telegram Web App specific params
@@ -48,16 +56,26 @@ export function isTelegramWebApp(): boolean {
     const telegramParams = ['tgWebAppData', 'tgWebAppVersion', 'tgWebAppPlatform'];
     const hasTelegramParams = telegramParams.some(param => urlParams.has(param));
     
+    console.log('isTelegramWebApp: URL params check:', { 
+      search: window.location.search, 
+      hasTelegramParams 
+    });
+    
     if (hasTelegramParams) {
+      console.log('isTelegramWebApp: Detected via URL parameters');
       return true;
     }
 
     // Method 4: Check for common Telegram Web App URL patterns
     const hash = window.location.hash;
+    console.log('isTelegramWebApp: Hash check:', hash);
+    
     if (hash.includes('tgWebAppData') || hash.includes('tgWebAppVersion')) {
+      console.log('isTelegramWebApp: Detected via URL hash');
       return true;
     }
 
+    console.log('isTelegramWebApp: Not detected - returning false');
     return false;
   } catch (error) {
     console.error('Error detecting Telegram Web App:', error);
@@ -69,25 +87,39 @@ export function isTelegramWebApp(): boolean {
  * Gets Telegram Web App initialization data
  */
 export function getTelegramWebAppInitData(): TelegramWebAppInitData | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined') {
+    console.log('getTelegramWebAppInitData: window is undefined (server-side)');
+    return null;
+  }
+  
+  console.log('getTelegramWebAppInitData: Starting data retrieval');
   
   try {
     // Try to get data from @telegram-apps/sdk
     try {
       const launchParams = retrieveLaunchParams();
+      console.log('getTelegramWebAppInitData: SDK launchParams:', launchParams);
+      
       if (launchParams && 'initData' in launchParams) {
         const initData = launchParams.initData;
+        console.log('getTelegramWebAppInitData: initData from SDK:', initData);
+        
         if (typeof initData === 'string' && initData.length > 0) {
+          console.log('getTelegramWebAppInitData: Valid initData found via SDK');
           return parseTelegramInitData(initData);
         }
       }
     } catch (sdkError) {
-      console.log('SDK retrieveLaunchParams failed:', sdkError);
+      console.log('getTelegramWebAppInitData: SDK retrieveLaunchParams failed:', sdkError);
     }
 
     // Fallback: Try to get data from Telegram WebApp object
     if (window.Telegram?.WebApp?.initData) {
+      console.log('getTelegramWebAppInitData: Found initData via window.Telegram.WebApp');
+      console.log('getTelegramWebAppInitData: Telegram WebApp initData:', window.Telegram.WebApp.initData);
       return parseTelegramInitData(window.Telegram.WebApp.initData);
+    } else {
+      console.log('getTelegramWebAppInitData: No initData in window.Telegram.WebApp');
     }
 
     // Fallback: Try to get from URL parameters
