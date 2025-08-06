@@ -115,13 +115,14 @@ export const authOptions: AuthOptions = {
           let lastName: string = '';
           let username: string = '';
           let photoUrl: string = '';
+          let decodedInitData: string = '';
 
           if (initDataString) {
             // New format: raw initData string
             console.log('Using raw initData string for validation');
             
             // Decode the URL-encoded initData string first
-            const decodedInitData = decodeURIComponent(initDataString);
+            decodedInitData = decodeURIComponent(initDataString);
             console.log('Decoded initData:', decodedInitData);
             
             // Parse the initData string to get individual parameters
@@ -153,7 +154,10 @@ export const authOptions: AuthOptions = {
           }
 
           // Validate Web App data using server-side validation
-          const isValid = await validateTelegramWebAppDataServer(validationData);
+          const rawDataForValidation = initDataString ? decodedInitData : 
+            new URLSearchParams(validationData).toString();
+          
+          const isValid = await validateTelegramWebAppDataServer(rawDataForValidation);
           if (!isValid) {
             console.error('Invalid Telegram Web App data');
             return null;
@@ -562,10 +566,11 @@ export async function resetPassword(token: string, newPassword: string) {
 
 /**
  * Server-side validation of Telegram Web App data
+ * Based on official Telegram Mini Apps documentation
  */
-export async function validateTelegramWebAppDataServer(queryParams: any): Promise<boolean> {
+export async function validateTelegramWebAppDataServer(rawInitData: string): Promise<boolean> {
   try {
-    console.log('validateTelegramWebAppDataServer: Validating data:', queryParams);
+    console.log('validateTelegramWebAppDataServer: Validating raw initData:', rawInitData);
     
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     if (!botToken) {
@@ -573,17 +578,19 @@ export async function validateTelegramWebAppDataServer(queryParams: any): Promis
       return false;
     }
 
-    // Extract required parameters
-    const { hash, auth_date, ...otherParams } = queryParams;
+    // Parse the raw initData to get all parameters
+    const params = new URLSearchParams(rawInitData);
+    const hash = params.get('hash');
+    const authDateStr = params.get('auth_date');
     
-    if (!hash || !auth_date) {
-      console.error('Missing hash or auth_date in Telegram Web App data', { hash: !!hash, auth_date: !!auth_date });
+    if (!hash || !authDateStr) {
+      console.error('Missing hash or auth_date in Telegram Web App data');
       return false;
     }
 
     // Check if auth_date is not too old (24 hours)
     const now = Math.floor(Date.now() / 1000);
-    const authTimestamp = typeof auth_date === 'string' ? parseInt(auth_date) : auth_date;
+    const authTimestamp = parseInt(authDateStr);
     const maxAge = 24 * 60 * 60; // 24 hours in seconds
 
     console.log('validateTelegramWebAppDataServer: Time validation:', {
@@ -599,24 +606,32 @@ export async function validateTelegramWebAppDataServer(queryParams: any): Promis
       return false;
     }
 
-    // Create data-check-string
-    const dataCheckArray = Object.keys(otherParams)
-      .sort()
-      .map(key => `${key}=${otherParams[key]}`)
-      .concat(`auth_date=${authTimestamp}`);
+    // Create data-check-string according to Telegram docs:
+    // 1. Create key=value pairs for all parameters except hash
+    // 2. Sort them alphabetically by key
+    // 3. Join with \n
+    const dataCheckArray: string[] = [];
     
+    for (const [key, value] of params.entries()) {
+      if (key !== 'hash') {
+        dataCheckArray.push(`${key}=${value}`);
+      }
+    }
+    
+    // Sort alphabetically by key
+    dataCheckArray.sort();
     const dataCheckString = dataCheckArray.join('\n');
 
     console.log('validateTelegramWebAppDataServer: Data check string:', dataCheckString);
 
-    // Create secret key
+    // Create secret key using two-stage HMAC as per Telegram docs
     const crypto = require('crypto');
     const secretKey = crypto
       .createHmac('sha256', 'WebAppData')
       .update(botToken)
       .digest();
 
-    // Create hash
+    // Create hash using the secret key
     const calculatedHash = crypto
       .createHmac('sha256', secretKey)
       .update(dataCheckString)
