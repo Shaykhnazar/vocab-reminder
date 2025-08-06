@@ -123,17 +123,21 @@ export function useTelegramAuthInit() {
       // Get the raw initData for proper validation
       const rawInitData = telegramWebAppData.rawInitData;
       
-      // Prepare auth data for server
-      const authData = prepareTelegramAuthData(initData, rawInitData || undefined);
-      console.log('🔐 Prepared auth data for:', authData.first_name, authData.id);
+      console.log('🔐 Using raw initData directly for authentication:', rawInitData?.substring(0, 100) + '...');
 
-      // Attempt NextAuth sign in using the same pattern as existing telegram-webapp-auth.ts
+      // Skip the prepareTelegramAuthData function entirely and use raw initData
+      if (!rawInitData) {
+        console.error('❌ No raw initData available for validation');
+        return false;
+      }
+
+      // Attempt NextAuth sign in using the original raw initData directly
       const result = await signIn('telegram-webapp', {
         redirect: false,
         callbackUrl: '/words'
       }, {
-        // Pass only the initData string - all user info is contained within it
-        initData: authData.initData,
+        // Pass the original raw initData string exactly as Telegram provided it
+        initData: rawInitData,
       } as any); // Type assertion to bypass strict TypeScript checking
 
       if (result?.error) {
@@ -147,16 +151,8 @@ export function useTelegramAuthInit() {
         return false;
       }
 
-      // Store the successful auth data using the raw initData if available
-      const initDataString = rawInitData || new URLSearchParams({
-        user: JSON.stringify(initData.user),
-        chat_type: initData.chat_type || '',
-        chat_instance: initData.chat_instance || '',
-        auth_date: initData.auth_date.toString(),
-        hash: initData.hash,
-      }).toString();
-
-      storeTelegramData(initDataString, initData.user);
+      // Store the successful auth data using the original raw initData
+      storeTelegramData(rawInitData, initData.user);
 
       console.log('✅ Telegram authentication successful');
 
