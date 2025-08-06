@@ -122,7 +122,7 @@ export async function POST(
             // First get current user data
             const { data: currentUser, error: fetchError } = await supabase
               .from('users')
-              .select('raw_user_meta_data, notification_preferences')
+              .select('notification_preferences, username, first_name, last_name')
               .eq('id', userId)
               .single();
 
@@ -131,15 +131,7 @@ export async function POST(
               throw new Error('User not found');
             }
 
-            // Prepare updated metadata and preferences
-            const updatedMetadata = {
-              ...(currentUser.raw_user_meta_data || {}),
-              telegram_username: username,
-              telegram_first_name: first_name,
-              telegram_last_name: last_name,
-              telegram_language: language_code
-            };
-
+            // Prepare updated preferences
             const updatedPreferences = {
               ...(currentUser.notification_preferences || { email: true, telegram: false }),
               telegram: true
@@ -150,7 +142,9 @@ export async function POST(
               .from('users')
               .update({
                 telegram_id: chatId.toString(),
-                raw_user_meta_data: updatedMetadata,
+                username: username || currentUser.username,
+                first_name: first_name || currentUser.first_name,
+                last_name: last_name || currentUser.last_name,
                 notification_preferences: updatedPreferences
               })
               .eq('id', userId);
