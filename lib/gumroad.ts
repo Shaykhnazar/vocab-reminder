@@ -6,8 +6,8 @@ export const GUMROAD_PRODUCTS = {
   FREE: {
     id: 'free',
     name: 'Free Plan',
-    wordLimit: 300,
-    features: ['Basic vocabulary management', 'Email notifications', 'Limited to 300 words'],
+    wordLimit: 1000,
+    features: ['Basic vocabulary management', 'Email notifications', 'Telegram notifications', 'Limited to 1000 words'],
     permalink: '',
     price: '$0',
     recurrence: 'none'
