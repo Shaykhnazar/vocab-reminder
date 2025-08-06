@@ -12,13 +12,54 @@ export const isIOS = (): boolean => {
 
 export const isTelegramEnvironment = (): boolean => {
   if (typeof window === 'undefined') return false;
-  return !!(
-    window.location.hash.includes('tgWebAppData') ||
-    window.location.search.includes('tgWebAppData') ||
-    navigator.userAgent.includes('Telegram') ||
-    window.parent !== window ||
-    (window as any).Telegram?.WebApp
-  );
+  
+  // Check various indicators of Telegram environment
+  const indicators = [
+    // URL-based detection
+    window.location.hash.includes('tgWebAppData'),
+    window.location.search.includes('tgWebAppData'),
+    
+    // User agent detection
+    navigator.userAgent.includes('Telegram'),
+    
+    // Frame detection
+    window.parent !== window,
+    
+    // Telegram WebApp object
+    !!(window as any).Telegram?.WebApp,
+    
+    // Check if @telegram-apps/sdk detects Telegram environment
+    (() => {
+      try {
+        const { retrieveLaunchParams } = require('@telegram-apps/sdk');
+        const launchParams = retrieveLaunchParams();
+        return !!(launchParams?.tgWebAppData || launchParams?.tgWebAppVersion);
+      } catch {
+        return false;
+      }
+    })()
+  ];
+  
+  const detected = indicators.some(indicator => indicator);
+  console.log('isTelegramEnvironment: Detection indicators:', {
+    urlHash: window.location.hash.includes('tgWebAppData'),
+    urlSearch: window.location.search.includes('tgWebAppData'),
+    userAgent: navigator.userAgent.includes('Telegram'),
+    frameDetection: window.parent !== window,
+    telegramObject: !!(window as any).Telegram?.WebApp,
+    sdkDetection: (() => {
+      try {
+        const { retrieveLaunchParams } = require('@telegram-apps/sdk');
+        const launchParams = retrieveLaunchParams();
+        return !!(launchParams?.tgWebAppData || launchParams?.tgWebAppVersion);
+      } catch {
+        return false;
+      }
+    })(),
+    finalResult: detected
+  });
+  
+  return detected;
 };
 
 /**

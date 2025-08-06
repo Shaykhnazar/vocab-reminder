@@ -54,6 +54,34 @@ export function getTelegramWebAppInitData(): TelegramWebAppInitData | null {
       const launchParams = retrieveLaunchParams();
       console.log('getTelegramWebAppInitData: SDK launchParams:', launchParams);
       
+      // Check if SDK has tgWebAppData directly
+      if (launchParams?.tgWebAppData) {
+        console.log('getTelegramWebAppInitData: Found tgWebAppData in SDK:', launchParams.tgWebAppData);
+        
+        // Convert the SDK data to our expected format
+        const telegramData: TelegramWebAppInitData = {
+          user: launchParams.tgWebAppData.user ? {
+            id: launchParams.tgWebAppData.user.id,
+            first_name: launchParams.tgWebAppData.user.first_name,
+            last_name: launchParams.tgWebAppData.user.last_name || '',
+            username: launchParams.tgWebAppData.user.username,
+            language_code: launchParams.tgWebAppData.user.language_code,
+            is_premium: launchParams.tgWebAppData.user.is_premium,
+            photo_url: launchParams.tgWebAppData.user.photo_url,
+          } : undefined,
+          chat_type: launchParams.tgWebAppData.chat_type,
+          chat_instance: launchParams.tgWebAppData.chat_instance,
+          auth_date: typeof launchParams.tgWebAppData.auth_date === 'string' 
+            ? parseInt(launchParams.tgWebAppData.auth_date) 
+            : Math.floor(launchParams.tgWebAppData.auth_date.getTime() / 1000),
+          hash: launchParams.tgWebAppData.hash,
+        };
+        
+        console.log('getTelegramWebAppInitData: Converted SDK data:', telegramData);
+        return telegramData;
+      }
+      
+      // Fallback: try to get initData string from SDK
       if (launchParams && 'initData' in launchParams) {
         const initData = launchParams.initData;
         console.log('getTelegramWebAppInitData: initData from SDK:', initData);
@@ -163,6 +191,8 @@ export function prepareTelegramAuthData(initData: TelegramWebAppInitData) {
     throw new Error('No user data available');
   }
 
+  console.log('prepareTelegramAuthData: Preparing auth data for:', initData.user);
+
   return {
     id: initData.user.id.toString(),
     first_name: initData.user.first_name,
@@ -171,6 +201,8 @@ export function prepareTelegramAuthData(initData: TelegramWebAppInitData) {
     photo_url: initData.user.photo_url || '',
     auth_date: initData.auth_date,
     hash: initData.hash,
+    chat_type: initData.chat_type,
+    chat_instance: initData.chat_instance,
   };
 }
 
