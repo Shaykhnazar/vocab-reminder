@@ -120,14 +120,18 @@ export const authOptions: AuthOptions = {
             // New format: raw initData string
             console.log('Using raw initData string for validation');
             
+            // Decode the URL-encoded initData string first
+            const decodedInitData = decodeURIComponent(initDataString);
+            console.log('Decoded initData:', decodedInitData);
+            
             // Parse the initData string to get individual parameters
-            const params = new URLSearchParams(initDataString);
+            const params = new URLSearchParams(decodedInitData);
             validationData = Object.fromEntries(params.entries());
             
             // Extract user data from the parsed parameters
             const userString = params.get('user');
             if (userString) {
-              const user = JSON.parse(decodeURIComponent(userString));
+              const user = JSON.parse(userString);
               telegramId = user.id.toString();
               firstName = user.first_name;
               lastName = user.last_name || '';
