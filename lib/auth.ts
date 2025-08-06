@@ -571,6 +571,8 @@ export async function resetPassword(token: string, newPassword: string) {
 export async function validateTelegramWebAppDataServer(rawInitData: string): Promise<boolean> {
   try {
     console.log('validateTelegramWebAppDataServer: Validating raw initData:', rawInitData);
+    console.log('validateTelegramWebAppDataServer: Raw initData length:', rawInitData.length);
+    console.log('validateTelegramWebAppDataServer: Raw initData bytes:', [...rawInitData].map(c => c.charCodeAt(0)));
     
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     if (!botToken) {
@@ -612,7 +614,9 @@ export async function validateTelegramWebAppDataServer(rawInitData: string): Pro
     // 3. Join with \n
     const dataCheckArray: string[] = [];
     
+    console.log('validateTelegramWebAppDataServer: All params from URLSearchParams:');
     for (const [key, value] of params.entries()) {
+      console.log(`  ${key} = ${value}`);
       if (key !== 'hash') {
         dataCheckArray.push(`${key}=${value}`);
       }
@@ -622,7 +626,9 @@ export async function validateTelegramWebAppDataServer(rawInitData: string): Pro
     dataCheckArray.sort();
     const dataCheckString = dataCheckArray.join('\n');
 
+    console.log('validateTelegramWebAppDataServer: Data check array before join:', dataCheckArray);
     console.log('validateTelegramWebAppDataServer: Data check string:', dataCheckString);
+    console.log('validateTelegramWebAppDataServer: Data check string bytes:', [...dataCheckString].map(c => c.charCodeAt(0)));
 
     // Create secret key using two-stage HMAC as per Telegram docs
     const crypto = require('crypto');
@@ -630,6 +636,8 @@ export async function validateTelegramWebAppDataServer(rawInitData: string): Pro
       .createHmac('sha256', 'WebAppData')
       .update(botToken)
       .digest();
+
+    console.log('validateTelegramWebAppDataServer: Secret key (hex):', secretKey.toString('hex'));
 
     // Create hash using the secret key
     const calculatedHash = crypto
@@ -651,6 +659,31 @@ export async function validateTelegramWebAppDataServer(rawInitData: string): Pro
       console.error('Expected:', calculatedHash);
       console.error('Received:', hash);
       console.error('Data check string:', dataCheckString);
+      
+      // Try alternative approaches for debugging
+      console.log('=== DEBUGGING ALTERNATIVE APPROACHES ===');
+      
+      // Try with different sorting or formatting
+      const altDataCheck1 = Object.keys(Object.fromEntries(params.entries()))
+        .filter(k => k !== 'hash')
+        .sort()
+        .map(key => `${key}=${params.get(key)}`)
+        .join('\n');
+      
+      const altHash1 = crypto.createHmac('sha256', secretKey).update(altDataCheck1).digest('hex');
+      console.log('Alternative 1 - manual sort:', altHash1 === hash ? 'MATCH!' : 'no match');
+      
+      // Try without URL decoding the values
+      const rawParams = new URLSearchParams(rawInitData.replace(/\+/g, '%20')); // Handle + encoding
+      const altDataCheck2 = [];
+      for (const [key, value] of rawParams.entries()) {
+        if (key !== 'hash') {
+          altDataCheck2.push(`${key}=${value}`);
+        }
+      }
+      altDataCheck2.sort();
+      const altHash2 = crypto.createHmac('sha256', secretKey).update(altDataCheck2.join('\n')).digest('hex');
+      console.log('Alternative 2 - raw params:', altHash2 === hash ? 'MATCH!' : 'no match');
     }
 
     return isValid;
