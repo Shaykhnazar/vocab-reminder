@@ -72,8 +72,10 @@ export function getTelegramWebAppInitData(): { data: TelegramWebAppInitData; raw
     const tg = window.Telegram?.WebApp;
     if (tg?.initData && tg.initData.length > 0) {
       console.log('✅ Found initData via Telegram WebApp object (length:', tg.initData.length, ')');
+      console.log('🔍 Original Telegram WebApp initData:', tg.initData);
       const parsed = parseTelegramInitData(tg.initData);
       if (parsed) {
+        console.log('✅ Method 1 SUCCESS: Using original raw initData from Telegram WebApp');
         return { data: parsed, rawInitData: tg.initData };
       }
     }
@@ -271,9 +273,13 @@ export function prepareTelegramAuthData(initData: TelegramWebAppInitData, rawIni
   }
 
   console.log('prepareTelegramAuthData: Preparing auth data for:', initData.user);
+  console.log('prepareTelegramAuthData: rawInitDataString provided:', !!rawInitDataString);
+  console.log('prepareTelegramAuthData: rawInitDataString length:', rawInitDataString?.length);
+  console.log('prepareTelegramAuthData: rawInitDataString content:', rawInitDataString);
 
   // If we have the raw initData string, use it for validation
   if (rawInitDataString) {
+    console.log('✅ Using original raw initData string for authentication');
     return {
       initData: rawInitDataString,
       // Include user info for easy access
