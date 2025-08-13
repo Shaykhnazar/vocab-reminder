@@ -2,7 +2,6 @@
 "use client"
 
 import { TelegramWebAppUser, TelegramWebAppInitData } from './telegram-webapp';
-import { validateTelegramWebAppDataServer } from './auth';
 import { supabase, User } from './supabase';
 
 export interface TelegramAuthResult {
@@ -62,9 +61,9 @@ export class TelegramAuthHandler {
         };
       }
 
-      // Validate the initData unless in dev mode
+      // Validate the initData using server-side API unless in dev mode
       if (!this.isDev) {
-        const isValid = await validateTelegramWebAppDataServer(initDataString);
+        const isValid = await this.validateTelegramDataServerSide(initDataString);
         if (!isValid) {
           console.error('❌ Telegram Web App data validation failed');
           return {
@@ -129,6 +128,32 @@ export class TelegramAuthHandler {
         success: false,
         error: this.isDev ? error.message : 'Authentication failed'
       };
+    }
+  }
+
+  /**
+   * Validate Telegram data using server-side API endpoint
+   */
+  private async validateTelegramDataServerSide(initDataString: string): Promise<boolean> {
+    try {
+      const response = await fetch('/api/auth/validate-telegram', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ initData: initDataString }),
+      });
+
+      if (!response.ok) {
+        console.error('Server-side validation request failed:', response.status);
+        return false;
+      }
+
+      const result = await response.json();
+      return result.valid === true;
+    } catch (error) {
+      console.error('Error calling server-side validation:', error);
+      return false;
     }
   }
 

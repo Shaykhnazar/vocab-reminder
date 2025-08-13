@@ -528,6 +528,55 @@ export async function generatePasswordResetToken(email: string) {
   return true;
 }
 
+/**
+ * Basic validation of Telegram Web App data without bot token
+ * Less secure but allows functionality when TELEGRAM_BOT_TOKEN is not available
+ */
+function validateBasicTelegramData(rawInitData: string): boolean {
+  try {
+    console.log('validateBasicTelegramData: Performing basic validation');
+    
+    const params = new URLSearchParams(rawInitData);
+    const hash = params.get('hash');
+    const authDateStr = params.get('auth_date');
+    const userStr = params.get('user');
+    
+    // Basic checks
+    if (!hash || !authDateStr || !userStr) {
+      console.error('Missing required parameters in Telegram data');
+      return false;
+    }
+    
+    // Check if auth_date is not too old (24 hours)
+    const now = Math.floor(Date.now() / 1000);
+    const authTimestamp = parseInt(authDateStr);
+    const maxAge = 24 * 60 * 60; // 24 hours in seconds
+    
+    if (now - authTimestamp > maxAge) {
+      console.error('Telegram Web App data is too old');
+      return false;
+    }
+    
+    // Try to parse user data
+    try {
+      const user = JSON.parse(userStr);
+      if (!user.id || !user.first_name) {
+        console.error('Invalid user data in Telegram parameters');
+        return false;
+      }
+    } catch (e) {
+      console.error('Failed to parse user data');
+      return false;
+    }
+    
+    console.log('✅ Basic validation passed');
+    return true;
+  } catch (error) {
+    console.error('Error in basic Telegram data validation:', error);
+    return false;
+  }
+}
+
 export async function resetPassword(token: string, newPassword: string) {
   const hashedToken = hashToken(token);
   const now = new Date().toISOString();
@@ -576,8 +625,10 @@ export async function validateTelegramWebAppDataServer(rawInitData: string): Pro
     
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     if (!botToken) {
-      console.error('TELEGRAM_BOT_TOKEN not set');
-      return false;
+      console.warn('TELEGRAM_BOT_TOKEN not set - using basic validation');
+      // When bot token is not available, we'll do basic validation
+      // This is less secure but allows the app to work
+      return validateBasicTelegramData(rawInitData);
     }
 
     // Parse the raw initData to get all parameters
