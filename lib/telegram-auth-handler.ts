@@ -167,6 +167,22 @@ export class TelegramAuthHandler {
         console.log('🔍 Debug info from server:', result.debugInfo);
       }
 
+      // If validation failed, get detailed debug info
+      if (!result.valid) {
+        console.log('🚨 Validation failed, getting detailed debug info...');
+        try {
+          const debugResponse = await fetch('/api/auth/debug-telegram', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ initData: initDataString }),
+          });
+          const debugData = await debugResponse.json();
+          console.log('🔍 Detailed debug analysis:', debugData.debug);
+        } catch (debugError) {
+          console.log('❌ Failed to get debug info:', debugError);
+        }
+      }
+
       return result.valid === true;
     } catch (error) {
       console.error('❌ Error calling server-side validation:', error);

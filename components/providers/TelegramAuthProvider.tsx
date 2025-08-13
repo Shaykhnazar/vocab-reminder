@@ -77,6 +77,9 @@ export default function TelegramAuthProvider({
     }
   }, [authState, authStoreState, status, diagnostics, debug, pathname]);
 
+  // TEMPORARILY DISABLED: Automatic Telegram Mini App authentication
+  // TODO: Re-enable after fixing validation issues
+  /*
   useEffect(() => {
     // Skip if NextAuth is still loading
     if (status === 'loading') return;
@@ -134,6 +137,21 @@ export default function TelegramAuthProvider({
     }
 
   }, [session, status, authState, authStoreState, pathname, router, redirectOnAuth, protectedRoutes, debug]);
+  */
+
+  // Simplified effect for protected route handling only
+  useEffect(() => {
+    if (status === 'loading') return;
+    
+    const isAuthenticated = session?.user || authStoreState.isAuthenticated;
+    const isOnProtectedPage = protectedRoutes.some(path => pathname.includes(path));
+    
+    // Only handle protected route redirects, no automatic Telegram auth
+    if (!isAuthenticated && isOnProtectedPage) {
+      console.log('🔒 Redirecting unauthenticated user to login from protected route:', pathname);
+      router.push('/auth/login');
+    }
+  }, [session, status, authStoreState.isAuthenticated, pathname, router, protectedRoutes]);
 
   // Show loading state only if:
   // 1. We're on a protected route AND

@@ -323,12 +323,16 @@ Please ensure the app is launched through a Telegram bot.`;
     });
   };
 
+  // TEMPORARILY DISABLED: Automatic Telegram Auth Initialization
+  // TODO: Re-enable after fixing validation issues
+  /*
   // Initialize on mount
   useEffect(() => {
     if (status === 'loading') return; // Wait for NextAuth to finish loading
     
     initializeTelegramAuth();
   }, [status]);
+  */
 
   // Handle NextAuth session changes
   useEffect(() => {
