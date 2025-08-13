@@ -619,9 +619,9 @@ export async function resetPassword(token: string, newPassword: string) {
  */
 export async function validateTelegramWebAppDataServer(rawInitData: string): Promise<boolean> {
   try {
-    console.log('validateTelegramWebAppDataServer: Validating raw initData:', rawInitData);
+    console.log('validateTelegramWebAppDataServer: Validating raw initData');
     console.log('validateTelegramWebAppDataServer: Raw initData length:', rawInitData.length);
-    console.log('validateTelegramWebAppDataServer: Raw initData bytes:', [...rawInitData].map(c => c.charCodeAt(0)));
+    console.log('validateTelegramWebAppDataServer: Raw initData preview:', rawInitData.substring(0, 200));
     
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     if (!botToken) {
@@ -636,6 +636,13 @@ export async function validateTelegramWebAppDataServer(rawInitData: string): Pro
     const hash = params.get('hash');
     const authDateStr = params.get('auth_date');
     
+    console.log('validateTelegramWebAppDataServer: Parsed parameters:', {
+      hasHash: !!hash,
+      hasAuthDate: !!authDateStr,
+      hashPreview: hash ? hash.substring(0, 16) + '...' : 'missing',
+      authDate: authDateStr
+    });
+    
     if (!hash || !authDateStr) {
       console.error('Missing hash or auth_date in Telegram Web App data');
       return false;
@@ -645,17 +652,29 @@ export async function validateTelegramWebAppDataServer(rawInitData: string): Pro
     const now = Math.floor(Date.now() / 1000);
     const authTimestamp = parseInt(authDateStr);
     const maxAge = 24 * 60 * 60; // 24 hours in seconds
+    const age = now - authTimestamp;
 
     console.log('validateTelegramWebAppDataServer: Time validation:', {
       now,
       authTimestamp,
-      age: now - authTimestamp,
+      age,
       maxAge,
-      isValid: (now - authTimestamp) <= maxAge
+      ageHours: Math.round(age / 3600),
+      isValid: age <= maxAge
     });
 
-    if (now - authTimestamp > maxAge) {
-      console.error('Telegram Web App data is too old');
+    // Allow some tolerance for future timestamps (5 minutes) and past timestamps (24 hours)
+    const futureTolerance = 5 * 60; // 5 minutes
+    const isFuture = age < -futureTolerance;
+    const isTooOld = age > maxAge;
+    
+    if (isFuture) {
+      console.error(`Telegram Web App data is from the future: ${Math.abs(Math.round(age / 3600))} hours ahead (tolerance: ${futureTolerance/60} minutes)`);
+      return false;
+    }
+    
+    if (isTooOld) {
+      console.error(`Telegram Web App data is too old: ${Math.round(age / 3600)} hours old (max: 24 hours)`);
       return false;
     }
 
@@ -702,14 +721,16 @@ export async function validateTelegramWebAppDataServer(rawInitData: string): Pro
     console.log('validateTelegramWebAppDataServer: Hash validation:', {
       calculated: calculatedHash,
       received: hash,
-      isValid
+      isValid,
+      dataCheckString: dataCheckString
     });
     
     if (!isValid) {
-      console.error('Telegram Web App hash validation failed');
-      console.error('Expected:', calculatedHash);
-      console.error('Received:', hash);
-      console.error('Data check string:', dataCheckString);
+      console.error('❌ Telegram Web App hash validation failed');
+      console.error('Expected hash:', calculatedHash);
+      console.error('Received hash:', hash);
+      console.error('Data check string used:', dataCheckString);
+      console.error('Bot token available:', !!botToken);
       
       // Try alternative approaches for debugging
       console.log('=== DEBUGGING ALTERNATIVE APPROACHES ===');
