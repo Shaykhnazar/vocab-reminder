@@ -16,6 +16,8 @@ import {
   useTelegramWebApp
 } from '@/lib/telegram-webapp';
 import { initializeTelegramEnvironment } from '@/lib/telegram-script-loader';
+import { useAuthStore, useAuthActions } from '@/lib/stores/use-auth-store';
+import { handleTelegramWebAppAuth } from '@/lib/telegram-auth-handler';
 
 interface TelegramAuthState {
   isInitialized: boolean;
@@ -85,10 +87,15 @@ export function useTelegramAuthInit() {
 
   /**
    * Attempt automatic Telegram authentication
+   * Now integrates with auth store and direct database operations
    */
   const attemptTelegramAuth = async (): Promise<boolean> => {
     try {
       console.log('🚀 Attempting Telegram authentication...');
+      
+      // Use store methods directly without hooks inside functions
+      const store = useAuthStore.getState();
+      store.setLoading(true);
 
       // Check if we're in Telegram environment
       const isTelegramEnv = telegramWebAppData.isTelegramWebApp;
@@ -96,20 +103,26 @@ export function useTelegramAuthInit() {
 
       if (!isTelegramEnv) {
         console.log('⚠️ Not in Telegram environment, skipping auto-auth');
+        store.setLoading(false);
         return false;
       }
 
       // Get initialization data from the hook
       const initData = telegramWebAppData.initData;
+      const rawInitData = telegramWebAppData.rawInitData;
+      
       console.log('🔍 InitData retrieval result:', {
         hasInitData: !!initData,
+        hasRawInitData: !!rawInitData,
         hasUser: !!initData?.user,
         userId: initData?.user?.id,
         userName: initData?.user?.first_name,
       });
 
-      if (!initData || !initData.user) {
+      if (!initData || !initData.user || !rawInitData) {
         console.error('❌ No valid Telegram data found');
+        store.setError('No valid Telegram data found');
+        store.setLoading(false);
         return false;
       }
 
@@ -117,50 +130,47 @@ export function useTelegramAuthInit() {
       const isValid = telegramWebAppData.isValid;
       if (!isValid) {
         console.error('❌ Telegram data validation failed');
+        store.setError('Telegram data validation failed');
+        store.setLoading(false);
         return false;
       }
 
-      // Get the raw initData for proper validation
-      const rawInitData = telegramWebAppData.rawInitData;
-      
-      console.log('🔐 Using raw initData directly for authentication:', rawInitData?.substring(0, 100) + '...');
+      // Use our new auth handler to process the authentication
+      const isDev = process.env.NODE_ENV === 'development';
+      const authResult = await handleTelegramWebAppAuth(rawInitData, initData, isDev);
 
-      // Skip the prepareTelegramAuthData function entirely and use raw initData
-      if (!rawInitData) {
-        console.error('❌ No raw initData available for validation');
-        return false;
-      }
-
-      // Attempt NextAuth sign in using the original raw initData directly
-      const result = await signIn('telegram-webapp', {
-        redirect: false,
-        callbackUrl: '/words'
-      }, {
-        // Pass the original raw initData string exactly as Telegram provided it
-        initData: rawInitData,
-      } as any); // Type assertion to bypass strict TypeScript checking
-
-      if (result?.error) {
-        console.error('❌ Authentication failed:', result.error);
+      if (!authResult.success) {
+        console.error('❌ Authentication failed:', authResult.error);
+        store.setError(authResult.error || 'Authentication failed');
+        store.setLoading(false);
         setAuthState(prev => ({
           ...prev,
-          error: `Authentication failed: ${result.error}`,
+          error: authResult.error || 'Authentication failed',
           isLoading: false,
           isInitialized: true,
         }));
         return false;
       }
 
-      // Store the successful auth data using the original raw initData
+      // Store the successful auth data
       storeTelegramData(rawInitData, initData.user);
 
-      console.log('✅ Telegram authentication successful');
+      // Update auth store with the authenticated user
+      if (authResult.user && authResult.telegramUser) {
+        store.setTelegramUser(authResult.telegramUser, authResult.user);
+      }
 
-      // Update auth state
+      console.log('✅ Telegram authentication successful:', {
+        userId: authResult.user?.id,
+        telegramId: authResult.telegramUser?.id,
+        isNewUser: authResult.isNewUser
+      });
+
+      // Update local auth state
       setAuthState({
         isInitialized: true,
         isAuthenticated: true,
-        user: initData.user,
+        user: authResult.telegramUser,
         error: null,
         isLoading: false,
       });
@@ -169,6 +179,10 @@ export function useTelegramAuthInit() {
 
     } catch (error: any) {
       console.error('❌ Telegram authentication error:', error);
+      const store = useAuthStore.getState();
+      store.setError(error.message || 'Authentication error');
+      store.setLoading(false);
+      
       setAuthState(prev => ({
         ...prev,
         error: `Authentication error: ${error.message}`,
@@ -181,10 +195,14 @@ export function useTelegramAuthInit() {
 
   /**
    * Initialize Telegram authentication system
+   * Now syncs with auth store
    */
   const initializeTelegramAuth = async () => {
     try {
       console.log('🚀 Initializing Telegram authentication system...');
+      const authStore = useAuthStore.getState();
+      
+      authStore.setLoading(true);
       
       // Generate diagnostics first
       const diag = generateDiagnostics();
@@ -194,7 +212,21 @@ export function useTelegramAuthInit() {
       // Initialize Telegram environment (script loading, etc.)
       await initializeTelegramEnvironment();
 
-      // If user is already authenticated via NextAuth, no need to re-authenticate
+      // Check if user is already authenticated in auth store
+      if (authStore.isAuthenticated && authStore.authUser) {
+        console.log('✅ User already authenticated in auth store:', authStore.authUser.first_name || authStore.authUser.name);
+        setAuthState({
+          isInitialized: true,
+          isAuthenticated: true,
+          user: authStore.authUser,
+          error: null,
+          isLoading: false,
+        });
+        authStore.setLoading(false);
+        return;
+      }
+
+      // Check NextAuth session as fallback
       if (session?.user) {
         console.log('✅ User already authenticated via NextAuth:', session.user);
         setAuthState({
@@ -204,6 +236,7 @@ export function useTelegramAuthInit() {
           error: null,
           isLoading: false,
         });
+        authStore.setLoading(false);
         return;
       }
 
@@ -224,6 +257,8 @@ Diagnostics:
 
 Please ensure the app is launched through a Telegram bot.`;
 
+        authStore.setError(errorMessage);
+        authStore.setLoading(false);
         setAuthState({
           isInitialized: true,
           isAuthenticated: false,
@@ -235,6 +270,11 @@ Please ensure the app is launched through a Telegram bot.`;
 
     } catch (error: any) {
       console.error('❌ Authentication initialization failed:', error);
+      const authStore = useAuthStore.getState();
+      
+      authStore.setError(`Initialization error: ${error.message}`);
+      authStore.setLoading(false);
+      
       setAuthState({
         isInitialized: true,
         isAuthenticated: false,
@@ -250,10 +290,14 @@ Please ensure the app is launched through a Telegram bot.`;
    */
   const refreshAuth = async () => {
     console.log('🔄 Refreshing authentication...');
-    setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+    const authStore = useAuthStore.getState();
     
-    // Clear existing data
+    setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+    authStore.setLoading(true);
+    
+    // Clear existing data from both stores
     clearStoredTelegramData();
+    authStore.clearAuth();
     
     // Re-initialize
     await initializeTelegramAuth();
@@ -264,7 +308,12 @@ Please ensure the app is launched through a Telegram bot.`;
    */
   const clearAuth = () => {
     console.log('🧹 Clearing authentication data...');
+    const authStore = useAuthStore.getState();
+    
+    // Clear from both local state and global store
     clearStoredTelegramData();
+    authStore.clearAuth();
+    
     setAuthState({
       isInitialized: true,
       isAuthenticated: false,
