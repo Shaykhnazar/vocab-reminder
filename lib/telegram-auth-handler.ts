@@ -188,9 +188,7 @@ export class TelegramAuthHandler {
             notification_preferences: {
               email: false,
               telegram: true
-            },
-            // Default word limits based on free tier
-            word_limit: 50, // Adjust based on your subscription system
+            }
           }
         ])
         .select()

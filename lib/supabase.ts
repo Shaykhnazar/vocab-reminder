@@ -29,6 +29,10 @@ export interface User {
   password: string;
   created_at: Date;
   telegram_id?: string;
+  photo_url?: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
   notification_preferences: {
     email: boolean;
     telegram: boolean;
