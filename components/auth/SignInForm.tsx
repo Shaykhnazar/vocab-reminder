@@ -10,7 +10,6 @@ import { Icons } from "@/components/icons"
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from 'next-intl';
-import TelegramDebugInfo from '../debug/TelegramDebugInfo';
 
 export default function SignInForm() {
   const t = useTranslations('Auth.SignIn');
@@ -101,8 +100,6 @@ export default function SignInForm() {
 
   return (
     <>
-      {/* Debug Info for Telegram Web App */}
-      <TelegramDebugInfo />
       
       <AuthCard
         title={t('title')}
