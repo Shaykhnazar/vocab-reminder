@@ -20,8 +20,6 @@ interface AuthUser {
     email: boolean;
     telegram: boolean;
   };
-  // From your Laravel implementation
-  links_balance?: number;
 }
 
 interface AuthStore {
@@ -96,8 +94,6 @@ export const useAuthStore = create<AuthStore>()(
             email: false,
             telegram: true,
           },
-          // Default balance from your Laravel implementation
-          links_balance: dbUser.links_balance || 3,
           // Merge any additional DB user data
           ...dbUser,
         };
