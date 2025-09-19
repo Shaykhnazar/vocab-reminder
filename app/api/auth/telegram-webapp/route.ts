@@ -123,7 +123,6 @@ async function createOrUpdateTelegramUser(telegramUser: TelegramUser) {
           last_name: telegramUser.last_name || '',
           username: telegramUser.username || '',
           photo_url: telegramUser.photo_url || '',
-          updated_at: new Date().toISOString(),
         })
         .eq('id', existingUser.id)
         .select()
@@ -187,8 +186,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse the initData
+    console.log('📊 Parsing initData...');
     const telegramData = parseTelegramInitData(initData);
+    console.log('📊 Parsed telegramData:', {
+      hasTelegramData: !!telegramData,
+      hasUser: !!telegramData?.user,
+      userId: telegramData?.user?.id,
+      firstName: telegramData?.user?.first_name,
+      authDate: telegramData?.auth_date,
+      hasHash: !!telegramData?.hash,
+    });
+
     if (!telegramData || !telegramData.user) {
+      console.error('❌ Invalid or missing user data in initData');
       return NextResponse.json(
         { error: 'Invalid or missing user data in initData' },
         { status: 400 }
@@ -233,20 +243,45 @@ export async function POST(request: NextRequest) {
 
     // Validate the data if bot token is available
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    console.log('🔐 Validation step:', {
+      hasBotToken: !!botToken,
+      botTokenPreview: botToken?.substring(0, 10) + '...',
+    });
+
     if (botToken) {
-      const isValid = validateTelegramWebAppData(initData, botToken);
-      if (!isValid) {
+      console.log('🔐 Validating Telegram Web App data...');
+      try {
+        const isValid = validateTelegramWebAppData(initData, botToken);
+        console.log('🔐 Validation result:', isValid);
+
+        if (!isValid) {
+          console.error('❌ Invalid Telegram Web App data signature');
+          return NextResponse.json(
+            { error: 'Invalid Telegram Web App data signature' },
+            { status: 401 }
+          );
+        } else {
+          console.log('✅ Telegram Web App data signature is valid');
+        }
+      } catch (validationError) {
+        console.error('❌ Validation error:', validationError);
         return NextResponse.json(
-          { error: 'Invalid Telegram Web App data signature' },
+          { error: 'Signature validation failed' },
           { status: 401 }
         );
       }
     } else {
-      console.warn('TELEGRAM_BOT_TOKEN not set - skipping signature validation');
+      console.warn('⚠️ TELEGRAM_BOT_TOKEN not set - skipping signature validation');
     }
 
     // Create or update user in database
+    console.log('💾 Creating/updating user in database...');
     const dbUser = await createOrUpdateTelegramUser(telegramData.user);
+    console.log('💾 Database operation complete:', {
+      userId: dbUser.id,
+      telegramId: dbUser.telegram_id,
+      firstName: dbUser.first_name,
+    });
 
     // Return user data for session creation
     return NextResponse.json({
@@ -264,9 +299,17 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Telegram Web App authentication error:', error);
+    console.error('❌ Telegram Web App authentication error:', error);
+    console.error('❌ Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined,
+    });
     return NextResponse.json(
-      { error: 'Authentication failed' },
+      {
+        error: 'Authentication failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
