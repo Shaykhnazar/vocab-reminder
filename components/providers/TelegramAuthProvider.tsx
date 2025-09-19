@@ -149,7 +149,7 @@ export default function TelegramAuthProvider({
     // Only handle protected route redirects, no automatic Telegram auth
     if (!isAuthenticated && isOnProtectedPage) {
       console.log('🔒 Redirecting unauthenticated user to login from protected route:', pathname);
-      router.push('/auth/login');
+      router.push('/login');
     }
   }, [session, status, authStoreState.isAuthenticated, pathname, router, protectedRoutes]);
 
