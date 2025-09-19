@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getTranslations } from 'next-intl/server';
+import { TelegramWebAppAutoAuth } from '@/components/auth/TelegramWebAppAuthSimple';
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
   const t = await getTranslations({ locale, namespace: 'Auth.Metadata' });
@@ -23,6 +24,10 @@ export default async function Page() {
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
+      {/* Auto-authentication for Telegram Mini Apps */}
+      <TelegramWebAppAutoAuth />
+
+      {/* Regular login form */}
       <SignInForm />
     </div>
   );
