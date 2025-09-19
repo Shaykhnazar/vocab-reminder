@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations } from 'next-intl';
 import { useTelegramAuthSimple } from '@/hooks/use-telegram-auth-simple';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/shadcn-ui/button';
 import { Loader2 } from 'lucide-react';
 
 interface TelegramWebAppAuthSimpleProps {
