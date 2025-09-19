@@ -770,11 +770,15 @@
       "toast": {
         "error": "Error",
         "success": "Success",
-        "telegramAutoAuth": "Successfully authenticated via Telegram Web App"
+        "telegramAutoAuth": "Successfully authenticated via Telegram Web App",
+        "telegramSuccess": "Successfully signed in with Telegram"
       }
     },
     "telegramWebApp": {
-      "authenticating": "Authenticating with Telegram..."
+      "authenticating": "Authenticating with Telegram...",
+      "tryAgain": "Try Again",
+      "clickToAuth": "Click below to authenticate with Telegram",
+      "authenticate": "Sign in with Telegram"
     },
     "SignUp": {
       "title": "Sign Up",

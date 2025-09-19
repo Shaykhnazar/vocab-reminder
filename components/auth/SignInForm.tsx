@@ -10,6 +10,7 @@ import { Icons } from "@/components/icons"
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from 'next-intl';
+import TelegramWebAppAuthSimple from './TelegramWebAppAuthSimple';
 
 export default function SignInForm() {
   const t = useTranslations('Auth.SignIn');
@@ -78,6 +79,25 @@ export default function SignInForm() {
 
   const socialButtons = (
     <>
+      {/* New Telegram Web App Authentication */}
+      <TelegramWebAppAuthSimple
+        autoRedirect={true}
+        showButton={true}
+        onAuthSuccess={() => {
+          toast({
+            title: t('toast.success'),
+            description: t('toast.telegramSuccess'),
+          });
+        }}
+        onAuthFailure={(error) => {
+          toast({
+            title: t('toast.error'),
+            description: error,
+            variant: 'destructive',
+          });
+        }}
+      />
+
       <AuthSocialButton
         type="button"
         onClick={() => signIn("google", {callbackUrl: "/"})}
@@ -87,6 +107,7 @@ export default function SignInForm() {
         Google
       </AuthSocialButton>
 
+      {/* Legacy Telegram Login Button (for non-mini app Telegram users) */}
       {botUsername ? (
         <div className="flex justify-center">
           <LoginButton
