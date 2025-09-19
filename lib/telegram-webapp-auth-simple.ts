@@ -43,8 +43,10 @@ export async function authenticateWithTelegramWebApp(): Promise<TelegramAuthResu
 
     console.log('🔐 Authenticating with Telegram Web App...');
     console.log('📊 InitData length:', initData.length);
+    console.log('📊 InitData preview:', initData.substring(0, 200));
 
     // Call our API route for validation
+    console.log('📡 Calling /api/auth/telegram-webapp...');
     const response = await fetch('/api/auth/telegram-webapp', {
       method: 'POST',
       headers: {
@@ -53,8 +55,11 @@ export async function authenticateWithTelegramWebApp(): Promise<TelegramAuthResu
       body: JSON.stringify({ initData }),
     });
 
+    console.log('📡 API Response status:', response.status);
+
     if (!response.ok) {
       const errorData = await response.json();
+      console.error('❌ API Error:', errorData);
       return {
         success: false,
         error: errorData.error || 'Authentication failed'
@@ -62,17 +67,20 @@ export async function authenticateWithTelegramWebApp(): Promise<TelegramAuthResu
     }
 
     const data = await response.json();
+    console.log('📡 API Response data:', data);
 
     if (!data.success || !data.user) {
+      console.error('❌ Invalid API response:', data);
       return {
         success: false,
         error: 'Invalid response from server'
       };
     }
 
-    console.log('✅ Telegram authentication successful:', data.user.first_name);
+    console.log('✅ Telegram API validation successful:', data.user.first_name);
 
     // Create a custom NextAuth session using credentials provider
+    console.log('🔑 Creating NextAuth session...');
     const signInResult = await signIn('credentials', {
       redirect: false,
       email: `telegram_${data.user.telegram_id}@telegram.local`,
@@ -80,7 +88,10 @@ export async function authenticateWithTelegramWebApp(): Promise<TelegramAuthResu
       telegram_user_data: JSON.stringify(data.user),
     });
 
+    console.log('🔑 NextAuth result:', signInResult);
+
     if (signInResult?.error) {
+      console.error('❌ NextAuth error:', signInResult.error);
       return {
         success: false,
         error: signInResult.error

@@ -41,9 +41,10 @@ export function useTelegramAuthSimple() {
    */
   const attemptTelegramAuth = async (): Promise<boolean> => {
     try {
-      console.log('🔐 Attempting Telegram Web App authentication...');
+      console.log('🔐 attemptTelegramAuth: Starting authentication process...');
 
       const result = await authenticateWithTelegramWebApp();
+      console.log('🔐 attemptTelegramAuth: Authentication result:', result);
 
       if (result.success) {
         console.log('✅ Telegram authentication successful');
@@ -116,6 +117,7 @@ export function useTelegramAuthSimple() {
       const telegramUser = getTelegramWebAppUser();
       if (telegramUser) {
         console.log('👤 Found Telegram user data:', telegramUser.first_name);
+        console.log('🚀 Attempting automatic Telegram authentication...');
         await attemptTelegramAuth();
       } else {
         console.log('⚠️ No Telegram user data available');

@@ -102,8 +102,8 @@ export function getTelegramWebAppInitData(): { data: TelegramWebAppInitData; raw
           } : undefined,
           chat_type: launchParams.tgWebAppData.chat_type,
           chat_instance: launchParams.tgWebAppData.chat_instance,
-          auth_date: typeof launchParams.tgWebAppData.auth_date === 'string' 
-            ? parseInt(launchParams.tgWebAppData.auth_date) 
+          auth_date: typeof launchParams.tgWebAppData.auth_date === 'string'
+            ? parseInt(launchParams.tgWebAppData.auth_date)
             : (typeof launchParams.tgWebAppData.auth_date === 'object' && launchParams.tgWebAppData.auth_date.getTime
               ? Math.floor(launchParams.tgWebAppData.auth_date.getTime() / 1000)
               : launchParams.tgWebAppData.auth_date as unknown as number),
@@ -116,8 +116,8 @@ export function getTelegramWebAppInitData(): { data: TelegramWebAppInitData; raw
           user: JSON.stringify(launchParams.tgWebAppData.user),
           chat_type: launchParams.tgWebAppData.chat_type || '',
           chat_instance: launchParams.tgWebAppData.chat_instance || '',
-          auth_date: (typeof launchParams.tgWebAppData.auth_date === 'object' && launchParams.tgWebAppData.auth_date.getTime 
-            ? Math.floor(launchParams.tgWebAppData.auth_date.getTime() / 1000) 
+          auth_date: (typeof launchParams.tgWebAppData.auth_date === 'object' && launchParams.tgWebAppData.auth_date.getTime
+            ? Math.floor(launchParams.tgWebAppData.auth_date.getTime() / 1000)
             : launchParams.tgWebAppData.auth_date).toString(),
           hash: launchParams.tgWebAppData.hash,
         }).toString();
