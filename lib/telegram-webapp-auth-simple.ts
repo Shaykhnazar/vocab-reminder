@@ -34,16 +34,41 @@ export async function authenticateWithTelegramWebApp(): Promise<TelegramAuthResu
       };
     }
 
-    // Get initialization data using the same method as the layout
-    const initDataResult = getTelegramWebAppInitData();
-    if (!initDataResult || !initDataResult.rawInitData) {
+    // Try to get initialization data
+    let initData: string | null = null;
+
+    // Method 1: Try the main webapp function
+    try {
+      const initDataResult = getTelegramWebAppInitData();
+      if (initDataResult?.rawInitData) {
+        initData = initDataResult.rawInitData;
+        console.log('✅ Got initData from main function');
+      }
+    } catch (e) {
+      console.log('⚠️ Main function failed, trying fallback');
+    }
+
+    // Method 2: Try direct Telegram object
+    if (!initData && window.Telegram?.WebApp?.initData) {
+      initData = window.Telegram.WebApp.initData;
+      console.log('✅ Got initData from Telegram object');
+    }
+
+    // Method 3: Try stored data
+    if (!initData) {
+      const storedData = localStorage.getItem('telegram_init_data');
+      if (storedData) {
+        initData = storedData;
+        console.log('✅ Got initData from localStorage');
+      }
+    }
+
+    if (!initData) {
       return {
         success: false,
         error: 'No initialization data found'
       };
     }
-
-    const initData = initDataResult.rawInitData;
 
     console.log('🔐 Authenticating with Telegram Web App...');
     console.log('📊 InitData length:', initData.length);
@@ -118,7 +143,7 @@ export async function authenticateWithTelegramWebApp(): Promise<TelegramAuthResu
 
 /**
  * Check if the current environment is a Telegram Web App
- * Uses the same logic as the main telegram-webapp module
+ * Simplified version that doesn't conflict with bundling
  */
 export function isTelegramWebApp(): boolean {
   if (typeof window === 'undefined') {
@@ -126,30 +151,22 @@ export function isTelegramWebApp(): boolean {
     return false;
   }
 
-  // Enhanced detection that prioritizes SDK data
   try {
-    // Method 1: Check SDK first since it's most reliable
-    try {
-      const { retrieveLaunchParams } = require('@telegram-apps/sdk');
-      const launchParams = retrieveLaunchParams();
-      if (launchParams?.tgWebAppData || launchParams?.tgWebAppVersion) {
-        console.log('✅ isTelegramWebApp: Detected via @telegram-apps/sdk');
-        return true;
-      }
-    } catch (sdkError) {
-      console.log('⚠️ isTelegramWebApp: SDK check failed:', sdkError);
-    }
-
-    // Method 2: Check Telegram object
+    // Check Telegram object and initData
     const hasTelegramObject = !!(window as any).Telegram?.WebApp;
     const hasInitData = !!(window as any).Telegram?.WebApp?.initData;
     const hasUserAgent = navigator.userAgent.includes('Telegram');
 
-    const detected = hasTelegramObject && (hasInitData || hasUserAgent);
+    // Also check for stored Telegram data as fallback
+    const hasStoredData = !!localStorage.getItem('telegram_init_data');
+
+    const detected = hasTelegramObject && (hasInitData || hasUserAgent || hasStoredData);
+
     console.log('isTelegramWebApp: Detection result:', {
       hasTelegramObject,
       hasInitData,
       hasUserAgent,
+      hasStoredData,
       detected
     });
 
@@ -169,25 +186,25 @@ export function getTelegramWebAppUser() {
   }
 
   try {
-    // Try SDK first
-    try {
-      const { retrieveLaunchParams } = require('@telegram-apps/sdk');
-      const launchParams = retrieveLaunchParams();
-      if (launchParams?.tgWebAppData?.user) {
-        console.log('✅ getTelegramWebAppUser: Found user via SDK');
-        return launchParams.tgWebAppData.user;
-      }
-    } catch (sdkError) {
-      console.log('⚠️ getTelegramWebAppUser: SDK failed:', sdkError);
-    }
-
-    // Fallback to Telegram object
+    // Check Telegram object
     if (window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
       if (tg.initDataUnsafe?.user) {
         console.log('✅ getTelegramWebAppUser: Found user via Telegram object');
         return tg.initDataUnsafe.user;
       }
+    }
+
+    // Check stored user data as fallback
+    try {
+      const storedUser = localStorage.getItem('telegram_user');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        console.log('✅ getTelegramWebAppUser: Found user via localStorage');
+        return user;
+      }
+    } catch (e) {
+      console.log('⚠️ getTelegramWebAppUser: Failed to parse stored user');
     }
 
     console.log('⚠️ getTelegramWebAppUser: No user data found');
