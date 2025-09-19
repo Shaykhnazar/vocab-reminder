@@ -7,9 +7,11 @@ import { useRouter } from 'next/navigation';
 import {
   authenticateWithTelegramWebApp,
   isTelegramWebApp,
-  getTelegramWebAppUser
+  getTelegramWebAppUser,
+  getAuthenticatedTelegramUser,
+  initializeTelegramData,
+  clearTelegramAuthData
 } from '@/lib/telegram-webapp-auth-simple';
-import { isTelegramWebApp as isTelegramWebAppMain } from '@/lib/telegram-webapp';
 
 interface TelegramAuthState {
   isInitialized: boolean;
@@ -88,7 +90,9 @@ export function useTelegramAuthSimple() {
       return;
     }
 
-    const isTWA = isTelegramWebAppMain(); // Use the main detection logic
+    // Ensure data is initialized before detection
+    initializeTelegramData();
+    const isTWA = isTelegramWebApp(); // Use the improved detection logic
 
     setAuthState(prev => ({
       ...prev,
@@ -114,7 +118,16 @@ export function useTelegramAuthSimple() {
     if (isTWA) {
       console.log('📱 Detected Telegram Web App environment');
 
-      // Check if we have user data available
+      // First check if we have a previously authenticated user
+      const authenticatedUser = getAuthenticatedTelegramUser();
+      if (authenticatedUser) {
+        console.log('🔄 Found previously authenticated user:', authenticatedUser.first_name);
+        console.log('🚀 Re-attempting Telegram authentication with stored data...');
+        await attemptTelegramAuth();
+        return;
+      }
+
+      // Check if we have user data available for new authentication
       const telegramUser = getTelegramWebAppUser();
       if (telegramUser) {
         console.log('👤 Found Telegram user data:', telegramUser.first_name);
@@ -147,7 +160,9 @@ export function useTelegramAuthSimple() {
    * Manual authentication trigger
    */
   const authenticate = async () => {
-    if (!isTelegramWebAppMain()) {
+    initializeTelegramData(); // Ensure data is fresh
+
+    if (!isTelegramWebApp()) {
       throw new Error('Not in Telegram Web App environment');
     }
 
@@ -159,13 +174,14 @@ export function useTelegramAuthSimple() {
    * Clear authentication state
    */
   const clearAuth = () => {
+    clearTelegramAuthData(); // Clear stored data
     setAuthState({
       isInitialized: true,
       isAuthenticated: false,
       isLoading: false,
       error: null,
       user: null,
-      isTelegramWebApp: isTelegramWebAppMain(),
+      isTelegramWebApp: isTelegramWebApp(),
     });
   };
 

@@ -1,29 +1,41 @@
-# ✅ Telegram Mini App Authentication - IMPLEMENTATION COMPLETE
+# ✅ Telegram Mini App Authentication - ENHANCED IMPLEMENTATION COMPLETE
 
 ## 🎉 What's Done
 
-Your Telegram Mini App authentication has been **completely implemented** and is ready for testing!
+Your Telegram Mini App authentication has been **completely enhanced** with reliable Hash-based data extraction and localStorage persistence!
 
 ### ✅ Fixed Issues
 1. **Login Page Redirect** - Fixed `/auth/login` → `/login` redirect issue
 2. **Complex Validation** - Removed 200+ lines of problematic validation code
 3. **Build Errors** - Fixed TypeScript compilation issues
 4. **Integration Missing** - Added new auth system to actual login page
+5. **Inconsistent Detection** - Fixed unreliable Telegram environment detection
+6. **Data Persistence** - Added reliable localStorage-based data storage
 
-### ✅ New Implementation
+### ✅ Enhanced Implementation
 1. **API Route**: `/api/auth/telegram-webapp` with proper HMAC-SHA256 validation
-2. **Hook**: `useTelegramAuthSimple` for easy authentication management
+2. **Hook**: `useTelegramAuthSimple` with improved detection and persistence
 3. **Components**: Multiple variants for different use cases
-4. **Login Integration**: Auto-authentication added to your login page
+4. **Login Integration**: Auto-authentication with hash-based data extraction
 5. **Translations**: All required text added to `messages/en.json`
+6. **Hash Extraction**: New `extractInitDataFromHash()` function for reliable data capture
+7. **Data Initialization**: `TelegramInitializer` component for app startup data capture
+8. **Persistent Storage**: Authenticated user data stored in localStorage
 
-## 🚀 How It Works Now
+## 🚀 How It Works Now (Enhanced)
+
+### Hash-Based Data Extraction:
+1. **App Startup** → `TelegramInitializer` runs immediately in root layout
+2. **Hash Check** → Looks for `tgWebAppData` in URL hash
+3. **Data Storage** → Stores `initData` and user data in localStorage
+4. **Persistent Detection** → Uses stored data for reliable environment detection
 
 ### For Telegram Mini App Users:
-1. **Auto-Detection** - Automatically detects Telegram environment
-2. **Auto-Authentication** - Attempts authentication on login page load
+1. **Auto-Detection** - Now reliably detects Telegram environment using stored data
+2. **Auto-Authentication** - Attempts authentication with hash-extracted data
 3. **Seamless Flow** - Redirects to `/words` on success
 4. **Error Handling** - Clear error messages with retry options
+5. **Session Persistence** - Authenticated user data persisted across sessions
 
 ### For Regular Users:
 - **Google OAuth** - Still works as before
@@ -35,32 +47,62 @@ Your Telegram Mini App authentication has been **completely implemented** and is
 **Deploy your changes and test in Telegram:**
 
 1. Open your mini app in Telegram
-2. Navigate to any protected page (like `/profile`)
-3. Should auto-redirect to `/login` and authenticate automatically
-4. Check browser console for detailed logs
+2. Check console for "🚀 TelegramInitializer: Starting initialization..."
+3. Navigate to any protected page (like `/profile`)
+4. Should auto-redirect to `/login` and authenticate automatically
+5. Check browser console for detailed logs with new prefixes
 
-## 🔧 What Happens in Telegram
+## 🔧 Enhanced Authentication Flow
 
-1. **Page Load** → `TelegramWebAppAutoAuth` detects Telegram environment
-2. **Data Extraction** → Gets `initData` from `window.Telegram.WebApp.initData`
-3. **API Call** → Sends to `/api/auth/telegram-webapp` for validation
+1. **App Load** → `TelegramInitializer` extracts hash data and stores in localStorage
+2. **Detection** → `isTelegramWebApp()` checks stored data first, then Telegram object
+3. **Authentication** → Uses multiple extraction methods with hash data as priority
 4. **Validation** → Server validates using your `TELEGRAM_BOT_TOKEN`
 5. **User Creation** → Creates/updates user in Supabase
 6. **Session** → Creates NextAuth session via credentials provider
-7. **Redirect** → Automatically redirects to `/words`
+7. **Storage** → Stores authenticated user in localStorage for persistence
+8. **Redirect** → Automatically redirects to `/words`
 
-## 🎯 Test Scenarios
+## 🆕 New Features
 
-1. **First Time User** - Should create new account and redirect
-2. **Returning User** - Should login and redirect immediately
-3. **Error Handling** - Should show clear errors if issues occur
-4. **Non-Telegram** - Should show regular login form
+### Hash-Based Extraction:
+- **`extractInitDataFromHash()`** - Extracts initData from URL hash parameters
+- **`initializeTelegramData()`** - Comprehensive data initialization on app startup
+- **Persistent Storage** - All Telegram data stored in localStorage for reliability
 
-## 📊 Monitoring
+### Improved Detection:
+- **Primary Check** - Uses stored data for detection (most reliable)
+- **Secondary Check** - Falls back to Telegram object detection
+- **Enhanced Logging** - Detailed console logs for debugging
 
-Check these for debugging:
-- **Browser Console** - Client-side logs (🔐, ✅, ❌ prefixes)
-- **Server Logs** - API validation logs
-- **Network Tab** - `/api/auth/telegram-webapp` requests
+### Data Management:
+- **`getAuthenticatedTelegramUser()`** - Retrieves previously authenticated user
+- **`clearTelegramAuthData()`** - Clears all stored authentication data
+- **Auto-Persistence** - Authenticated user automatically stored after login
 
-Your implementation is **ready to go**! 🚀
+## 🎯 Enhanced Test Scenarios
+
+1. **First Time User** - Hash extraction → authentication → redirect
+2. **Returning User** - Stored data detection → re-authentication → redirect
+3. **Interrupted Session** - localStorage recovery → seamless continuation
+4. **Error Handling** - Clear errors with data persistence maintained
+5. **Non-Telegram** - Graceful fallback to regular login form
+
+## 📊 Enhanced Monitoring
+
+Check these for debugging with new log prefixes:
+- **🚀** - Initialization logs
+- **✅** - Success operations
+- **⚠️** - Warnings and fallbacks
+- **❌** - Errors
+- **🔧** - Configuration and setup
+- **💾** - Data storage operations
+- **🔄** - Re-authentication attempts
+
+### Key Console Messages:
+- `🚀 TelegramInitializer: Starting initialization...`
+- `✅ extractInitDataFromHash: Found initData in URL hash`
+- `💾 Stored authenticated user data in localStorage`
+- `🔄 Found previously authenticated user: [name]`
+
+Your implementation is **enhanced and ready**! 🚀
