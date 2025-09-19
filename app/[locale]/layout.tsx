@@ -9,6 +9,7 @@ import { Footer } from "@/components/navigation/Footer";
 import { MobileNav } from "@/components/navigation/MobileNav";
 import { Toaster } from "@/components/shadcn-ui/toaster";
 import TelegramAuthProvider from "@/components/providers/TelegramAuthProvider";
+import { TelegramInitializer } from "@/components/auth/TelegramInitializer";
 
 // Metadata generation with translations
 export async function generateMetadata({ 
@@ -48,6 +49,7 @@ export default async function LocaleLayout({
       <div className="flex min-h-screen flex-col">
         <NextAuthProvider>
           <TelegramAuthProvider>
+            <TelegramInitializer />
             <Navbar />
             <main className="flex-1 pb-20 md:pb-0">
               {children}
