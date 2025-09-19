@@ -9,6 +9,7 @@ import {
   isTelegramWebApp,
   getTelegramWebAppUser
 } from '@/lib/telegram-webapp-auth-simple';
+import { isTelegramWebApp as isTelegramWebAppMain } from '@/lib/telegram-webapp';
 
 interface TelegramAuthState {
   isInitialized: boolean;
@@ -87,7 +88,7 @@ export function useTelegramAuthSimple() {
       return;
     }
 
-    const isTWA = isTelegramWebApp();
+    const isTWA = isTelegramWebAppMain(); // Use the main detection logic
 
     setAuthState(prev => ({
       ...prev,
@@ -146,7 +147,7 @@ export function useTelegramAuthSimple() {
    * Manual authentication trigger
    */
   const authenticate = async () => {
-    if (!isTelegramWebApp()) {
+    if (!isTelegramWebAppMain()) {
       throw new Error('Not in Telegram Web App environment');
     }
 
@@ -164,7 +165,7 @@ export function useTelegramAuthSimple() {
       isLoading: false,
       error: null,
       user: null,
-      isTelegramWebApp: isTelegramWebApp(),
+      isTelegramWebApp: isTelegramWebAppMain(),
     });
   };
 
