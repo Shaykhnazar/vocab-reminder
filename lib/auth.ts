@@ -18,11 +18,30 @@ export const authOptions: AuthOptions = {
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        password: { label: 'Password', type: 'password' },
+        telegram_user_data: { label: 'Telegram User Data', type: 'text' }
       },
       async authorize(credentials) {
         if (!credentials) return null;
 
+        // Handle Telegram authentication
+        if (credentials.telegram_user_data) {
+          try {
+            const telegramUser = JSON.parse(credentials.telegram_user_data);
+            return {
+              id: telegramUser.id,
+              name: telegramUser.name,
+              image: telegramUser.image,
+              telegram_id: telegramUser.telegram_id,
+              provider: 'telegram'
+            };
+          } catch (error) {
+            console.error('Error parsing Telegram user data:', error);
+            throw new Error('Invalid Telegram user data');
+          }
+        }
+
+        // Handle regular email/password authentication
         const user = await findUserByEmail(credentials.email);
         if (!user) throw new Error('No user found');
 
@@ -99,114 +118,6 @@ export const authOptions: AuthOptions = {
         }
       }
     }),
-    CredentialsProvider({
-      id: "telegram-webapp",
-      name: "Telegram Web App",
-      credentials: {},
-      async authorize(credentials, req) {
-        try {
-          console.log('Telegram Web App auth attempt:', req.query);
-
-          // Check if we have the new format with initData string
-          const initDataString = req.query?.initData as string;
-          let validationData: any;
-          let telegramId: string;
-          let firstName: string;
-          let lastName: string = '';
-          let username: string = '';
-          let photoUrl: string = '';
-          let decodedInitData: string = '';
-
-          if (initDataString) {
-            // New format: raw initData string
-            console.log('Using raw initData string for validation');
-            
-            // Decode the URL-encoded initData string first
-            decodedInitData = decodeURIComponent(initDataString);
-            console.log('Decoded initData:', decodedInitData);
-            
-            // Parse the initData string to get individual parameters
-            const params = new URLSearchParams(decodedInitData);
-            validationData = Object.fromEntries(params.entries());
-            
-            // Extract user data from the parsed parameters
-            const userString = params.get('user');
-            if (userString) {
-              const user = JSON.parse(userString);
-              telegramId = user.id.toString();
-              firstName = user.first_name;
-              lastName = user.last_name || '';
-              username = user.username || '';
-              photoUrl = user.photo_url || '';
-            } else {
-              console.error('No user data in initData string');
-              return null;
-            }
-          } else {
-            // Fallback: old format with individual query parameters
-            console.log('Using individual query parameters for validation');
-            validationData = req.query || {};
-            telegramId = req.query?.id as string;
-            firstName = req.query?.first_name as string;
-            lastName = req.query?.last_name as string || '';
-            username = req.query?.username as string || '';
-            photoUrl = req.query?.photo_url as string || '';
-          }
-
-          // Validate Web App data using server-side validation
-          const rawDataForValidation = initDataString ? decodedInitData : 
-            new URLSearchParams(validationData).toString();
-          
-          const isValid = await validateTelegramWebAppDataServer(rawDataForValidation);
-          if (!isValid) {
-            console.error('Invalid Telegram Web App data');
-            return null;
-          }
-
-          if (!telegramId || !firstName) {
-            console.error('Missing required Telegram Web App data');
-            return null;
-          }
-
-          // Check if user exists
-          let dbUser = await findUserByTelegramId(telegramId);
-
-          if (dbUser) {
-            console.log('Existing Telegram Web App user found:', dbUser.id);
-            return {
-              id: dbUser.id,
-              name: [dbUser.first_name, dbUser.last_name || ""].join(" "),
-              image: dbUser.photo_url,
-              telegram_id: dbUser.telegram_id,
-            };
-          } else {
-            console.log('Creating new Telegram Web App user');
-            dbUser = await createTelegramUser({
-              telegram_id: telegramId,
-              firstName: firstName,
-              lastName: lastName,
-              username: username,
-              photoUrl: photoUrl,
-            });
-
-            if (!dbUser) {
-              console.error('Failed to create Telegram Web App user');
-              return null;
-            }
-
-            return {
-              id: dbUser.id,
-              name: [firstName, lastName].join(" "),
-              image: photoUrl,
-              telegram_id: dbUser.telegram_id,
-            };
-          }
-        } catch (error) {
-          console.error('Error in Telegram Web App authorize:', error);
-          return null;
-        }
-      }
-    }),
   ],
   session: {
     strategy: 'jwt'
@@ -261,6 +172,14 @@ export const authOptions: AuthOptions = {
         token.telegram_id = user.telegram_id || user.id;
         token.name = user.name || "";
         token.image = user.image || "";
+        token.provider = "telegram";
+      }
+      // Handle new Telegram Web App authentication via credentials
+      if (user && user.provider === "telegram" && user.telegram_id) {
+        token.telegram_id = user.telegram_id;
+        token.name = user.name || "";
+        token.image = user.image || "";
+        token.provider = "telegram";
       }
       return token;
     },
@@ -528,54 +447,6 @@ export async function generatePasswordResetToken(email: string) {
   return true;
 }
 
-/**
- * Basic validation of Telegram Web App data without bot token
- * Less secure but allows functionality when TELEGRAM_BOT_TOKEN is not available
- */
-function validateBasicTelegramData(rawInitData: string): boolean {
-  try {
-    console.log('validateBasicTelegramData: Performing basic validation');
-    
-    const params = new URLSearchParams(rawInitData);
-    const hash = params.get('hash');
-    const authDateStr = params.get('auth_date');
-    const userStr = params.get('user');
-    
-    // Basic checks
-    if (!hash || !authDateStr || !userStr) {
-      console.error('Missing required parameters in Telegram data');
-      return false;
-    }
-    
-    // Check if auth_date is not too old (24 hours)
-    const now = Math.floor(Date.now() / 1000);
-    const authTimestamp = parseInt(authDateStr);
-    const maxAge = 24 * 60 * 60; // 24 hours in seconds
-    
-    if (now - authTimestamp > maxAge) {
-      console.error('Telegram Web App data is too old');
-      return false;
-    }
-    
-    // Try to parse user data
-    try {
-      const user = JSON.parse(userStr);
-      if (!user.id || !user.first_name) {
-        console.error('Invalid user data in Telegram parameters');
-        return false;
-      }
-    } catch (e) {
-      console.error('Failed to parse user data');
-      return false;
-    }
-    
-    console.log('✅ Basic validation passed');
-    return true;
-  } catch (error) {
-    console.error('Error in basic Telegram data validation:', error);
-    return false;
-  }
-}
 
 export async function resetPassword(token: string, newPassword: string) {
   const hashedToken = hashToken(token);
@@ -613,154 +484,3 @@ export async function resetPassword(token: string, newPassword: string) {
   return true;
 }
 
-/**
- * Server-side validation of Telegram Web App data
- * Based on official Telegram Mini Apps documentation
- */
-export async function validateTelegramWebAppDataServer(rawInitData: string): Promise<boolean> {
-  try {
-    console.log('validateTelegramWebAppDataServer: Validating raw initData');
-    console.log('validateTelegramWebAppDataServer: Raw initData length:', rawInitData.length);
-    console.log('validateTelegramWebAppDataServer: Raw initData preview:', rawInitData.substring(0, 200));
-    
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    if (!botToken) {
-      console.warn('TELEGRAM_BOT_TOKEN not set - using basic validation');
-      // When bot token is not available, we'll do basic validation
-      // This is less secure but allows the app to work
-      return validateBasicTelegramData(rawInitData);
-    }
-
-    // Parse the raw initData to get all parameters
-    const params = new URLSearchParams(rawInitData);
-    const hash = params.get('hash');
-    const authDateStr = params.get('auth_date');
-    
-    console.log('validateTelegramWebAppDataServer: Parsed parameters:', {
-      hasHash: !!hash,
-      hasAuthDate: !!authDateStr,
-      hashPreview: hash ? hash.substring(0, 16) + '...' : 'missing',
-      authDate: authDateStr
-    });
-    
-    if (!hash || !authDateStr) {
-      console.error('Missing hash or auth_date in Telegram Web App data');
-      return false;
-    }
-
-    // Check if auth_date is not too old (24 hours)
-    const now = Math.floor(Date.now() / 1000);
-    const authTimestamp = parseInt(authDateStr);
-    const maxAge = 24 * 60 * 60; // 24 hours in seconds
-    const age = now - authTimestamp;
-
-    console.log('validateTelegramWebAppDataServer: Time validation:', {
-      now,
-      authTimestamp,
-      age,
-      maxAge,
-      ageHours: Math.round(age / 3600),
-      isValid: age <= maxAge
-    });
-
-    // Allow some tolerance for future timestamps (5 minutes) and past timestamps (24 hours)
-    const futureTolerance = 5 * 60; // 5 minutes
-    const isFuture = age < -futureTolerance;
-    const isTooOld = age > maxAge;
-    
-    if (isFuture) {
-      console.error(`Telegram Web App data is from the future: ${Math.abs(Math.round(age / 3600))} hours ahead (tolerance: ${futureTolerance/60} minutes)`);
-      return false;
-    }
-    
-    if (isTooOld) {
-      console.error(`Telegram Web App data is too old: ${Math.round(age / 3600)} hours old (max: 24 hours)`);
-      return false;
-    }
-
-    // Create data-check-string according to Telegram docs:
-    // 1. Create key=value pairs for all parameters except hash
-    // 2. Sort them alphabetically by key
-    // 3. Join with \n
-    const dataCheckArray: string[] = [];
-    
-    console.log('validateTelegramWebAppDataServer: All params from URLSearchParams:');
-    for (const [key, value] of params.entries()) {
-      console.log(`  ${key} = ${value}`);
-      if (key !== 'hash') {
-        dataCheckArray.push(`${key}=${value}`);
-      }
-    }
-    
-    // Sort alphabetically by key
-    dataCheckArray.sort();
-    const dataCheckString = dataCheckArray.join('\n');
-
-    console.log('validateTelegramWebAppDataServer: Data check array before join:', dataCheckArray);
-    console.log('validateTelegramWebAppDataServer: Data check string:', dataCheckString);
-    console.log('validateTelegramWebAppDataServer: Data check string bytes:', [...dataCheckString].map(c => c.charCodeAt(0)));
-
-    // Create secret key using two-stage HMAC as per Telegram docs
-    const crypto = require('crypto');
-    const secretKey = crypto
-      .createHmac('sha256', 'WebAppData')
-      .update(botToken)
-      .digest();
-
-    console.log('validateTelegramWebAppDataServer: Secret key (hex):', secretKey.toString('hex'));
-
-    // Create hash using the secret key
-    const calculatedHash = crypto
-      .createHmac('sha256', secretKey)
-      .update(dataCheckString)
-      .digest('hex');
-
-    // Compare hashes
-    const isValid = calculatedHash === hash;
-    
-    console.log('validateTelegramWebAppDataServer: Hash validation:', {
-      calculated: calculatedHash,
-      received: hash,
-      isValid,
-      dataCheckString: dataCheckString
-    });
-    
-    if (!isValid) {
-      console.error('❌ Telegram Web App hash validation failed');
-      console.error('Expected hash:', calculatedHash);
-      console.error('Received hash:', hash);
-      console.error('Data check string used:', dataCheckString);
-      console.error('Bot token available:', !!botToken);
-      
-      // Try alternative approaches for debugging
-      console.log('=== DEBUGGING ALTERNATIVE APPROACHES ===');
-      
-      // Try with different sorting or formatting
-      const altDataCheck1 = Object.keys(Object.fromEntries(params.entries()))
-        .filter(k => k !== 'hash')
-        .sort()
-        .map(key => `${key}=${params.get(key)}`)
-        .join('\n');
-      
-      const altHash1 = crypto.createHmac('sha256', secretKey).update(altDataCheck1).digest('hex');
-      console.log('Alternative 1 - manual sort:', altHash1 === hash ? 'MATCH!' : 'no match');
-      
-      // Try without URL decoding the values
-      const rawParams = new URLSearchParams(rawInitData.replace(/\+/g, '%20')); // Handle + encoding
-      const altDataCheck2 = [];
-      for (const [key, value] of rawParams.entries()) {
-        if (key !== 'hash') {
-          altDataCheck2.push(`${key}=${value}`);
-        }
-      }
-      altDataCheck2.sort();
-      const altHash2 = crypto.createHmac('sha256', secretKey).update(altDataCheck2.join('\n')).digest('hex');
-      console.log('Alternative 2 - raw params:', altHash2 === hash ? 'MATCH!' : 'no match');
-    }
-
-    return isValid;
-  } catch (error) {
-    console.error('Error validating Telegram Web App data:', error);
-    return false;
-  }
-}
