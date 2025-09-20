@@ -32,6 +32,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { useSession } from 'next-auth/react';
 
 interface SubscriptionData {
   currentSubscription: {
@@ -53,48 +54,64 @@ const VocabularyDashboard = () => {
   const t = useTranslations('Dashboard');
   const router = useRouter();
   const { toast } = useToast();
+  const { data: session } = useSession();
   const [searchTerm, setSearchTerm] = useState('');
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
 
-  // Mock data for visualization
-  const stats = {
-    totalWords: 154,
-    newWords: 24,
-    learningWords: 47,
-    masteredWords: 83,
-    reviewsDue: 12,
-    streak: 7,
-    successRate: 87,
-    retentionRate: 92
-  };
+  // Real user statistics
+  const [stats, setStats] = useState({
+    totalWords: 0,
+    newWords: 0,
+    learningWords: 0,
+    masteredWords: 0,
+    reviewsDue: 0,
+    streak: 0,
+    successRate: 0,
+    retentionRate: 0,
+    weeklyProgress: 0
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
 
-  // Fetch subscription data
+  // Fetch subscription data and user statistics
   useEffect(() => {
-    const fetchSubscription = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/subscriptions');
-        if (!response.ok) throw new Error('Failed to fetch subscription');
-        const data = await response.json();
-        setSubscription({
-          currentSubscription: data.currentSubscription ? {
-            ...data.currentSubscription,
-            gumroadUrl: data.currentSubscription?.gumroadUrl || '/subscriptions'
-          } : null
-        });
+        // Fetch subscription data
+        const subscriptionResponse = await fetch('/api/subscriptions');
+        if (subscriptionResponse.ok) {
+          const subscriptionData = await subscriptionResponse.json();
+          setSubscription({
+            currentSubscription: subscriptionData.currentSubscription ? {
+              ...subscriptionData.currentSubscription,
+              gumroadUrl: subscriptionData.currentSubscription?.gumroadUrl || '/subscriptions'
+            } : null
+          });
+        }
+
+        // Fetch user statistics
+        const statsResponse = await fetch('/api/user-stats');
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats(statsData.stats);
+        } else {
+          throw new Error('Failed to fetch user statistics');
+        }
+
       } catch (error) {
-        console.error('Error fetching subscription:', error);
+        console.error('Error fetching data:', error);
         toast({
           title: t('toast.error'),
-          description: t('errors.subscriptionFetchFailed'),
+          description: t('errors.dataFetchFailed') || 'Failed to load dashboard data',
           variant: 'destructive',
         });
       } finally {
         setSubscriptionLoading(false);
+        setStatsLoading(false);
       }
     };
 
-    fetchSubscription();
+    fetchData();
   }, [toast, t]);
 
   // Calculate percentages for progress bars
@@ -117,26 +134,40 @@ const VocabularyDashboard = () => {
     ? subscription.currentSubscription.wordsRemaining > 0
     : true;
 
-  // Mock upcoming reviews
+  // Real words data
+  const [recentWords, setRecentWords] = useState<any[]>([]);
+  const [wordsLoading, setWordsLoading] = useState(true);
+
+  // Fetch recent words for the dashboard
+  useEffect(() => {
+    const fetchRecentWords = async () => {
+      try {
+        const response = await fetch('/api/words/recent?limit=5');
+        if (response.ok) {
+          const data = await response.json();
+          setRecentWords(data.words || []);
+        }
+      } catch (error) {
+        console.error('Error fetching recent words:', error);
+      } finally {
+        setWordsLoading(false);
+      }
+    };
+
+    fetchRecentWords();
+  }, []);
+
+  // Mock upcoming reviews (will be replaced with real data later)
   const upcomingReviews = [
-    { day: t('cards.upcoming.today'), count: 12, isActive: true },
-    { day: t('cards.upcoming.tomorrow'), count: 8, isActive: false },
-    { day: t('cards.upcoming.inDays', { days: 3 }), count: 14, isActive: false }
+    { day: t('cards.upcoming.today'), count: stats.reviewsDue, isActive: true },
+    { day: t('cards.upcoming.tomorrow'), count: 0, isActive: false },
+    { day: t('cards.upcoming.inDays', { days: 3 }), count: 0, isActive: false }
   ];
 
-  // Mock sample words for the list
-  const sampleWords = [
-    { word: "ephemeral", definition: t('exampleWords.ephemeral'), stage: 3, dueToday: true },
-    { word: "ubiquitous", definition: t('exampleWords.ubiquitous'), stage: 5, dueToday: false, mastered: true },
-    { word: "serendipity", definition: t('exampleWords.serendipity'), stage: 2, dueToday: true },
-    { word: "eloquent", definition: t('exampleWords.eloquent'), stage: 4, dueToday: false },
-    { word: "pragmatic", definition: t('exampleWords.pragmatic'), stage: 1, dueToday: true, new: true }
-  ];
-
-  // Filter sample words based on search term
-  const filteredWords = sampleWords.filter(item =>
+  // Filter recent words based on search term
+  const filteredWords = recentWords.filter(item =>
     item.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.definition.toLowerCase().includes(searchTerm.toLowerCase())
+    item.definition?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStageColor = (stage: number, mastered: boolean | undefined, isNew: boolean | undefined) => {
@@ -215,7 +246,9 @@ const VocabularyDashboard = () => {
             <div className="flex flex-col gap-4">
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold">
-                  {t('welcomeUser', { name: 'Alex' })}
+                  {t('welcomeUser', {
+                    name: session?.user?.name || 'User'
+                  })}
                 </h1>
                 <p className="mt-1 text-sm sm:text-base text-purple-100">
                   {stats.reviewsDue > 0
@@ -250,38 +283,66 @@ const VocabularyDashboard = () => {
 
         <Card className="bg-white shadow-sm border-none">
           <CardContent className="p-4">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="bg-blue-100 p-2.5 sm:p-3 rounded-full">
-                <Brain size={20} className="text-blue-600 sm:w-6 sm:h-6" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm text-gray-500">{t('learningProgress')}</div>
-                <div className="text-xl sm:text-2xl font-bold">{stats.totalWords} {t('words')}</div>
-                <div className="flex items-center gap-1 mt-1">
-                  <span className="text-green-600 text-xs font-medium">+5 {t('thisWeek')}</span>
-                  <TrendingUp size={12} className="text-green-600 sm:w-[14px] sm:h-[14px]" />
+            {statsLoading ? (
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="bg-gray-100 p-2.5 sm:p-3 rounded-full animate-pulse">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-200 rounded"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 bg-gray-200 rounded w-20 animate-pulse"></div>
+                  <div className="h-6 bg-gray-200 rounded w-16 animate-pulse"></div>
+                  <div className="h-3 bg-gray-200 rounded w-12 animate-pulse"></div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="bg-blue-100 p-2.5 sm:p-3 rounded-full">
+                  <Brain size={20} className="text-blue-600 sm:w-6 sm:h-6" />
+                </div>
+                <div>
+                  <div className="text-xs sm:text-sm text-gray-500">{t('learningProgress')}</div>
+                  <div className="text-xl sm:text-2xl font-bold">{stats.totalWords} {t('words')}</div>
+                  <div className="flex items-center gap-1 mt-1">
+                    <span className="text-green-600 text-xs font-medium">
+                      +{stats.weeklyProgress} {t('thisWeek')}
+                    </span>
+                    <TrendingUp size={12} className="text-green-600 sm:w-[14px] sm:h-[14px]" />
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card className="bg-white shadow-sm border-none">
           <CardContent className="p-4">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="bg-amber-100 p-2.5 sm:p-3 rounded-full">
-                <Award size={20} className="text-amber-600 sm:w-6 sm:h-6" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm text-gray-500">{t('currentStreak')}</div>
-                <div className="text-xl sm:text-2xl font-bold">{stats.streak} {t('days')}</div>
-                <div className="flex items-center gap-1 mt-1">
-                  <Badge variant="outline" className="text-xs bg-amber-50 border-amber-200 text-amber-700">
-                    {t('personalBest')}
-                  </Badge>
+            {statsLoading ? (
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="bg-gray-100 p-2.5 sm:p-3 rounded-full animate-pulse">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-200 rounded"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 bg-gray-200 rounded w-20 animate-pulse"></div>
+                  <div className="h-6 bg-gray-200 rounded w-16 animate-pulse"></div>
+                  <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="bg-amber-100 p-2.5 sm:p-3 rounded-full">
+                  <Award size={20} className="text-amber-600 sm:w-6 sm:h-6" />
+                </div>
+                <div>
+                  <div className="text-xs sm:text-sm text-gray-500">{t('currentStreak')}</div>
+                  <div className="text-xl sm:text-2xl font-bold">{stats.streak} {t('days')}</div>
+                  <div className="flex items-center gap-1 mt-1">
+                    <Badge variant="outline" className="text-xs bg-amber-50 border-amber-200 text-amber-700">
+                      {t('personalBest')}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -531,10 +592,18 @@ const VocabularyDashboard = () => {
 
                     <TabsContent value="all" className="mt-0">
                       <div className="space-y-2">
-                        {filteredWords.length > 0 ? (
+                        {wordsLoading ? (
+                          <div className="space-y-3">
+                            {[1, 2, 3].map((i) => (
+                              <div key={i} className="animate-pulse">
+                                <div className="h-16 bg-gray-100 rounded-lg"></div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : filteredWords.length > 0 ? (
                           filteredWords.map((item, i) => (
                             <div
-                              key={i}
+                              key={item.id || i}
                               className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 rounded-lg border ${
                                 item.dueToday
                                   ? 'border-blue-200 bg-blue-50'
@@ -580,6 +649,16 @@ const VocabularyDashboard = () => {
                               </div>
                             </div>
                           ))
+                        ) : recentWords.length === 0 ? (
+                          <div className="text-center py-8 text-gray-500">
+                            <BookOpen className="mx-auto h-12 w-12 text-gray-300 mb-3" />
+                            <p className="text-sm font-medium mb-2">{t('wordList.empty')}</p>
+                            <p className="text-xs mb-4">{t('wordList.emptyDescription')}</p>
+                            <Button size="sm" onClick={() => router.push('/words')} className="mx-auto">
+                              <Plus size={14} className="mr-1" />
+                              {t('addFirstWord')}
+                            </Button>
+                          </div>
                         ) : (
                           <div className="text-center py-6 text-gray-500 text-sm">
                             {t('noMatchingWords')}

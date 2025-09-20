@@ -8,6 +8,7 @@ import { Badge } from '@/components/shadcn-ui/badge';
 import {
   ChevronLeft,
   ChevronRight,
+  Plus,
   Check,
   X,
   RotateCcw,
@@ -18,71 +19,62 @@ import {
   Pause,
   Trophy,
   List,
-  Home
+  Home,
+  Loader2,
+  BookOpen
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 // Define the possible status types
 type CardStatus = 'correct' | 'incorrect' | 'skipped' | null;
 
 // Interface for flashcard
 interface Flashcard {
-  id: number;
+  id: string;
   word: string;
   definition: string;
-  context: string | undefined;
+  context?: string;
   stage: number;
   reviewed: boolean;
   status: CardStatus;
 }
 
+interface ReviewResult {
+  wordId: string;
+  success: boolean;
+  responseTimeMs: number;
+  confidenceLevel: number;
+}
+
 const FlashcardReview = () => {
   const t = useTranslations('Review');
   const router = useRouter();
+  const { toast } = useToast();
 
-  // Mock review session data
+  // Loading and error states
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Real review session data
   const [session, setSession] = useState({
+    id: '',
     current: 0,
-    total: 12,
+    total: 0,
     correct: 0,
     incorrect: 0,
     skipped: 0,
     timeSpent: 0,
     isComplete: false,
-    isPaused: false
+    isPaused: false,
+    startTime: Date.now()
   });
 
-  // Mock flashcards data with proper typing
-  const [cards, setCards] = useState<Flashcard[]>([
-    {
-      id: 1,
-      word: "ephemeral",
-      definition: "Lasting for a very short time",
-      context: "The beauty of cherry blossoms is ephemeral, lasting only a few days each year.",
-      stage: 3,
-      reviewed: false,
-      status: null
-    },
-    {
-      id: 2,
-      word: "ubiquitous",
-      definition: "Present, appearing, or found everywhere",
-      context: "Mobile phones have become ubiquitous in modern society.",
-      stage: 2,
-      reviewed: false,
-      status: null
-    },
-    {
-      id: 3,
-      word: "serendipity",
-      definition: "The occurrence of events by chance in a happy or beneficial way",
-      context: "Finding my favorite book in that tiny bookstore was pure serendipity.",
-      stage: 1,
-      reviewed: false,
-      status: null
-    },
-  ]);
+  // Real flashcards data
+  const [cards, setCards] = useState<Flashcard[]>([]);
+  const [reviewResults, setReviewResults] = useState<ReviewResult[]>([]);
 
   // State for tracking card flip
   const [isFlipped, setIsFlipped] = useState(false);
@@ -92,12 +84,55 @@ const FlashcardReview = () => {
 
   // State for showing hint
   const [showHint, setShowHint] = useState(false);
+  const [cardStartTime, setCardStartTime] = useState(Date.now());
+
+  // Fetch review words on component mount
+  useEffect(() => {
+    const fetchReviewWords = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/review/words');
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch review words');
+        }
+
+        const data = await response.json();
+
+        if (data.words.length === 0) {
+          // No words to review
+          setSession(prev => ({ ...prev, isComplete: true, total: 0 }));
+          setCards([]);
+        } else {
+          setCards(data.words);
+          setSession(prev => ({
+            ...prev,
+            id: data.sessionId,
+            total: data.words.length,
+            isComplete: false
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching review words:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load review words');
+        toast({
+          title: t('error'),
+          description: t('loadError'),
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviewWords();
+  }, [toast, t]);
 
   // Effect for timer
   useEffect(() => {
     let interval: string | number | NodeJS.Timeout | undefined;
 
-    if (!session.isPaused && !session.isComplete) {
+    if (!session.isPaused && !session.isComplete && !loading) {
       interval = setInterval(() => {
         setTimer(prev => prev + 1);
         setSession(prev => ({...prev, timeSpent: prev.timeSpent + 1}));
@@ -105,7 +140,7 @@ const FlashcardReview = () => {
     }
 
     return () => clearInterval(interval);
-  }, [session.isPaused, session.isComplete]);
+  }, [session.isPaused, session.isComplete, loading]);
 
   // Format time for display
   const formatTime = (seconds: number) => {
@@ -125,8 +160,23 @@ const FlashcardReview = () => {
     setIsFlipped(!isFlipped);
   };
 
+  // Record review result
+  const recordReviewResult = (success: boolean, confidence = 5) => {
+    const responseTime = Date.now() - cardStartTime;
+    const result: ReviewResult = {
+      wordId: currentCard.id,
+      success,
+      responseTimeMs: responseTime,
+      confidenceLevel: confidence
+    };
+
+    setReviewResults(prev => [...prev, result]);
+  };
+
   // Handle marking card as correct
   const handleCorrect = () => {
+    recordReviewResult(true);
+
     // Update card status
     const updatedCards = [...cards];
     updatedCards[session.current] = {
@@ -137,7 +187,7 @@ const FlashcardReview = () => {
 
     setCards(updatedCards);
 
-    // Update session stats
+    // Update session stats and move to next card
     setSession(prev => ({
       ...prev,
       correct: prev.correct + 1,
@@ -145,13 +195,16 @@ const FlashcardReview = () => {
       isComplete: prev.current + 1 >= prev.total
     }));
 
-    // Reset card flip
+    // Reset card state
     setIsFlipped(false);
     setShowHint(false);
+    setCardStartTime(Date.now());
   };
 
   // Handle marking card as incorrect
   const handleIncorrect = () => {
+    recordReviewResult(false, 2);
+
     // Update card status
     const updatedCards = [...cards];
     updatedCards[session.current] = {
@@ -162,7 +215,7 @@ const FlashcardReview = () => {
 
     setCards(updatedCards);
 
-    // Update session stats
+    // Update session stats and move to next card
     setSession(prev => ({
       ...prev,
       incorrect: prev.incorrect + 1,
@@ -170,13 +223,16 @@ const FlashcardReview = () => {
       isComplete: prev.current + 1 >= prev.total
     }));
 
-    // Reset card flip
+    // Reset card state
     setIsFlipped(false);
     setShowHint(false);
+    setCardStartTime(Date.now());
   };
 
   // Handle skipping card
   const handleSkip = () => {
+    recordReviewResult(false, 1);
+
     // Update card status
     const updatedCards = [...cards];
     updatedCards[session.current] = {
@@ -187,7 +243,7 @@ const FlashcardReview = () => {
 
     setCards(updatedCards);
 
-    // Update session stats
+    // Update session stats and move to next card
     setSession(prev => ({
       ...prev,
       skipped: prev.skipped + 1,
@@ -195,10 +251,63 @@ const FlashcardReview = () => {
       isComplete: prev.current + 1 >= prev.total
     }));
 
-    // Reset card flip
+    // Reset card state
     setIsFlipped(false);
     setShowHint(false);
+    setCardStartTime(Date.now());
   };
+
+  // Submit review session results
+  const submitReviewSession = async () => {
+    if (reviewResults.length === 0) return;
+
+    try {
+      setSubmitting(true);
+      const sessionData = {
+        sessionId: session.id,
+        results: reviewResults,
+        totalTimeMs: session.timeSpent * 1000
+      };
+
+      const response = await fetch('/api/review/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sessionData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit review session');
+      }
+
+      const result = await response.json();
+      console.log('Review session submitted successfully:', result);
+
+      toast({
+        title: t('sessionComplete'),
+        description: t('reviewsSubmitted', { count: result.successful }),
+        variant: 'default',
+      });
+
+    } catch (err) {
+      console.error('Error submitting review session:', err);
+      toast({
+        title: t('error'),
+        description: t('submitError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Submit results when session completes
+  useEffect(() => {
+    if (session.isComplete && reviewResults.length > 0 && !submitting) {
+      submitReviewSession();
+    }
+  }, [session.isComplete, reviewResults.length, submitting]);
 
   // Toggle session pause
   const togglePause = () => {
@@ -213,6 +322,64 @@ const FlashcardReview = () => {
       window.speechSynthesis.speak(utterance);
     }
   };
+
+  // Early returns for different states
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
+        <div className="w-full max-w-md text-center">
+          <Loader2 className="mx-auto h-12 w-12 text-purple-600 animate-spin mb-4" />
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">{t('loading')}</h2>
+          <p className="text-gray-600">{t('loadingWords')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
+        <div className="w-full max-w-md text-center">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+            <X className="mx-auto h-12 w-12 text-red-500 mb-4" />
+            <h2 className="text-xl font-semibold text-red-800 mb-2">{t('error')}</h2>
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()} className="mb-2">
+              <RotateCcw size={16} className="mr-2" />
+              {t('retry')}
+            </Button>
+            <br />
+            <Button variant="outline" onClick={() => router.push('/dashboard')}>
+              <Home size={16} className="mr-2" />
+              {t('dashboard')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (session.total === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
+        <div className="w-full max-w-md text-center">
+          <BookOpen className="mx-auto h-16 w-16 text-gray-300 mb-4" />
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">{t('noWordsTitle')}</h2>
+          <p className="text-gray-600 mb-6">{t('noWordsDescription')}</p>
+          <div className="space-y-3">
+            <Button onClick={() => router.push('/words')} className="w-full">
+              <Plus size={16} className="mr-2" />
+              {t('addWords')}
+            </Button>
+            <Button variant="outline" onClick={() => router.push('/dashboard')} className="w-full">
+              <Home size={16} className="mr-2" />
+              {t('dashboard')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Render session complete view
   if (session.isComplete) {
@@ -260,6 +427,7 @@ const FlashcardReview = () => {
                   onClick={() => {
                     // Reset session
                     setSession({
+                      id: session.id,
                       current: 0,
                       total: session.total,
                       correct: 0,
@@ -267,7 +435,8 @@ const FlashcardReview = () => {
                       skipped: 0,
                       timeSpent: 0,
                       isComplete: false,
-                      isPaused: false
+                      isPaused: false,
+                      startTime: Date.now()
                     });
 
                     // Reset cards
