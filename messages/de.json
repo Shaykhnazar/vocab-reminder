@@ -871,7 +871,12 @@
     "sessionPausedDescription": "Machen Sie eine Pause und setzen Sie fort, wenn Sie bereit sind",
     "quitSession": "Sitzung beenden",
     "loadingWords": "Wörter werden geladen...",
+    "loading": "Laden...",
     "noWordsToReview": "Im Moment keine Wörter zum Wiederholen. Schauen Sie später wieder vorbei!",
+    "noWordsTitle": "Keine Wörter zum Wiederholen",
+    "noWordsDescription": "Sie haben derzeit keine Wörter, die wiederholt werden müssen. Fügen Sie Wörter hinzu, um zu beginnen!",
+    "addWords": "Wörter hinzufügen",
+    "dashboard": "Dashboard",
     "reviewSuccess": "Wiederholungserfolg",
     "addMoreWords": "Mehr Wörter hinzufügen",
     "stats": {
