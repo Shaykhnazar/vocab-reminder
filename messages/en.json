@@ -875,7 +875,12 @@
     "sessionPausedDescription": "Take a break and resume when you're ready",
     "quitSession": "Quit Session",
     "loadingWords": "Loading words...",
+    "loading": "Loading...",
     "noWordsToReview": "No words to review at the moment. Check back later!",
+    "noWordsTitle": "No Words to Review",
+    "noWordsDescription": "You don't have any words due for review right now. Add some words to get started!",
+    "addWords": "Add Words",
+    "dashboard": "Dashboard",
     "reviewSuccess": "Review Success",
     "addMoreWords": "Add More Words",
     "stats": {

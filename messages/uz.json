@@ -871,7 +871,12 @@
     "sessionPausedDescription": "Tanaffus qiling va tayyor bo'lganingizda davom eting",
     "quitSession": "Mashg'ulotdan chiqish",
     "loadingWords": "So'zlar yuklanmoqda...",
+    "loading": "Yuklanmoqda...",
     "noWordsToReview": "Hozircha takrorlash uchun so'zlar yo'q. Keyinroq qaytib keling!",
+    "noWordsTitle": "Takrorlash uchun so'zlar yo'q",
+    "noWordsDescription": "Hozir takrorlash uchun so'zlaringiz yo'q. Boshlash uchun so'zlar qo'shing!",
+    "addWords": "So'zlar qo'shish",
+    "dashboard": "Boshqaruv paneli",
     "reviewSuccess": "Muvaffaqiyatli takrorlash",
     "addMoreWords": "Ko'proq so'zlar qo'shish",
     "stats": {
