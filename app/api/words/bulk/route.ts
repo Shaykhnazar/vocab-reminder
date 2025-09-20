@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, REVIEW_INTERVALS } from '@/lib/supabase';
 import { addToNotificationQueue } from '@/lib/notifications';
+import { validateBulkWords } from '@/lib/validation';
 
 // Define a structure for words we'll be adding in bulk
 interface BulkWordInput {
@@ -33,8 +34,26 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Get user notification preferences (using the first word's userId)
+    // Validate subscription limits for bulk operation
     const userId = words[0].userId;
+    const wordsToAdd = words.map(w => w.word);
+
+    try {
+      const bulkValidation = await validateBulkWords(userId, wordsToAdd);
+      if (!bulkValidation.valid) {
+        return NextResponse.json({
+          error: bulkValidation.error,
+          allowedCount: bulkValidation.allowedCount
+        }, { status: 400 });
+      }
+    } catch (validationError) {
+      console.error('Bulk validation error:', validationError);
+      return NextResponse.json({
+        error: 'Failed to validate subscription limits'
+      }, { status: 500 });
+    }
+
+    // Get user notification preferences
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('notification_preferences, telegram_id')

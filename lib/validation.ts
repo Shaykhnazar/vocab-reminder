@@ -1,6 +1,6 @@
 // lib/validation.ts
 
-import {supabase} from "@/lib/supabase";
+import {supabase, canAddWord} from "@/lib/supabase";
 
 export enum DuplicateCheckPeriod {
   DAY = 'day',
@@ -66,6 +66,15 @@ export async function validateNewWord(userId: string, word: string): Promise<{
       return { valid: false, error: 'Word is too long (max 50 characters)' };
     }
 
+    // Check subscription limits
+    const subscriptionCheck = await canAddWord(userId);
+    if (!subscriptionCheck.allowed) {
+      return {
+        valid: false,
+        error: subscriptionCheck.message || 'Word limit reached for your subscription'
+      };
+    }
+
     // Check for duplicates in the last week
     const isDuplicate = await isWordDuplicate({
       userId,
@@ -83,6 +92,59 @@ export async function validateNewWord(userId: string, word: string): Promise<{
     return { valid: true };
   } catch (error) {
     console.error('Word validation error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Validates multiple words for bulk adding
+ */
+export async function validateBulkWords(userId: string, words: string[]): Promise<{
+  valid: boolean;
+  error?: string;
+  allowedCount?: number;
+}> {
+  try {
+    if (!words || words.length === 0) {
+      return { valid: false, error: 'No words provided' };
+    }
+
+    // Check subscription limits for bulk operation
+    const subscriptionCheck = await canAddWord(userId);
+    if (!subscriptionCheck.allowed) {
+      return {
+        valid: false,
+        error: subscriptionCheck.message || 'Word limit reached for your subscription'
+      };
+    }
+
+    // Get current word count and subscription details
+    const { data: subscriptionData } = await supabase
+      .from('subscriptions')
+      .select('word_limit')
+      .eq('user_id', userId)
+      .single();
+
+    const { count: currentWordCount } = await supabase
+      .from('words')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
+
+    const wordLimit = subscriptionData?.word_limit || 50; // Default free plan limit
+    const wordsUsed = currentWordCount || 0;
+    const remainingSlots = wordLimit - wordsUsed;
+
+    if (words.length > remainingSlots) {
+      return {
+        valid: false,
+        error: `You can only add ${remainingSlots} more words with your current subscription. You're trying to add ${words.length} words.`,
+        allowedCount: remainingSlots
+      };
+    }
+
+    return { valid: true, allowedCount: words.length };
+  } catch (error) {
+    console.error('Bulk word validation error:', error);
     throw error;
   }
 }

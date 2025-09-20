@@ -190,27 +190,12 @@ export async function processUserNotifications(userId: string) {
       });
     }
 
-    // Update all notifications and words in a transaction
-    const nextReviewDates = notifications.map((n) => {
-      const currentStage = n.words.review_stage || 0;
-
-      // Don't increment if already at max stage
-      if (currentStage >= 5) {  // Changed from 4 to 5
-        return null; // Word is mastered
-      }
-
-      const nextStage = currentStage + 1;
-      const interval = REVIEW_INTERVALS[nextStage];
-
-      return new Date(Date.now() + interval).toISOString();
-    });
-
-    await supabase.rpc('update_notifications_and_words', {
-      notification_ids: notifications.map((n) => n.id),
-      word_ids: notifications.map((n) => n.words.id),
-      next_review_dates: nextReviewDates,
-      now: now.toISOString()
-    });
+    // Note: Don't update word review stages here - this is handled by the review submission API
+    // Just mark notifications as sent
+    await supabase
+      .from('notification_queue')
+      .update({ status: 'sent', sent_at: now.toISOString() })
+      .in('id', notifications.map(n => n.id));
   } catch (error) {
     // If there's an error, revert notifications back to pending
     await supabase
